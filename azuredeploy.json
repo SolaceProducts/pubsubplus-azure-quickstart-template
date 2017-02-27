@@ -26,22 +26,29 @@
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
     },
-    "ubuntuOSVersion": {
+    "centOSVersion": {
       "type": "string",
-      "defaultValue": "14.04.4-LTS",
+      "defaultValue": "7.2",
       "metadata": {
-        "description": "The Ubuntu version for deploying the Docker containers. This will pick a fully patched image of this given Ubuntu version. Allowed values: 14.04.4-LTS, 15.10, 16.04.0-LTS"
+        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.1, 7.2, 7.3"
       },
       "allowedValues": [
-        "14.04.4-LTS",
-        "15.10",
-        "16.04.0-LTS"
+        "7.1",
+        "7.2",
+        "7.3"
       ]
+    },
+    "solaceVMR_URI": {
+        "type": "string",
+        "defaultValue": "https://testdestore.blob.core.windows.net/containers/soltr-100.0vmr_docker.0.113-vmr-community-docker.tar.gz",
+        "netadata": {
+            "description": "The URI location of the Solace VMR Docker container tarball"
+        }
     }
   },
   "variables": {
-    "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
+    "imagePublisher": "OpenLogic",
+    "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
     "nicName": "myVMNicD",
     "extensionName": "DockerExtension",
@@ -184,6 +191,48 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": { }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "getVMRContainer",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "parameters('solaceVMR_URI')"
+          ],
+          "commandToExecute": "sh mv ./soltr*tar.gz /tmp/soltr.latest.tar.gz"
+        } 
+      }
+    },
+        {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "configureVMRContainer",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/deploy_vmrs.sh"
+          ],
+          "commandToExecute": "sh deploy_vmrs.sh"
+        } 
       }
     }
   ]
