@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "newStorageAccountName": {
+    "storageAccountName": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
@@ -68,7 +68,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[parameters('newStorageAccountName')]",
+      "name": "[parameters('storageAccountName')]",
       "apiVersion": "2015-05-01-preview",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -140,7 +140,7 @@
       "name": "[variables('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -156,13 +156,13 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('ubuntuOSVersion')]",
+            "sku": "[parameters('centOSVersion')]",
             "version": "latest"
           },
           "osDisk": {
             "name": "osdisk1",
             "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
+              "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
