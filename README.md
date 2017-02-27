@@ -8,12 +8,12 @@ How to Deploy a VRM
 -------------------
 This is a 2 step process:
 
-1. Go to the Solace Developer portal and request a Solace Comunity edition VRM. This process will return an email with a Download link.
+Go to the Solace Developer portal and request a Solace Comunity edition VRM. This process will return an email with a Download link.
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce_hyper-v/" target="_blank">
     <img src="http://dev.solacesystems.com/wp-content/uploads/2016/10/solace-logo-white.png"/>
 
-2. Hit the Deploy button and in the dployment template add in the link to the VMR provided by Solace. 
+Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%KenBarr%2FSolace_ARM_Quickstart_Template%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
