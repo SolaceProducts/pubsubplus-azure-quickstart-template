@@ -15,9 +15,9 @@ Go to the Solace Developer portal and request a Solace Comunity edition VRM. Thi
 
 Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%KenBarr%2FSolace_ARM_Quickstart_Template%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FKenBarr%2FSolace_ARM_Quickstart_Template%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2github.com%KenBarr%2FSolace_ARM_Quickstart_Template%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FKenBarr%2FSolace_ARM_Quickstart_Template%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
