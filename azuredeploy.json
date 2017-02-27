@@ -195,7 +195,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),'/', getVMRContainer]",
+      "name": "[concat(variables('vmName'),'/', 'getVMRContainer']",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -216,7 +216,7 @@
     },
         {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),'/', configureVMRContainer]",
+      "name": "[concat(variables('vmName'),'/', 'configureVMRContainer']",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
