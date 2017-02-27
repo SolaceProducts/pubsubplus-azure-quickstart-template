@@ -21,7 +21,7 @@ sudo docker volume create --name=adbBackup
 sudo docker volume create --name=softAdb
 
 #Load the VMR
-sudo docker load -i /tmp/soltr.latest.tar.gz
+sudo docker load -i ./soltr*.tar.gz
 
 #Define a create script
 sudo tee /root/docker-create <<-EOF 

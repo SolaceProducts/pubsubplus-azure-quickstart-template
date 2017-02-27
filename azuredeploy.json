@@ -4,6 +4,7 @@
   "parameters": {
     "storageAccountName": {
       "type": "string",
+      "defaultValue": "testdestore",
       "metadata": {
         "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
       }
@@ -38,6 +39,17 @@
         "7.3"
       ]
     },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "DS2_V2",
+      "metadata": {
+        "description": "The size of the VM, requires 2 cores and 4GB of memory. Allowed values: DS2_V2, F2S"
+      },
+      "allowedValues": [
+        "DS2_V2",
+        "F2S"
+      ]
+    },
     "solaceVMR_URI": {
         "type": "string",
         "defaultValue": "https://testdestore.blob.core.windows.net/containers/soltr-100.0vmr_docker.0.113-vmr-community-docker.tar.gz",
@@ -58,9 +70,9 @@
     "storageAccountType": "Standard_LRS",
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressType": "Dynamic",
-    "vmStorageAccountContainerName": "vhds",
+    "vmStorageAccountVHDsName": "vhds",
+    "vmStorageAccountContainersName": "containers",
     "vmName": "MyDockerVM",
-    "vmSize": "Standard_F1",
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]"
@@ -145,7 +157,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[variables('vmSize')]"
+          "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
           "computerName": "[variables('vmName')]",
@@ -162,7 +174,7 @@
           "osDisk": {
             "name": "osdisk1",
             "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
+              "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('OSDiskName'),'.vhd')"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -195,27 +207,6 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'),'/', 'getVMRContainer')]",
-      "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Extensions",
-        "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "fileUris": [
-            "parameters('solaceVMR_URI')"
-          ],
-          "commandToExecute": "sh mv ./soltr*tar.gz /tmp/soltr.latest.tar.gz"
-        } 
-      }
-    },
-        {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/', 'configureVMRContainer')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
@@ -229,6 +220,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
+            "https://testdestore.blob.core.windows.net/containers/soltr-100.0vmr_docker.0.113-vmr-community-docker.tar.gz",
             "https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/deploy_vmrs.sh"
           ],
           "commandToExecute": "sh deploy_vmrs.sh"
