@@ -41,13 +41,13 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "DS2_V2",
+      "defaultValue": "Standard_D2_v2",
       "metadata": {
         "description": "The size of the VM, requires 2 cores and 4GB of memory. Allowed values: DS2_V2, F2S"
       },
       "allowedValues": [
-        "DS2_V2",
-        "F2S"
+        "Standard_D2_v2",
+        "Standard_F2s"
       ]
     },
     "solaceVMR_URI": {
