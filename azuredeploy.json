@@ -211,7 +211,7 @@
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),'/extensions/',variables('extensionName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",

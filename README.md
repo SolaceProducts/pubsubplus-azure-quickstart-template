@@ -11,7 +11,7 @@ This is a 2 step process:
 Go to the Solace Developer portal and request a Solace Comunity edition VRM. This process will return an email with a Download link.
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce_hyper-v/" target="_blank">
-    <img src="http://dev.solacesystems.com/wp-content/uploads/2016/10/solace-logo-white.png"/>
+    <img src="https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/register.png"/>
 
 Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
 

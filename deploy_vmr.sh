@@ -3,15 +3,6 @@
 #Install the logical volume manager
 yum -y install lvm2
 
-#Install the Docker yum repository. 
-tee /etc/yum.repos.d/docker.repo <<-EOF 
-[dockerrepo]
- name=Docker Repository 
- baseurl=https://yum.dockerproject.org/repo/main/centos/7/
- enabled=1 
- gpgcheck=1 
- gpgkey=https://yum.dockerproject.org/gpg 
-EOF
 
 #Create new volumes that the VMR container can use to consume and store data.
 docker volume create --name=jail
@@ -23,6 +14,9 @@ docker volume create --name=softAdb
 #Load the VMR
 docker load -i ./soltr*.tar.gz
 
+#Need to de
+export VMR_VERSION=`docker images | egrep -o [0-9\.]*vmr_docker[\-\.0-9a-z]*`
+
 #Define a create script
 tee /root/docker-create <<-EOF 
 #!/bin/bash 
@@ -31,20 +25,20 @@ docker create \
  --shm-size 2g \
  --net=host \
  -v jail:/usr/sw/jail \
- -v var:/usr/sw/var \ 
- -v internalSpool:/usr/sw/internalSpool \ 
- -v adbBackup:/usr/sw/adb \ 
- -v softAdb:/usr/sw/internalSpool/softAdb \ 
- --env 'username_admin_globalaccesslevel=admin' \ 
- --env 'username_admin_password=admin' \ 
- --name=solace solace-app:100.0vmr_docker.0.60-enterprise 
+ -v var:/usr/sw/var \
+ -v internalSpool:/usr/sw/internalSpool \
+ -v adbBackup:/usr/sw/adb \
+ -v softAdb:/usr/sw/internalSpool/softAdb \
+ --env 'username_admin_globalaccesslevel=admin' \
+ --env 'username_admin_password=admin' \
+ --name=solace solace-app:${VMR_VERSION} 
 EOF
 
 #Make the file executable
-chmod +x docker-create
+chmod +x /root/docker-create
 
 #Launch the VMR
-./docker-create
+/root/docker-create
 
 #Construct systemd for VMR
 tee /etc/systemd/system/solace-docker-vmr.service <<-EOF
