@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #Install the logical volume manager
-sudo yum -y install lvm2
+yum -y install lvm2
 
 #Install the Docker yum repository. 
-sudo tee /etc/yum.repos.d/docker.repo <<-EOF 
+tee /etc/yum.repos.d/docker.repo <<-EOF 
 [dockerrepo]
  name=Docker Repository 
  baseurl=https://yum.dockerproject.org/repo/main/centos/7/
@@ -14,17 +14,17 @@ sudo tee /etc/yum.repos.d/docker.repo <<-EOF
 EOF
 
 #Create new volumes that the VMR container can use to consume and store data.
-sudo docker volume create --name=jail
-sudo docker volume create --name=var
-sudo docker volume create --name=internalSpool
-sudo docker volume create --name=adbBackup
-sudo docker volume create --name=softAdb
+docker volume create --name=jail
+docker volume create --name=var
+docker volume create --name=internalSpool
+docker volume create --name=adbBackup
+docker volume create --name=softAdb
 
 #Load the VMR
-sudo docker load -i ./soltr*.tar.gz
+docker load -i ./soltr*.tar.gz
 
 #Define a create script
-sudo tee /root/docker-create <<-EOF 
+tee /root/docker-create <<-EOF 
 #!/bin/bash 
 docker create \
  --privileged=true \
@@ -41,13 +41,13 @@ docker create \
 EOF
 
 #Make the file executable
-sudo chmod +x docker-create
+chmod +x docker-create
 
 #Launch the VMR
-sudo ./docker-create
+./docker-create
 
 #Construct systemd for VMR
-sudo tee /etc/systemd/system/solace-docker-vmr.service <<-EOF
+tee /etc/systemd/system/solace-docker-vmr.service <<-EOF
 [Unit] 
   Description=solace-docker-vmr 
   Requires=docker.service 
@@ -61,6 +61,6 @@ sudo tee /etc/systemd/system/solace-docker-vmr.service <<-EOF
 EOF
 
 #Start the solace service and enable it at system start up.
-sudo systemctl daemon-reload 
-sudo systemctl enable solace-docker-vmr 
-sudo systemctl start solace-docker-vmr
+systemctl daemon-reload 
+systemctl enable solace-docker-vmr 
+systemctl start solace-docker-vmr
