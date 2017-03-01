@@ -21,6 +21,13 @@
         "description": "Password for the Virtual Machine."
       }
     },
+    "securityGroupName": {
+      "type": "string",
+      "defaultValue": "vmrsecurity",
+      "metadata": {
+        "description": "Security group defined to support VMR default message vpn ports"
+      }
+    },
     "dnsNameForPublicIP": {
       "type": "string",
       "metadata": {
@@ -81,14 +88,14 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[parameters('storageAccountName')]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "[variables('storageAccountType')]"
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
@@ -100,7 +107,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
@@ -121,7 +128,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
@@ -147,7 +154,121 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "name": "[parameters('securityGroupName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2016-03-30",
+      "location": "[parameters('location')]",
+      "properties": {
+          "securityRules": [
+              {
+                  "name": "ssh",
+                  "properties": {
+                      "priority": 100,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "22",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "web",
+                  "properties": {
+                      "priority": 101,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "80",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "mqtt",
+                  "properties": {
+                      "priority": 102,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "1883",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "mqtt_ws",
+                  "properties": {
+                      "priority": 103,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "8000",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "semp",
+                  "properties": {
+                      "priority": 104,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "8080",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "rest",
+                  "properties": {
+                      "priority": 105,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "9000",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "smf_compressed",
+                  "properties": {
+                      "priority": 106,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "55003",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              },
+              {
+                  "name": "smf",
+                  "properties": {
+                      "priority": 107,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "55555",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              }             
+          ]
+       }
+    },
+    {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmName')]",
       "location": "[resourceGroup().location]",
@@ -192,7 +313,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/', variables('extensionName'))]",
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
@@ -208,7 +329,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/', 'configureVMRContainer')]",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),'/extensions/',variables('extensionName'))]"
@@ -220,7 +341,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "https://testdestore.blob.core.windows.net/containers/soltr-100.0vmr_docker.0.113-vmr-community-docker.tar.gz",
+            "parameters('solaceVMR_URI')",
             "https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/deploy_vmr.sh"
           ],
           "commandToExecute": "sh deploy_vmr.sh"

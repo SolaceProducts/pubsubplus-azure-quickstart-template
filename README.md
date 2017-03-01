@@ -1,7 +1,5 @@
 # Install a Solace Message Router onto a Linux Virtual Machines using Docker and Custom Extensions
 
-
-
 The Solace Virtual Message Router (VMR) provides enterprise-grade messaging capabilities deployable in any computing environment. The VMR provides the same rich feature set as Solace’s proven hardware appliances, with the same open protocol support, APIs and common management. The VMR can be deployed in the datacenter or natively within all popular private and public clouds. 
 
 How to Deploy a VRM
@@ -12,6 +10,7 @@ This is a 2 step process:
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce_hyper-v/" target="_blank">
     <img src="https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/register.png"/>
+</a>
 
 * Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
 
