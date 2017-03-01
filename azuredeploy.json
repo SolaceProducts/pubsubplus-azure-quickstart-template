@@ -72,7 +72,7 @@
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
-    "vmName": "MyDockerVM",
+    "vmName": "SolaceVMR",
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]"
