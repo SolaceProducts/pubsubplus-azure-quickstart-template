@@ -341,7 +341,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[(parameters('solaceVMR_URI')]",
+            "[parameters('solaceVMR_URI')]",
             "https://raw.githubusercontent.com/KenBarr/Solace_ARM_Quickstart_Template/master/deploy_vmr.sh"
           ],
           "commandToExecute": "sh deploy_vmr.sh"
