@@ -4,7 +4,6 @@
   "parameters": {
     "storageAccountName": {
       "type": "string",
-      "defaultValue": "testdestore",
       "metadata": {
         "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
       }
@@ -23,7 +22,7 @@
     },
     "securityGroupName": {
       "type": "string",
-      "defaultValue": "vmrsecurity",
+      "defaultValue": "vmr-security",
       "metadata": {
         "description": "Security group defined to support VMR default message vpn ports"
       }
