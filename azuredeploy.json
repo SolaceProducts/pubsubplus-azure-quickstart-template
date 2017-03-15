@@ -59,7 +59,6 @@
     },
     "solaceVMR_URI": {
         "type": "string",
-        "defaultValue": "https://testdestore.blob.core.windows.net/containers/soltr-100.0vmr_docker.0.113-vmr-community-docker.tar.gz",
         "metadata": {
             "description": "The URI location of the Solace VMR Docker container tarball"
         }
