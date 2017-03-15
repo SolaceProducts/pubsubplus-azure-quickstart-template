@@ -9,7 +9,7 @@ This is a 2 step process:
 * Go to the Solace Developer portal and request a Solace Comunity edition VMR. This process will return an email with a Download link.
 
 <a href="https://products.solace.com/download/VMR_DOCKER_COMM" target="_blank">
-    <img src="SolaceLabs/solace-azure-quickstart-template/images/register.png"/>
+    <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/images/register.png"/>
 </a>
 
 * Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
