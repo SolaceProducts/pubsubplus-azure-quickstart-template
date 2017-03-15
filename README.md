@@ -21,6 +21,18 @@ This is a 2 step process:
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
+The fields that need to fill out are:
+1. Resource Group - A new group or an existing group available in pulldown menu once "Use existing" is selected.
+2. Location - Select region most suitable to you.
+3. Storage Account Name – New or existing storage account
+4. Admin Username - Username for the virtual Machine.
+5. Admin Password - Password for the virtual Machine.
+6. Security Group Name – New or existing security group, VMR default ports will be made publically available.
+7. DNS Name – Public DNS name for the virtual machine.
+8. CentOS version – Use Centos 7.2 or CentOS 7.3
+9. VM Size – Use Standard_D2_V2 or Standard_F2s
+10. Solace VMR URI – The URI link to the community edition VMR received in the registration process
+
 # Gaining admin access to the VMR
 
 For persons used to working with Solace message router console access, this is still available with the google compute engine instance.  Access the web ssh terminal window by clicking the [ssh] button next to your VMR instance,  then launch a SolOS cli session:
