@@ -24,7 +24,7 @@ This is a 2 step process:
 The fields that need to fill out are:
 1. Resource Group - A new group or an existing group available in pulldown menu once "Use existing" is selected.
 2. Location - Select region most suitable to you.
-3. Storage Account Name – New or existing storage account
+3. Storage Account Name – New or existing storage account, your VHD will be stored here.
 4. Admin Username - Username for the virtual Machine.
 5. Admin Password - Password for the virtual Machine.
 6. Security Group Name – New or existing security group, VMR default ports will be made publically available.
