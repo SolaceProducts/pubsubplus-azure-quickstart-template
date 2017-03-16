@@ -12,7 +12,7 @@ This is a 2 step process:
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
 </a>
 
-* Hit the "Deploy to Azure" button and in the dployment template add in the link to the VMR provided by Solace. 
+* Hit the "Deploy to Azure" button and in the deployment template add in the link to the VMR provided by Solace. 
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
@@ -21,7 +21,7 @@ This is a 2 step process:
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
-The fields that need to fill out are:
+The fields that you need to fill out are:
 1. Resource Group - A new group or an existing group available in pulldown menu once "Use existing" is selected.
 2. Location - Select region most suitable to you.
 3. Storage Account Name – New or existing storage account
@@ -35,11 +35,11 @@ The fields that need to fill out are:
 
 # Gaining admin access to the VMR
 
-For persons used to working with Solace message router console access, this is still available with the google compute engine instance.  Access the web ssh terminal window by clicking the [ssh] button next to your VMR instance,  then launch a SolOS cli session:
+For persons used to working with Solace message router console access, this is still available with the Azure instance.  Access the web ssh terminal window by clicking the [ssh] button next to your VMR instance,  then launch a SolOS cli session:
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/azure_console.png "console with SolOS cli")
 
-For persons who are unfamiliar with the Solace mesage router or would prefer an administration application the SolAdmin managmanent application is available.  For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Access IP will be the External IP accosiated with youe GCE instance and port will be 8080 by default.
+For persons who are unfamiliar with the Solace mesage router, or would prefer an administration application, the SolAdmin managmanent application is available.  For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Access IP will be the External IP associated with your Azure instance and the port will be 8080 by default.
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/azure-soladmin.png "soladmin connection to gce")
 
