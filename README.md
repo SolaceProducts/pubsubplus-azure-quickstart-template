@@ -6,7 +6,7 @@ How to Deploy a VMR
 -------------------
 This is a 2 step process:
 
-* Go to the Solace Developer portal and request a Solace Comunity edition VMR. This process will return an email with a Download link.
+* Go to the Solace Developer portal and request a Solace Comunity edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" downlaod hyperlink.  This will be needed in the following section.
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
