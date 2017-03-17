@@ -12,7 +12,9 @@ docker volume create --name=adbBackup
 docker volume create --name=softAdb
 
 #Load the VMR
-docker load -i ./soltr*.tar.gz
+REAL_HTML=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=]*" *`
+wget -O /tmp/soltr-docker.tar.gz -nv ${REAL_HTML}
+docker load -i /tmp/soltr-docker.tar.gz 
 
 #Need to de
 export VMR_VERSION=`docker images | grep solace | awk '{print $2}'`
