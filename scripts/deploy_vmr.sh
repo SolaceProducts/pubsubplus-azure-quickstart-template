@@ -21,7 +21,7 @@ for filename in ./*; do
     fi    
 done
 
-wget -O /tmp/soltr-docker.tar.gz -nv ${REAL_HTML}
+wget -O /tmp/soltr-docker.tar.gz -nv ${REAL_LINK}
 docker load -i /tmp/soltr-docker.tar.gz 
 
 #Need to de
