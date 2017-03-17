@@ -342,7 +342,7 @@
             "[parameters('solaceVMR_URI')]",
             "https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/scripts/deploy_vmr.sh"
           ],
-          "commandToExecute": "[concat ('sh deploy_vmr.sh ',parameters('solaceVMR_URI'))]"
+          "commandToExecute": "sh deploy_vmr.sh"
         } 
       }
     }
