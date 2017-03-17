@@ -12,7 +12,7 @@ docker volume create --name=adbBackup
 docker volume create --name=softAdb
 
 #Load the VMR
-REDIRECT_FILE=${1} |cut -d'/' -f4
+REDIRECT_FILE=${1} | cut -d'/' -f4
 REAL_HTML=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=]*" ${REDIRECT_FILE}`
 wget -O /tmp/soltr-docker.tar.gz -nv ${REAL_HTML}
 docker load -i /tmp/soltr-docker.tar.gz 
