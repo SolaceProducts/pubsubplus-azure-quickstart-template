@@ -35,9 +35,9 @@ The fields that you need to fill out are:
 
 # Gaining admin access to the VMR
 
-For persons used to working with Solace message router console access, this is still available with the Azure instance.  Access the web ssh terminal window by clicking the [ssh] button next to your VMR instance,  then launch a SolOS cli session:
+For persons used to working with Solace message router console access, this is still available with the Azure instance.  The [connect] button to the upper left displays this information: Use the "Admin Username" and "Admin Password" provided.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/azure_console.png "console with SolOS cli")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/remote_access.png "console with SolOS cli")
 
 For persons who are unfamiliar with the Solace mesage router, or would prefer an administration application, the SolAdmin managmanent application is available.  For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Access IP will be the External IP associated with your Azure instance and the port will be 8080 by default.
 
