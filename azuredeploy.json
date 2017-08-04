@@ -37,10 +37,9 @@
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
-        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.1, 7.2, 7.3"
+        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3"
       },
       "allowedValues": [
-        "7.1",
         "7.2",
         "7.3"
       ]
