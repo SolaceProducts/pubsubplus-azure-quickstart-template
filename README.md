@@ -6,7 +6,7 @@ How to Deploy a VMR
 -------------------
 This is a 2 step process:
 
-* Go to the Solace Developer portal and request a Solace Comunity edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" downlaod hyperlink.  This will be needed in the following section.
+* Go to the Solace Developer portal and request a Solace Community edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" download hyperlink.  This will be needed in the following section.
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
@@ -39,13 +39,20 @@ For persons used to working with Solace message router console access, this is s
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/remote_access.png "console with SolOS cli")
 
-For persons who are unfamiliar with the Solace mesage router, or would prefer an administration application, the SolAdmin managmanent application is available.  For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Access IP will be the External IP associated with your Azure instance and the port will be 8080 by default.
+Once you have access to the base OS command line you can access the SolOS CLI with the following command:
+    sudo docker exec -it solace /usr/sw/loads/currentload/bin/cli -A
+
+It would be advised to change the SolOS cli admin user password as per these instructions:
+http://docs.solace.com/Configuring-and-Managing-Routers/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords
+
+
+For persons who are unfamiliar with the Solace mesage router, or would prefer an administration application, the SolAdmin management application is available.  For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Management IP will be the External IP associated with your Azure instance and the port will be 8080 by default.
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/azure-soladmin.png "soladmin connection to gce")
 
 # Testing data access to the VMR
 
-To test data traffic though the newly created VMR instance, visit the Solace developer portal and and select your prefered programming langauge to [send and receive messages](http://dev.solace.com/get-started/send-receive-messages/). Under each language there is a Publish/Subscribe tutorial that will help you get started.
+To test data traffic though the newly created VMR instance, visit the Solace developer portal and and select your preferred programming language to [send and receive messages](http://dev.solace.com/get-started/send-receive-messages/). Under each language there is a Publish/Subscribe tutorial that will help you get started.
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/solace_tutorial.png "getting started publish/subscribe")
 
