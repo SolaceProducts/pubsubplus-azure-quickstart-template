@@ -34,7 +34,7 @@ while [ $LOOP_COUNT -lt 3 ]; do
 
   LOCAL_MD5_SUM=`md5sum /tmp/${SolOS_LOAD}`
 
-  if [ ${LOCAL_MD5_SUM} -ne `cat wget -O /tmp/solos.info` ]; then
+  if [ ${LOCAL_MD5_SUM} -ne `cat /tmp/solos.info` ]; then
     ((LOOP_COUNT++))
     echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"
   else
