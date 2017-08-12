@@ -24,17 +24,19 @@ while [ $LOOP_COUNT -lt 3 ]; do
       fi    
   done
 
-  #check to make sure we have a complete load
+ echo "`date` INFO: check to make sure we have a complete load"
   wget -O /tmp/solos.info -nv  https://products.solace.com/download/VMR_DOCKER_COMM_MD5
   IFS=' ' read -ra SOLOS_INFO <<< `cat /tmp/solos.info`
   MD5_SUM=${SOLOS_INFO[0]}
   SolOS_LOAD=${SOLOS_INFO[1]}
+  echo "`date` INFO: Reference md5sum is: ${MD5_SUM}"
 
-  wget -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
+  wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
 
-  LOCAL_MD5_SUM=`md5sum /tmp/${SolOS_LOAD}`
-
-  if [ ${LOCAL_MD5_SUM} -ne `cat /tmp/solos.info` ]; then
+  LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
+  IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
+  LOCAL_MD5_SUM=${SOLOS_INFO[0]}
+  if [ ${LOCAL_MD5_SUM} != ${MD5_SUM} ]; then
     ((LOOP_COUNT++))
     echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"
   else
@@ -43,10 +45,11 @@ while [ $LOOP_COUNT -lt 3 ]; do
   fi
 done
 
-if [ ${LOOP_COUNT} -eq 3 ]; then
+if [ ${LOOP_COUNT} == 3 ]; then
   echo "`date` ERROR: Failed to download ${SolOS_LOAD} exiting"
   exit 1
 fi
+
 
 docker load -i /tmp/${SolOS_LOAD} 
 
