@@ -219,7 +219,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(),'/', variables('extensionName'))]",
+      "name": "[concat(variables('vmName'), copyindex() , '/', variables('extensionName'))]",
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -236,10 +236,10 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/', 'configureVMRContainer')]",
+      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/',variables('extensionName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/extensions/, variables('vmName'), copyindex(), '/', variables('extensionName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
