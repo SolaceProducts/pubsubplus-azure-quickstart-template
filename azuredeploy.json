@@ -249,7 +249,7 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceVMR_URI')]",
-            "[concat(variables('scriptUrl'), variables('solaceInstallScriptName'))]"
+            "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]"
           ],
           "commandToExecute": "sh [variables('solaceInstallScriptName')]"   
         } 
