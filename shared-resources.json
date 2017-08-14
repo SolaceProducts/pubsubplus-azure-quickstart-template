@@ -15,6 +15,13 @@
         "metadata": {
           "description": "Security group defined to support VMR default message vpn ports"
         }
+      },
+      "availabilitySetName": {
+        "type": "string",
+        "defaultValue": "solaceHAcluster",
+        "metadata": {
+          "description": "Security group defined to support VMR default message vpn ports"
+        }
       }
     },
     "variables": {
@@ -35,13 +42,14 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Compute/availabilitySets",
-            "name": "solaceHAcluster",
+            "name": "parameters(availabilitySetName')",
             "location": "[resourceGroup().location]",
             "properties": {
                 "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
                 "platformUpdateDomainCount": "[variables('platformUpdateDomainCount')]"
             }
         },
+
         {
             "name": "[parameters('securityGroupName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
