@@ -61,12 +61,16 @@
             "description": "The URI location of the Solace VMR Docker container tarball"
         }
     },
-    "deploy_ha": {
-      "type": "bool",
+    "deploymentModel": {
+      "type": "string",
       "metadata": {
-          "description": "True to deploy three node ha cluster or false to deploy single node"
-      }
-  }
+          "description": "Deploy three node ha cluster or single node"
+      },
+      "allowedValues": [
+        "highAvailability",
+        "singleNode"
+      ]
+    }
   },
   "variables": {
     "imagePublisher": "OpenLogic",
@@ -88,7 +92,14 @@
     "subnetName": "Subnet",
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]"
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+    "deploymentModelHA": {
+      "numberOfNodes": 3
+    },
+    "deploymentModelSingle": {
+      "numberOfNodes": 1
+    },
+    "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
   },
   "resources": [
         {
