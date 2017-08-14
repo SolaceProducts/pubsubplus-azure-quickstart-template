@@ -115,7 +115,7 @@
         },
         "parameters": {
           "securityGroupName": {
-            "value": "[variables('securityGroupName')]"
+            "value": "[parameters('securityGroupName')]"
           }
         }
       }
@@ -174,7 +174,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(variable('nodeAddressPrefix'), copyindex())]",
+              "privateIPAddress": "[concat(variables('nodeAddressPrefix'), copyindex())]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'), copyindex())]"
               },
