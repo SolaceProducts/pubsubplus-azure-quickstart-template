@@ -234,9 +234,9 @@
       }
     },
     {
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/', 'configureVMRContainer')]",
-      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),'/extensions/',variables('extensionName'))]"
@@ -249,7 +249,7 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceVMR_URI')]",
-            "[concat(variables('scriptUrl'), variables('solaceInstallScriptName')]"
+            "[concat(variables('scriptUrl'), variables('solaceInstallScriptName'))]"
           ],
           "commandToExecute": "sh [variables('solaceInstallScriptName')]"   
         } 
