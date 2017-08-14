@@ -96,16 +96,14 @@
     "deploymentModelHighAvailability": {
       "numberOfNodes": 3
     },
-    "deploymentModelSingleNode": {
-      "numberOfNodes": 1
-    },
+    "deploymentModelSingleNode": { "numberOfNodes": 1 },
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
   },
   "resources": [
     {
-      "name": "shared",
-      "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "shared",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
