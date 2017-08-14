@@ -73,6 +73,7 @@
     }
   },
   "variables": {
+    "availabilitySetName": "SolaceHACluster",
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
@@ -181,7 +182,8 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex()))]"
+        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -219,9 +221,13 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex() , '/', variables('extensionName'))]",
+      "name": "[concat(variables('vmName'), copyindex(), '/', variables('extensionName'))]",
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "DockerLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex())]"
       ],
@@ -238,6 +244,10 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "SolaceLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/extensions/, variables('vmName'), copyindex(), '/', variables('extensionName'))]"
       ],
