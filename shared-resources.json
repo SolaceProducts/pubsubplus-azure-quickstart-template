@@ -30,16 +30,6 @@
       "storageAccountType": "Standard_LRS"
     },
     "resources": [
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Compute/availabilitySets",
-            "name": "parameters(availabilitySetName')",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
-                "platformUpdateDomainCount": "[variables('platformUpdateDomainCount')]"
-            }
-        },
 
         {
             "name": "[parameters('securityGroupName')]",
