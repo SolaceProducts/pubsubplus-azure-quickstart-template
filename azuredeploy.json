@@ -109,7 +109,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplatename')]",
+          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplatename'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
