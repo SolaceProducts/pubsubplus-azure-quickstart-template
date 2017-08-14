@@ -102,14 +102,14 @@
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
   },
   "resources": [
-        {
+    {
       "name": "shared",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables(sharedTemplatename')]",
+          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplatename')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
