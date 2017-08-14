@@ -142,7 +142,7 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('nicName'), copyindex())]",
+      "name": "[concat(variables('nicName'), copyindex())]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "nicLoop",
