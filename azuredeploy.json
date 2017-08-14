@@ -27,7 +27,7 @@
         "description": "Security group defined to support VMR default message vpn ports"
       }
     },
-    "dnsNameForPublicIP": {
+    "NameForPublicIP": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
@@ -91,6 +91,7 @@
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
     "nodeAddressPrefix": "10.0.0.10",
+    "storageAccountType": "Standard_LRS",
     "subnetName": "Subnet",
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
@@ -113,9 +114,6 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "storageAccountName": {
-            "value": "[variables('storageAccountName')]"
-          },
           "securityGroupName": {
             "value": "[variables('securityGroupName')]"
           }
@@ -134,7 +132,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsNameForPublicIP')]"
+          "domainNameLabel": "[concat(parameters('dnsNameForPublicIP'), copyindex()]"
         }
       }
     },
@@ -176,7 +174,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(parameters('nodeAddressPrefix'), copyindex())]",
+              "privateIPAddress": "[concat(variable('nodeAddressPrefix'), copyindex())]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'), copyindex())]"
               },
@@ -285,7 +283,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/extensions/', variables('vmName'), copyindex(), '/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",

@@ -2,32 +2,15 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "storageAccountName": {
-        "type": "string",
-        "defaultValue": "solacestorage",
-        "metadata": {
-          "Description": "Unique namespace for the Storage Account where the Virtual Machine's disks will be placed"
-        }
-      },
       "securityGroupName": {
         "type": "string",
         "defaultValue": "vmr-security",
         "metadata": {
           "description": "Security group defined to support VMR default message vpn ports"
         }
-      },
-      "availabilitySetName": {
-        "type": "string",
-        "defaultValue": "solaceHAcluster",
-        "metadata": {
-          "description": "Security group defined to support VMR default message vpn ports"
-        }
       }
     },
     "variables": {
-      "platformFaultDomainCount": "3",
-      "platformUpdateDomainCount": "3",
-      "storageAccountType": "Standard_LRS"
     },
     "resources": [
 
