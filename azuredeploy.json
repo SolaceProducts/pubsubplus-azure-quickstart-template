@@ -132,7 +132,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsNameForPublicIP'), copyindex()]"
+          "domainNameLabel": "[concat(parameters('dnsNameForPublicIP'), copyindex())]"
         }
       }
     },
