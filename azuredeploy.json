@@ -78,7 +78,6 @@
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
     "nicName": "myVMNicD",
-    "extensionName": "DockerExtension",
     "scriptUrl": "https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/",
     "sharedTemplatename": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
@@ -221,7 +220,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/', variables('extensionName'))]",
+      "name": "[concat(variables('vmName'), copyindex(), '/DockerExtension')]",
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -233,7 +232,7 @@
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
-        "type": "[variables('extensionName')]",
+        "type": "DockerExtension",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": { }
@@ -249,7 +248,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/extensions/, variables('vmName'), copyindex(), '/', variables('extensionName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/extensions/, variables('vmName'), copyindex(), '/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
