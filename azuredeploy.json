@@ -27,7 +27,7 @@
         "description": "Security group defined to support VMR default message vpn ports"
       }
     },
-    "NameForPublicIP": {
+    "dnsNameForPublicIP": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
