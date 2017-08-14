@@ -67,8 +67,8 @@
           "description": "Deploy three node ha cluster or single node"
       },
       "allowedValues": [
-        "highAvailability",
-        "singleNode"
+        "HighAvailability",
+        "SingleNode"
       ]
     }
   },
@@ -93,10 +93,10 @@
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "deploymentModelHA": {
+    "deploymentModelHighAvailability": {
       "numberOfNodes": 3
     },
-    "deploymentModelSingle": {
+    "deploymentModelSingleNode": {
       "numberOfNodes": 1
     },
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
