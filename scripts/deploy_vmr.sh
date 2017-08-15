@@ -74,7 +74,7 @@ while [ $LOOP_COUNT -lt 3 ]; do
     echo "`date` INFO: Successfully downloaded ${SolOS_COMM_LOAD}"
     break
   fi
-  if [ ${LOCAL_MD5_SUM} == ${MD5_EVAL_EVAL} ]; then
+  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_EVAL} ]; then
     echo "`date` INFO: Successfully downloaded ${SolOS_EVAL_LOAD}"
     isEval=1
     break
