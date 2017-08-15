@@ -295,7 +295,7 @@
             "[parameters('solaceVMR_URI')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]"
           ],
-          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), '-c ', copyindex(), '-i ', variables('nodeAddressPrefix'), '-n ', variables('numberOfInstances'), '-p ', parameters('adminPassword')]"   
+          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), '-c ', copyindex(), '-i ', variables('nodeAddressPrefix'), '-n ', variables('numberOfInstances'), '-p ', parameters('adminPassword'))]"   
         } 
       }
     }
