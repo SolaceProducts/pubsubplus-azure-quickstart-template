@@ -89,7 +89,7 @@ if [ ${LOOP_COUNT} == 3 ]; then
 fi
 
 echo "`date` INFO: If there is a requiremewnt for 3 node cluster and not Evalution edition exit"
-if [ ${isEval} == 1 ] && [ ${number_of_instances} == 3 ]; then
+if [ ${isEval} == 0 ] && [ ${number_of_instances} == 3 ]; then
   echo "`date` ERROR: Trying to build HA cluster with communitoy edition SolOS, this is not supported"
   exit 1
 fi
