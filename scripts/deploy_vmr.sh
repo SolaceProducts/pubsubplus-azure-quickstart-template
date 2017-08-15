@@ -158,8 +158,8 @@ if [ ${number_of_instances} > 1 ]; then
         ;; 
     2 ) 
       redundancy_config="\
-      --env nodetype=monitor \
-      --env routername=monitoring \
+      --env nodetype=monitoring \
+      --env routername=monitor \
       --env redundancy_group_password=${password} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
