@@ -11,7 +11,7 @@ DEBUG="-vvvv"
 
 verbose=0
 
-while getopts "c:i:vn:" opt; do
+while getopts "c:i:n:p:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
@@ -51,13 +51,13 @@ wget -O /tmp/solosEval.info -nv  https://products.solace.com/download/VMR_DOCKER
 IFS=' ' read -ra SOLOSEVAL_INFO <<< `cat /tmp/solosEval.info`
 MD5_SUM_EVAL=${SOLOSEVAL_INFO[0]}
 SolOS_EVAL_LOAD=${SOLOSEVAL_INFO[1]}
-echo "`date` INFO: Reference eval md5sum is: ${  MD5_SUM_EVAL}"
+echo "`date` INFO: Reference eval md5sum is: ${MD5_SUM_EVAL}"
 
 wget -O /tmp/solosComm.info -nv  https://products.solace.com/download/VMR_DOCKER_COMM_MD5
 IFS=' ' read -ra SOLOSCOMM_INFO <<< `cat /tmp/solosComm.info`
 MD5_SUM_COMM=${SOLOSCOMM_INFO[0]}
 SolOS_COMM_LOAD=${SOLOSCOMM_INFO[1]}
-echo "`date` INFO: Reference comm md5sum is: ${  MD5_SUM_COMM}"
+echo "`date` INFO: Reference comm md5sum is: ${MD5_SUM_COMM}"
 
 echo "`date` INFO: try 3 times to download from URL provided and validate it is Evaluation and Community edition VRM"
 LOOP_COUNT=0
@@ -70,7 +70,7 @@ while [ $LOOP_COUNT -lt 3 ]; do
   LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
   IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
   LOCAL_MD5_SUM=${SOLOS_INFO[0]}
-  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_EVAL} ]; then
+  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_COMM} ]; then
     echo "`date` INFO: Successfully downloaded ${SolOS_COMM_LOAD}"
     break
   fi
@@ -159,7 +159,7 @@ if [ ${number_of_instances} > 1 ]; then
     2 ) 
       redundancy_config="\
       --env nodetype=monitor \
-      --env routername=monitor \
+      --env routername=monitoring \
       --env redundancy_group_password=${password} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
