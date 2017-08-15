@@ -1,5 +1,37 @@
 #!/bin/bash
 
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables:
+current_index=""
+ip_prefix=""
+number_of_instances=""
+password="admin"
+DEBUG="-vvvv"
+
+verbose=0
+
+while getopts "c:i:vn:" opt; do
+    case "$opt" in
+    c)  current_index=$OPTARG
+        ;;
+    i)  ip_prefix=$OPTARG
+        ;;
+    n)  number_of_instances=$OPTARG
+        ;;
+    n)  password=$OPTARG
+        ;;        
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+verbose=1
+echo "`date` current_index=$current_index ,ip_prefix=$ip_prefix ,number_of_instances=$number_of_instances, \
+       ,Leftovers: $@"
+
+
 #Install the logical volume manager
 yum -y install lvm2
 
@@ -50,21 +82,79 @@ if [ ${LOOP_COUNT} == 3 ]; then
   exit 1
 fi
 
-
 docker load -i /tmp/${SolOS_LOAD} 
 
-#Need to de
 export VMR_VERSION=`docker images | grep solace | awk '{print $2}'`
+echo "`date` INFO: VMR version: ${VMR_VERSION}"
 
 MEM_SIZE=`cat /proc/meminfo | grep MemTotal | tr -dc '0-9'`
 
 if [ ${MEM_SIZE} -lt 6087960 ]; then
+  echo "`date` WARN: Not enough memory: ${MEM_SIZE} Creating 2GB Swap space"
   mkdir /var/lib/solace
   dd if=/dev/zero of=/var/lib/solace/swap count=2048 bs=1MiB
   mkswap -f /var/lib/solace/swap
   chmod 0600 /var/lib/solace/swap
   swapon -f /var/lib/solace/swap
   grep -q 'solace\/swap' /etc/fstab || sudo sh -c 'echo "/var/lib/solace/swap none swap sw 0 0" >> /etc/fstab'
+else
+   echo "`date` INFO: Memory size is ${MEM_SIZE}"
+fi
+
+if [ ${number_of_instances} > 1 ]; then
+  echo "`date` INFO: Configuring HA tuple"
+  case ${$current_index} in  
+    0 )
+      redundancy_config="\
+      --env nodetype=message_routing \
+      --env routername=primary \
+      --env redundancy_matelink_connectvia=${ip_prefix}1 \
+      --env redundancy_activestandbyrole=primary \
+      --env redundancy_group_password=${admin_password} \
+      --env redundancy_enable=yes \
+      --env redundancy_group_node_primary_nodetype=message_routing \
+      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
+      --env redundancy_group_node_backup_nodetype=message_routing \
+      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
+      --env redundancy_group_node_monitor_nodetype=monitoring \
+      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
+      --env configsync_enable=yes"
+        ;; 
+    1 ) 
+      redundancy_config="\
+      --env nodetype=message_routing \
+      --env routername=backup \
+      --env redundancy_matelink_connectvia=${ip_prefix}0 \
+      --env redundancy_activestandbyrole=backup \
+      --env redundancy_group_password=${admin_password} \
+      --env redundancy_enable=yes \
+      --env redundancy_group_node_primary_nodetype=message_routing \
+      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
+      --env redundancy_group_node_backup_nodetype=message_routing \
+      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
+      --env redundancy_group_node_monitor_nodetype=monitoring \
+      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
+      --env configsync_enable=yes"
+        ;; 
+    2 ) 
+      redundancy_config="\
+      --env nodetype=monitor \
+      --env routername=monitor \
+      --env redundancy_group_password=${admin_password} \
+      --env redundancy_enable=yes \
+      --env redundancy_group_node_primary_nodetype=message_routing \
+      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
+      --env redundancy_group_node_backup_nodetype=message_routing \
+      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
+      --env redundancy_group_node_monitor_nodetype=monitoring \
+      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2"
+        ;; 
+esac
+  
+
+else
+  echo "`date` INFO: Configuring singleton"
+  redundancy_config=""
 fi
 
 
@@ -81,7 +171,8 @@ docker create \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  --env 'username_admin_globalaccesslevel=admin' \
- --env 'username_admin_password=admin' \
+ --env 'username_admin_password=${password}' \
+ ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF
 
