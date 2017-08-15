@@ -19,9 +19,9 @@ while getopts "c:i:vn:" opt; do
         ;;
     n)  number_of_instances=$OPTARG
         ;;
-    n)  password=$OPTARG
+    p)  password=$OPTARG
         ;;        
-    esac
+    esacls
 done
 
 shift $((OPTIND-1))
@@ -57,7 +57,7 @@ while [ $LOOP_COUNT -lt 3 ]; do
   done
 
  echo "`date` INFO: check to make sure we have a complete load"
-  wget -O /tmp/solos.info -nv  https://products.solace.com/download/VMR_DOCKER_COMM_MD5
+  wget -O /tmp/solos.info -nv  https://products.solace.com/download/VMR_DOCKER_EVAL_MD5
   IFS=' ' read -ra SOLOS_INFO <<< `cat /tmp/solos.info`
   MD5_SUM=${SOLOS_INFO[0]}
   SolOS_LOAD=${SOLOS_INFO[1]}
@@ -103,14 +103,14 @@ fi
 
 if [ ${number_of_instances} > 1 ]; then
   echo "`date` INFO: Configuring HA tuple"
-  case ${$current_index} in  
+  case ${current_index} in  
     0 )
       redundancy_config="\
       --env nodetype=message_routing \
       --env routername=primary \
       --env redundancy_matelink_connectvia=${ip_prefix}1 \
       --env redundancy_activestandbyrole=primary \
-      --env redundancy_group_password=${admin_password} \
+      --env redundancy_group_password=${password} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -126,7 +126,7 @@ if [ ${number_of_instances} > 1 ]; then
       --env routername=backup \
       --env redundancy_matelink_connectvia=${ip_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_password=${admin_password} \
+      --env redundancy_group_password=${password} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -140,7 +140,7 @@ if [ ${number_of_instances} > 1 ]; then
       redundancy_config="\
       --env nodetype=monitor \
       --env routername=monitor \
-      --env redundancy_group_password=${admin_password} \
+      --env redundancy_group_password=${password} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -149,9 +149,7 @@ if [ ${number_of_instances} > 1 ]; then
       --env redundancy_group_node_monitor_nodetype=monitoring \
       --env redundancy_group_node_monitor_connectvia=${ip_prefix}2"
         ;; 
-esac
-  
-
+  esac
 else
   echo "`date` INFO: Configuring singleton"
   redundancy_config=""
@@ -170,8 +168,8 @@ docker create \
  -v internalSpool:/usr/sw/internalSpool \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \
- --env 'username_admin_globalaccesslevel=admin' \
- --env 'username_admin_password=${password}' \
+ --env username_admin_globalaccesslevel=admin \
+ --env username_admin_password=${password} \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF
