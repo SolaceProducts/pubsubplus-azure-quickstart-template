@@ -36,51 +36,71 @@ echo "`date` current_index=$current_index ,ip_prefix=$ip_prefix ,number_of_insta
 yum -y install lvm2
 
 
+#Load the VMR
+REAL_LINK=
+for filename in ./*; do
+    echo "File = ${filename}"
+    count=`grep -c "https://products.solace.com" ${filename}`
+    if [ "1" = ${count} ]; then
+      REAL_LINK=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=]*" ${filename}`
+    fi    
+done
+
+echo "`date` INFO: check to make sure we have a complete load"
+wget -O /tmp/solosEval.info -nv  https://products.solace.com/download/VMR_DOCKER_EVAL_MD5
+IFS=' ' read -ra SOLOSEVAL_INFO <<< `cat /tmp/solosEval.info`
+MD5_SUM_EVAL=${SOLOSEVAL_INFO[0]}
+SolOS_EVAL_LOAD=${SOLOSEVAL_INFO[1]}
+echo "`date` INFO: Reference eval md5sum is: ${  MD5_SUM_EVAL}"
+
+wget -O /tmp/solosComm.info -nv  https://products.solace.com/download/VMR_DOCKER_COMM_MD5
+IFS=' ' read -ra SOLOSCOMM_INFO <<< `cat /tmp/solosComm.info`
+MD5_SUM_COMM=${SOLOSCOMM_INFO[0]}
+SolOS_COMM_LOAD=${SOLOSCOMM_INFO[1]}
+echo "`date` INFO: Reference comm md5sum is: ${  MD5_SUM_COMM}"
+
+echo "`date` INFO: try 3 times to download from URL provided and validate it is Evaluation and Community edition VRM"
+LOOP_COUNT=0
+SolOS_LOAD=solos.tar.gz
+isEval=0
+
+while [ $LOOP_COUNT -lt 3 ]; do
+  wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
+
+  LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
+  IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
+  LOCAL_MD5_SUM=${SOLOS_INFO[0]}
+  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_EVAL} ]; then
+    echo "`date` INFO: Successfully downloaded ${SolOS_COMM_LOAD}"
+    break
+  fi
+  if [ ${LOCAL_MD5_SUM} == ${MD5_EVAL_EVAL} ]; then
+    echo "`date` INFO: Successfully downloaded ${SolOS_EVAL_LOAD}"
+    isEval=1
+    break
+  fi
+  echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"
+  ((LOOP_COUNT++))
+done
+
+if [ ${LOOP_COUNT} == 3 ]; then
+  echo "`date` ERROR: Failed to download SolOS exiting"
+  exit 1
+fi
+
+echo "`date` INFO: If there is a requiremewnt for 3 node cluster and not Evalution edition exit"=
+if [ ${isEval} == 1 ] && [ ${number_of_instances} == 3 ]; then
+  echo "`date` ERROR: Trying to build HA cluster with communitoy edition SolOS, this is not supported"
+  exit 1
+fi
+
+echo "`date` INFO: Setting up SolOS Docker image"
 #Create new volumes that the VMR container can use to consume and store data.
 docker volume create --name=jail
 docker volume create --name=var
 docker volume create --name=internalSpool
 docker volume create --name=adbBackup
 docker volume create --name=softAdb
-
-LOOP_COUNT=0
-
-while [ $LOOP_COUNT -lt 3 ]; do
-  #Load the VMR
-  REAL_LINK=
-  for filename in ./*; do
-      echo "File = ${filename}"
-      count=`grep -c "https://products.solace.com" ${filename}`
-      if [ "1" = ${count} ]; then
-        REAL_LINK=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=]*" ${filename}`
-      fi    
-  done
-
- echo "`date` INFO: check to make sure we have a complete load"
-  wget -O /tmp/solos.info -nv  https://products.solace.com/download/VMR_DOCKER_EVAL_MD5
-  IFS=' ' read -ra SOLOS_INFO <<< `cat /tmp/solos.info`
-  MD5_SUM=${SOLOS_INFO[0]}
-  SolOS_LOAD=${SOLOS_INFO[1]}
-  echo "`date` INFO: Reference md5sum is: ${MD5_SUM}"
-
-  wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
-
-  LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
-  IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
-  LOCAL_MD5_SUM=${SOLOS_INFO[0]}
-  if [ ${LOCAL_MD5_SUM} != ${MD5_SUM} ]; then
-    ((LOOP_COUNT++))
-    echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"
-  else
-    echo "Successfully downloaded ${SolOS_LOAD}"
-    break
-  fi
-done
-
-if [ ${LOOP_COUNT} == 3 ]; then
-  echo "`date` ERROR: Failed to download ${SolOS_LOAD} exiting"
-  exit 1
-fi
 
 docker load -i /tmp/${SolOS_LOAD} 
 
