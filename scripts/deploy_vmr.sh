@@ -21,7 +21,7 @@ while getopts "c:i:vn:" opt; do
         ;;
     p)  password=$OPTARG
         ;;        
-    esacls
+    esac
 done
 
 shift $((OPTIND-1))
