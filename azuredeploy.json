@@ -116,6 +116,9 @@
         "parameters": {
           "securityGroupName": {
             "value": "[parameters('securityGroupName')]"
+          },
+          "subnetPrefix": {
+            "value": "[variables('subnetPrefix')]"
           }
         }
       }

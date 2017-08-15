@@ -8,7 +8,17 @@
         "metadata": {
           "description": "Security group defined to support VMR default message vpn ports"
         }
-      }
+      },
+      "subnetPrefix": {
+        "type": "string",
+        "defaultValue": "10.0.0.0/24",
+        "metadata": {
+          "description": "Subnet for VMRS"
+        }
+      },
+
+
+      
     },
     "variables": {
     },
@@ -22,9 +32,48 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "ssh",
+                        "name": "outbound",
                         "properties": {
                             "priority": 100,
+                            "sourceAddressPrefix": "[parameters('subnetPrefix')]",
+                            "protocol": "*",
+                            "destinationPortRange": "*",
+                            "access": "Allow",
+                            "direction": "Outbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "ad8741",
+                        "properties": {
+                            "priority": 150,
+                            "protocol": "Tcp",
+                            "sourceAddressPrefix": "[parameters('subnetPrefix')]",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "8741",
+                            "destinationAddressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "ad8300",
+                        "properties": {
+                            "priority": 151,
+                            "protocol": "*",
+                            "sourceAddressPrefix": "[parameters('subnetPrefix')]",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "8300-8302",
+                            "destinationAddressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    },                  
+                    {
+                        "name": "ssh",
+                        "properties": {
+                            "priority": 200,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "22",
@@ -37,7 +86,7 @@
                     {
                         "name": "web",
                         "properties": {
-                            "priority": 101,
+                            "priority": 201,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "80",
@@ -50,7 +99,7 @@
                     {
                         "name": "mqtt",
                         "properties": {
-                            "priority": 102,
+                            "priority": 202,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "1883",
@@ -63,7 +112,7 @@
                     {
                         "name": "mqtt_ws",
                         "properties": {
-                            "priority": 103,
+                            "priority": 203,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "8000",
@@ -76,7 +125,7 @@
                     {
                         "name": "semp",
                         "properties": {
-                            "priority": 104,
+                            "priority": 204,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "8080",
@@ -89,7 +138,7 @@
                     {
                         "name": "rest",
                         "properties": {
-                            "priority": 105,
+                            "priority": 205,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "9000",
@@ -102,7 +151,7 @@
                     {
                         "name": "smf_compressed",
                         "properties": {
-                            "priority": 106,
+                            "priority": 206,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "55003",
@@ -115,7 +164,7 @@
                     {
                         "name": "smf",
                         "properties": {
-                            "priority": 107,
+                            "priority": 207,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "55555",
