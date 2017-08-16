@@ -5,18 +5,21 @@ The Solace Virtual Message Router (VMR) provides enterprise-grade messaging capa
 How to Deploy a VMR
 -------------------
 
-VMRs can either be deployed as a 3 node HA cluster or a single node.  For simple test enviroments that need to validate application functionality, a simple single instance will suffice, but in production or any enviroment where message loss can not be tolerated then a HA cluster is required.
+VMRs can either be deployed as a 3 node HA cluster or a single node.  For simple test enviroments that need to validate application functionality, a simple single instance will suffice.
+
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/single-vmr.png "Single Node Deployment")
+
+But, in production or any enviroment where message loss can not be tolerated then a HA cluster is required.
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/ha-cluster.png "HA Cluster Deployment")
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/single-vmr.png "Single Node Deployment")
 
 This is a 2 step process:
 
 * Go to the Solace Developer portal and request a Solace Community edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" download hyperlink.  This will be needed in the following section.
 
- COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
-       --- | --- |
+| COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
+| --- | --- |
 
 <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
