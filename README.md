@@ -20,11 +20,13 @@ This is a 2 step process:
 
 | COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
 | --- | --- |
-| <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
+<a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
-</a> | <a href="http://dev.solace.com/downloads/download-vmr-evaluation-edition-docker/" target="_blank">
+</a> 
+
+<a href="http://dev.solace.com/downloads/download-vmr-evaluation-edition-docker/" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
-</a> |
+</a>
 
 
 * Hit the "Deploy to Azure" button and in the deployment template add in the link to the VMR provided by Solace. 
