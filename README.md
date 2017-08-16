@@ -4,20 +4,35 @@ The Solace Virtual Message Router (VMR) provides enterprise-grade messaging capa
 
 How to Deploy a VMR
 -------------------
+
+VMRs can either be deployed as a 3 node HA cluster or a single node.  For simple test enviroments that need to validate application functionality, a simple single instance will suffice, but in production or any enviroment where message loss can not be tolerated then a HA cluster is required.
+
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/ha-cluster.png "HA Cluster Deployment")
+
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/single-vmr.png "Single Node Deployment")
+
 This is a 2 step process:
 
 * Go to the Solace Developer portal and request a Solace Community edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" download hyperlink.  This will be needed in the following section.
 
+ COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
+       --- | --- |
+
 <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank">
     <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
 </a>
+
+<a href="http://dev.solace.com/downloads/download-vmr-evaluation-edition-docker/" target="_blank">
+    <img src="https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/register.png"/>
+</a>
+
 
 * Hit the "Deploy to Azure" button and in the deployment template add in the link to the VMR provided by Solace. 
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
@@ -32,12 +47,13 @@ The fields that you need to fill out are:
 8. CentOS version – Use Centos 7.2 or CentOS 7.3
 9. VM Size – Use Standard_D2_V2 or Standard_F2s
 10. Solace VMR URI – The URI link to the community edition VMR received in the registration process
+11. Deployment Model - High Availability, Single Node
 
 # Gaining admin access to the VMR
 
 For persons used to working with Solace message router console access, this is still available with the Azure instance.  The [connect] button to the upper left displays this information: Use the "Admin Username" and "Admin Password" provided.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/qa-issues/images/remote_access.png "console with SolOS cli")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/remote_access.png "console with SolOS cli")
 
 Once you have access to the base OS command line you can access the SolOS CLI with the following command:
 ```
