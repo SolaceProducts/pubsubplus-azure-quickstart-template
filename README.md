@@ -74,6 +74,10 @@ To test data traffic though the newly created VMR instance, visit the Solace dev
 
 ![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/solace_tutorial.png "getting started publish/subscribe")
 
+# Troubelshouting VMR startup
+
+All startup logs are located here: /var/lib/waagent/custom-script/download/0/ and are readable by root only.
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
