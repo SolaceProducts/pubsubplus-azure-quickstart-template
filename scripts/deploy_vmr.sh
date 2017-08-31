@@ -90,7 +90,7 @@ fi
 
 echo "`date` INFO: If there is a requiremewnt for 3 node cluster and not Evalution edition exit"
 if [ ${isEval} == 0 ] && [ ${number_of_instances} == 3 ]; then
-  echo "`date` ERROR: Trying to build HA cluster with communitoy edition SolOS, this is not supported"
+  echo "`date` ERROR: Trying to build HA cluster with community edition SolOS, this is not supported"
   exit 1
 fi
 
@@ -121,7 +121,7 @@ else
    echo "`date` INFO: Memory size is ${MEM_SIZE}"
 fi
 
-if [ ${number_of_instances} > 1 ]; then
+if [ ${number_of_instances} -gt 1 ]; then
   echo "`date` INFO: Configuring HA tuple"
   case ${current_index} in  
     0 )
