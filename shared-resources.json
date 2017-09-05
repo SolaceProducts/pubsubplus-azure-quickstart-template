@@ -15,15 +15,11 @@
         "metadata": {
           "description": "Subnet for VMRS"
         }
-      },
-
-
-      
+      } 
     },
     "variables": {
     },
     "resources": [
-
         {
             "name": "[parameters('securityGroupName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
