@@ -84,7 +84,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Authors
 
-See the list of [contributors](https://github.com/azure-quickstart-templates/solace-community-edition/graphs/contributors) who participated in this project.
+See the list of [contributors](https://github.com/SolaceLabs/solace-azure-quickstart-template/graphs/contributors) who participated in this project.
 
 ## License
 
