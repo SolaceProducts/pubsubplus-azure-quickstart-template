@@ -16,7 +16,7 @@ But, in production or any enviroment where message loss can not be tolerated the
 
 This is a 2 step process:
 
-* Go to the Solace Developer portal and request a Solace Community edition VMR or Evaluation edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR for Docker" download hyperlink.  This will be needed in the following section.  The link below will take you to the correct version of the VMR you require depending on wether you want a simple single instance or a HA Cluster.
+* Go to the Solace Developer portal and request a Solace Community edition VMR or Evaluation edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR for Docker" download hyperlink.  This URL link will be needed in the following section.  The link below will take you to the correct version of the VMR you require depending on wether you want a simple single instance or a HA Cluster.
 
 | COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
 | --- | --- |
