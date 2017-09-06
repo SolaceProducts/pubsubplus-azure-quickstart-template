@@ -16,7 +16,7 @@ But, in production or any enviroment where message loss can not be tolerated the
 
 This is a 2 step process:
 
-* Go to the Solace Developer portal and request a Solace Community edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR Community Edition for Docker" download hyperlink.  This will be needed in the following section.
+* Go to the Solace Developer portal and request a Solace Community edition VMR or Evaluation edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR for Docker" download hyperlink.  This will be needed in the following section.  The link below will take you to the correct version of the VMR you require depending on wether you want a simple single instance or a HA Cluster.
 
 | COMMUNITY EDITION FOR SINGLE NODE | EVALUTAION EDITION FOR HA CLUSTER
 | --- | --- |
@@ -48,7 +48,7 @@ The fields that you need to fill out are:
 7. DNS Name – Public DNS name for the virtual machine.
 8. CentOS version – Use Centos 7.2 or CentOS 7.3
 9. VM Size – Use Standard_D2_V2 or Standard_F2s
-10. Solace VMR URI – The URI link to the community edition VMR received in the registration process
+10. Solace VMR URI – The URI link from the registration email received during Step 1. of the install process.
 11. Deployment Model - High Availability, Single Node
 
 # Gaining admin access to the VMR
