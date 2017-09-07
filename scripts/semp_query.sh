@@ -66,6 +66,6 @@ if [[ ! -z $count_search ]]; then
     count_string=`echo $count_search | cut -d '"' -f 2`
     count_result=`echo ${count_line} | tr "><" "\n" | grep -c ${count_string}`
     echo -e "`date` INFO:${script_name}: \n\t count search: $count_search \n\t count_line: ${count_line} \n\t count_string: ${count_string} \n\t count_result: ${count_result}" >&2
-    echo  "{\"error-info\":\"\",\"count-search-result\":\"${count_result}\"}"
+    echo  "{\"error-info\":\"\",\"count-search-result\":${count_result}}"
     exit 0
 fi
