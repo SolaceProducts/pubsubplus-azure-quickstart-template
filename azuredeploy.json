@@ -190,13 +190,15 @@
       }
     },
     {
-      "type": "Microsoft.Storage/storageAccounts",
       "name": "[parameters('storageAccountName')]",
-      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[variables('storageAccountType')]"
+      },
+      "kind": "BlobStorage",
       "location": "[resourceGroup().location]",
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
+      "properties": {}
     },
     {
       "apiVersion": "2015-06-15",
