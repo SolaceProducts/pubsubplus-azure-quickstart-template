@@ -231,7 +231,7 @@ if [ "${is_primary}" = "true" ]; then
          -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><group/></redundancy></show></rpc>" \
          -c '/rpc-reply/rpc/show/redundancy/group-node/status[text()="Online"]'`
 
-    online_count=`echo ${online_results} | jq '.count-search-result' -`
+    online_count=`echo ${online_results} | jq '.countSearchResult' -`
 
     run_time=$((${count} * ${pause}))
     if [ ${online_count} -eq 3 ]; then

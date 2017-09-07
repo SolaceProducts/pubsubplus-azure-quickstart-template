@@ -39,7 +39,7 @@ echo "`date` INFO:${script_name}: count_search=${count_search} ,name=${name} ,pa
 
 if [[ ${url} = "" || ${name} = "" || ${password} = "" || ${query} = "" ]]; then
     echo "`date` ERROR:${script_name}: url, name, password and query are madatory fields" >&2
-    echo  '{"error-info":"missing parameter"}'
+    echo  '{"errorInfo":"missing parameter"}'
     exit 1
   fi
 
@@ -48,7 +48,7 @@ query_response_code=`echo $query_response | xmllint -xpath 'string(/rpc-reply/ex
 
 if [[ -z ${query_response_code} && ${query_response_code} != "ok" ]]; then
     echo "`date` ERROR:${script_name}: Query failed -${query_response}-" >&2
-    echo  "{\"error-info\":\"query failed -${query_response_code}-\"}"
+    echo  "{\"errorInfo\":\"query failed -${query_response_code}-\"}"
     exit 1
 fi
 
@@ -57,7 +57,7 @@ echo "`date` INFO:${script_name}: Query passed ${query_response_code}" >&2
 if [[ ! -z $value_search ]]; then
     value_result=`echo $query_response | xmllint -xpath "string($value_search)" -`
     echo "`date` INFO:${script_name}: Value search $value_search returned ${value_result}" >&2
-    echo  "{\"error-info\":\"\",\"value-search-result\":\"${value_result}\"}"
+    echo  "{\"errorInfo\":\"\",\"valueSearchResult\":\"${value_result}\"}"
     exit 0
 fi
 
@@ -66,6 +66,6 @@ if [[ ! -z $count_search ]]; then
     count_string=`echo $count_search | cut -d '"' -f 2`
     count_result=`echo ${count_line} | tr "><" "\n" | grep -c ${count_string}`
     echo -e "`date` INFO:${script_name}: \n\t count search: $count_search \n\t count_line: ${count_line} \n\t count_string: ${count_string} \n\t count_result: ${count_result}" >&2
-    echo  "{\"error-info\":\"\",\"count-search-result\":${count_result}}"
+    echo  "{\"errorInfo\":\"\",\"countSearchResult\":${count_result}}"
     exit 0
 fi
