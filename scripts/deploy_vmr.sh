@@ -222,11 +222,11 @@ systemctl enable solace-docker-vmr
 systemctl start solace-docker-vmr
 
 
-loop-guard=30
+loop_guard=30
 pause=10
 count=0
 if [ "${is_primary}" = "true" ]; then
-  while [ ${count} -lt ${loop-guard} ]; do 
+  while [ ${count} -lt ${loop_guard} ]; do 
     online-count=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><group/></redundancy></show></rpc>" \
          -c '/rpc-reply/rpc/show/redundancy/group-node/status[text()="Online"]'`
