@@ -106,7 +106,7 @@
     {
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "shared",
+      "name": "SolaceSecurity.Template",
       "properties": {
         "mode": "Incremental",
         "templateLink": {

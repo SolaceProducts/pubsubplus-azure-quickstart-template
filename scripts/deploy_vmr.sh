@@ -221,11 +221,11 @@ systemctl daemon-reload
 systemctl enable solace-docker-vmr 
 systemctl start solace-docker-vmr
 
-if [ "${is_primary}" = "true" ]; then
-  loop-guard=30
-  pause=10
-  count=0
 
+loop-guard=30
+pause=10
+count=0
+if [ "${is_primary}" = "true" ]; then
   while [ ${count} -lt ${loop-guard} ]; do 
     online-count=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><group/></redundancy></show></rpc>" \
@@ -248,6 +248,6 @@ if [ "${is_primary}" = "true" ]; then
 
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
-./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+ ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
