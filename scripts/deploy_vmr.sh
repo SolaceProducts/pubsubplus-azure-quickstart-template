@@ -245,8 +245,6 @@ if [ "${is_primary}" = "true" ]; then
     echo "`date` ERROR: Solace redundancy group never came up" | tee /dev/stderr
     exit 1 
   fi
-  
-  <rpc semp-version='soltr/8_5VMR'><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></rpc>
 
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
