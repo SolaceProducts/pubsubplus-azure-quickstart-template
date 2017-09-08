@@ -51,9 +51,9 @@ The fields that you need to fill out are:
 10. Solace VMR URI – The URI link from the registration email received during Step 1. of the install process.
 11. Deployment Model - High Availability, Single Node
 
-After completing the template fields and accepting the legal terms, you need to purchase the deployment, cost will only be related to the Azure instance costs.
+After completing the template fields and accepting the legal terms, you need to purchase the deployment, the cost will only be related to the Azure instance costs.
 
-Once the deployment has started to can view its progress under the Resource groups tab.  Select the resource group you have deployed into, then select the correct deployment across the top. You can then scroll down and see its progress.  
+Once the deployment has started you can view its progress under the Resource groups tab.  Select the resource group you have deployed into, then select the correct deployment across the top. You can then scroll down and see its progress.  
 
 In this example the resource group is testvmr3, the Microsoft.Template template is in progress.  You can see the VMs have started, SolaceVMR0,1,2; the Docker extensions have been installed and the VMR configurations are taking place.  Once the VMRs are configured, the Primary VMR validates the cluster and will signal the deployment complete. After this point you can access the VMRs.
 
