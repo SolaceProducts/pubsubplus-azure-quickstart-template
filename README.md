@@ -7,11 +7,11 @@ How to Deploy a VMR
 
 VMRs can either be deployed as a 3 node HA cluster or a single node.  For simple test enviroments that need to validate application functionality, a simple single instance will suffice.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/single-vmr.png "Single Node Deployment")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/single-vmr.png "Single Node Deployment")
 
 But, in production or any enviroment where message loss can not be tolerated then a HA cluster is required.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/ha-cluster.png "HA Cluster Deployment")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/ha-cluster.png "HA Cluster Deployment")
 
 
 This is a 2 step process:
@@ -31,10 +31,10 @@ This is a 2 step process:
 
 * Hit the "Deploy to Azure" button and in the deployment template add in the link to the VMR provided by Solace. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2FaddHA%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2FaddHA%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
@@ -57,13 +57,13 @@ Once the deployment has started you can view its progress under the Resource gro
 
 In this example the resource group is testvmr3, the Microsoft.Template template is in progress.  You can see the VMs have started, SolaceVMR0,1,2; the Docker extensions have been installed and the VMR configurations are taking place.  Once the VMRs are configured, the Primary VMR validates the cluster and will signal the deployment complete. After this point you can access the VMRs.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/deployment.png "deployment progress")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/deployment.png "deployment progress")
 
 # Gaining admin access to the VMR
 
 For persons used to working with Solace message router console access, this is still available with the Azure instance.  The [connect] button to the upper left displays this information: Use the "Admin Username" and "Admin Password" provided.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/remote_access.png "console with SolOS cli")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/remote_access.png "console with SolOS cli")
 
 Once you have access to the base OS command line you can access the SolOS CLI with the following command:
 ```
