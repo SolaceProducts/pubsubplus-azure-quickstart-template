@@ -51,11 +51,19 @@ The fields that you need to fill out are:
 10. Solace VMR URI – The URI link from the registration email received during Step 1. of the install process.
 11. Deployment Model - High Availability, Single Node
 
+After completing the template fields and accepting the legal terms, you need to purchase the deployment, cost will only be related to the Azure instance costs.
+
+Once the deployment has started to can view its progress under the Resource groups tab.  Select the resource group you have deployed into, then select the correct deployment across the top. You can then scroll down and see its progress.  
+
+In this example the resource group is testvmr3, the Microsoft.Template template is in progress.  You can see the VMs have started, SolaceVMR0,1,2; the Docker extensions have been installed and the VMR configurations are taking place.  Once the VMRs are configured, the Primary VMR validates the cluster and will signal the deployment complete. After this point you can access the VMRs.
+
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/deployment.png "deployment progress")
+
 # Gaining admin access to the VMR
 
 For persons used to working with Solace message router console access, this is still available with the Azure instance.  The [connect] button to the upper left displays this information: Use the "Admin Username" and "Admin Password" provided.
 
-![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/images/remote_access.png "console with SolOS cli")
+![alt text](https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/addHA/images/remote_access.png "console with SolOS cli")
 
 Once you have access to the base OS command line you can access the SolOS CLI with the following command:
 ```
