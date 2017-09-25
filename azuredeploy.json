@@ -27,7 +27,7 @@
         "description": "Security group defined to support VMR default message vpn ports"
       }
     },
-    "dnsNameForPublicIP": {
+    "dnsLabelForPublicIP": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine."
@@ -135,7 +135,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsNameForPublicIP'), copyindex())]"
+          "domainNameLabel": "[concat(parameters('dnsLabelForPublicIP'), copyindex())]"
         }
       }
     },
