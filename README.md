@@ -2,21 +2,6 @@
 
 The Solace Virtual Message Router (VMR) is enterprise-grade messaging middleware that meets the needs of big data, cloud migration, and internet of things initiatives, and enables microservices and event-driven architecture. Capabilities include topic-based publish/subscribe, request/reply, message queues/queueing, and data streaming for IoT devices and mobile/web apps. The VMR supports open APIs and standard protocols including AMQP, JMS, MQTT, REST, and WebSocket. The VMR can be deployed in on-premise datacenters, natively within private and public clouds, and across complex hybrid cloud environments.
 
-*	Message
-*	Messaging
-*	MQTT
-*	AMQP
-*	REST
-*	Stream
-*	Streaming
-*	IoT
-*	Middleware
-*	Big Data
-*	Microservices
-*	Queues
-*	Topics
-*	Hybrid-Cloud
-
 
 How to Deploy a VMR
 -------------------
