@@ -226,8 +226,8 @@ loop_guard=30
 pause=10
 count=0
 mate_active_check=""
-echo "`date` INFO: Wait for Primary to be 'Local Active' or 'Mate Active'"
 if [ "${is_primary}" = "true" ]; then
+  echo "`date` INFO: Wait for Primary to be 'Local Active' or 'Mate Active'"
   while [ ${count} -lt ${loop_guard} ]; do 
     online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
@@ -299,3 +299,4 @@ if [ "${is_primary}" = "true" ]; then
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
          -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
+echo "`date` INFO: Solace VMR bringup complete"
