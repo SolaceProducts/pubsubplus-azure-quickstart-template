@@ -27,6 +27,12 @@
         "description": "Security group defined to support VMR system level and default message vpn ports."
       }
     },
+    "workspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique OMS Workspace Name for Log Analytics."
+      }
+    },
     "dnsLabelForLbIp": {
       "type": "string",
       "metadata": {
@@ -39,26 +45,29 @@
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
       }
     },
-    "centOSVersion": {
+    "centosVersion": {
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
-        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.2, 7.3, 7.4"
       },
       "allowedValues": [
         "7.2",
-        "7.3"
+        "7.3",
+        "7.4"
       ]
     },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, F2S"
+        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
       },
       "allowedValues": [
         "Standard_D2_v2",
-        "Standard_F2s"
+        "Standard_D2_v3",
+        "Standard_F2s",
+        "Standard_F2s_v2"
       ]
     },
     "solaceVmrUri": {
@@ -116,6 +125,25 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+    "syslogFacilities": [
+      "kern",
+      "user",
+      "daemon",
+      "auth",
+      "syslog",
+      "uucp",
+      "authpriv",
+      "ftp",
+      "cron",
+      "local0",
+      "local1",
+      "local2",
+      "local3",
+      "local4",
+      "local5",
+      "local6",
+      "local7"
+    ],
     "adminPasswordDir" : "/mnt/resource/secrets",
     "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
@@ -486,7 +514,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('centOSVersion')]",
+            "sku": "[parameters('centosVersion')]",
             "version": "latest"
           },
           "osDisk": {
@@ -508,9 +536,9 @@
       }
     },
     {
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/DockerExtension')]",
-      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "DockerLoop",
@@ -525,6 +553,107 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": { }
+      }
+    },
+    {
+      "apiVersion": "2015-03-20",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "name": "[parameters('workspaceName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "Free"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "Microsoft.OperationalInsights/workspaces/datasources",
+          "name": "[concat(parameters('workspaceName'), '/syslogCollection')]",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+            "state": "Enabled"
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces/datasources",
+      "name": "[concat(parameters('workspaceName'), '/syslog', copyIndex())]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "copy": {
+        "name": "SyslogFacilityLoop",
+        "count": "[length(variables('syslogFacilities'))]"
+      },
+      "kind": "LinuxSyslog",
+      "properties": {
+        "syslogName": "[variables('syslogFacilities')[copyIndex()]]",
+        "syslogSeverities": [
+          {
+            "severity": "emerg"
+          },
+          {
+            "severity": "alert"
+          },
+          {
+            "severity": "crit"
+          },
+          {
+            "severity": "err"
+          },
+          {
+            "severity": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+      },
+      "plan": {
+        "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+        "publisher": "Microsoft",
+        "product": "OMSGallery/Containers",
+        "promotionCode": ""
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'), copyindex(), '/OmsAgentExtension')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "OmsAgentLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+        "type": "OmsAgentForLinux",
+        "typeHandlerVersion": "1.4",
+        "settings": {
+          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
+        },
+        "protectedSettings": {
+          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
+        }
       }
     },
     {

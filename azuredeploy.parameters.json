@@ -11,6 +11,9 @@
     "adminPassword": {
       "value": "P4$$w0rd"
     },
+    "workspaceName": {
+      "value": "GEN-UNIQUE"
+    },
     "dnsLabelForLbIp": {
       "value": "GEN-UNIQUE"
     },
