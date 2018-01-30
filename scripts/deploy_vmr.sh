@@ -7,12 +7,14 @@ current_index=""
 ip_prefix=""
 number_of_instances=""
 password_file="solOSpasswd"
+disk_size=""
+disk_volume=""
 DEBUG="-vvvv"
 is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:" opt; do
+while getopts "c:i:n:p:s:v:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
@@ -22,6 +24,10 @@ while getopts "c:i:n:p:" opt; do
         ;;
     p)  password_file=$OPTARG
         ;;
+    s)  disk_size=$OPTARG
+        ;;
+    v)  disk_volume=$OPTARG
+        ;;
     esac
 done
 
@@ -30,7 +36,7 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=$password_file , Leftovers: $@"
+      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
@@ -96,13 +102,6 @@ if [ ${isEval} == 0 ] && [ ${number_of_instances} == 3 ]; then
 fi
 
 echo "`date` INFO: Setting up SolOS Docker image"
-#Create new volumes that the VMR container can use to consume and store data.
-docker volume create --name=jail
-docker volume create --name=var
-docker volume create --name=internalSpool
-docker volume create --name=adbBackup
-docker volume create --name=softAdb
-
 docker load -i /tmp/${SolOS_LOAD} 
 
 export VMR_VERSION=`docker images | grep solace | awk '{print $2}'`
@@ -177,37 +176,67 @@ else
   redundancy_config=""
 fi
 
+#Create new volumes that the VMR container can use to consume and store data.
+docker volume create --name=jail
+docker volume create --name=var
+
+if [ $disk_size == "0" ]; then
+  docker volume create --name=diagnostics
+  docker volume create --name=internalSpool
+  docker volume create --name=softAdb
+  docker volume create --name=adbBackup
+  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool -v softAdb:/usr/sw/internalSpool/softAdb -v adbBackup:/usr/sw/adb"
+else
+  echo "`date` Create primary partition on new disk"
+  (
+  echo n # Add a new partition
+  echo p # Primary partition
+  echo 1  # Partition number
+  echo   # First sector (Accept default: 1)
+  echo   # Last sector (Accept default: varies)
+  echo w # Write changes
+  ) | sudo fdisk $disk_volume
+  mkfs.xfs  ${disk_volume}1 -m crc=0
+  UUID=`blkid -s UUID -o value ${disk_volume}1`
+  echo "UUID=${UUID} /opt/vmr xfs defaults 0 0" >> /etc/fstab
+  mkdir /opt/vmr
+  mkdir /opt/vmr/diagnostics
+  mkdir /opt/vmr/internalSpool
+  mkdir /opt/vmr/softAdb
+  mkdir /opt/vmr/adbBackup
+  mount -a
+  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool -v /opt/vmr/softAdb:/usr/sw/internalSpool/softAdb -v /opt/vmr/adbBackup:/usr/sw/adb"
+fi
+
 #Define a create script
 tee /root/docker-create <<-EOF 
 #!/bin/bash 
 docker create \
  --privileged=true \
+ --net=host \
  --uts=host \
  --shm-size 2g \
+ --ulimit core=-1 \
  --ulimit memlock=-1 \
  --ulimit nofile=2448:38048 \
- --ulimit core=-1 \
- --net=host \
  --log-driver syslog \
  --log-opt syslog-format=rfc3164 \
  --log-opt syslog-address=udp://127.0.0.1:25224 \
+ -v $(dirname ${password_file}):/run/secrets \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
- -v $(dirname ${password_file}):/run/secrets \
- -v internalSpool:/usr/sw/internalSpool \
- -v adbBackup:/usr/sw/adb \
- -v softAdb:/usr/sw/internalSpool/softAdb \
+ ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${password_file}) \
  --env logging_debug_output=all \
- --env logging_command_output=all \
- --env logging_system_output=all \
- --env logging_event_output=all \
- --env logging_kernel_output=all \
  --env logging_debug_format=graylog \
+ --env logging_command_output=all \
  --env logging_command_format=graylog \
+ --env logging_system_output=all \
  --env logging_system_format=graylog \
+ --env logging_event_output=all \
  --env logging_event_format=graylog \
+ --env logging_kernel_output=all \
  --env logging_kernel_format=graylog \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 

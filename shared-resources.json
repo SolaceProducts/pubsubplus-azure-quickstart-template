@@ -67,7 +67,7 @@
                         }
                     },
                     {
-                        "name": "ssh",
+                        "name": "ssh_host",
                         "properties": {
                             "priority": 200,
                             "sourceAddressPrefix": "*",
@@ -80,9 +80,22 @@
                         }
                     },
                     {
-                        "name": "semp",
+                        "name": "ssh",
                         "properties": {
                             "priority": 201,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "2222",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "semp",
+                        "properties": {
+                            "priority": 202,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "8080",
@@ -95,7 +108,7 @@
                     {
                         "name": "smf",
                         "properties": {
-                            "priority": 202,
+                            "priority": 203,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "55555",
@@ -108,7 +121,7 @@
                     {
                         "name": "smf_compressed",
                         "properties": {
-                            "priority": 203,
+                            "priority": 204,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "55003",
@@ -121,7 +134,7 @@
                     {
                         "name": "smf_web",
                         "properties": {
-                            "priority": 204,
+                            "priority": 205,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "80",
@@ -134,7 +147,7 @@
                     {
                         "name": "mqtt",
                         "properties": {
-                            "priority": 205,
+                            "priority": 206,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "1883",
@@ -147,7 +160,7 @@
                     {
                         "name": "mqtt_web",
                         "properties": {
-                            "priority": 206,
+                            "priority": 207,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "8000",
@@ -160,7 +173,7 @@
                     {
                         "name": "amqp",
                         "properties": {
-                            "priority": 207,
+                            "priority": 208,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "5672",
@@ -173,7 +186,7 @@
                     {
                         "name": "rest",
                         "properties": {
-                            "priority": 208,
+                            "priority": 209,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "9000",
@@ -184,7 +197,7 @@
                         }
                     }
                 ]
-             }
-          }
+            }
+        }
     ]
 }
