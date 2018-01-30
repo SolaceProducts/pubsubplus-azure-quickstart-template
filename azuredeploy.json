@@ -5,19 +5,19 @@
     "storageAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Storage Account where the Virtual Machine's disks will be placed."
+        "description": "Unique DNS Label for the Storage Account where the disks of the Virtual Machine(s) will be placed."
       }
     },
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine."
+        "description": "Username for the Virtual Machine(s)."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine."
+        "description": "Password for the Virtual Machine(s) and for the admin CLI user."
       }
     },
     "securityGroupName": {
@@ -61,7 +61,7 @@
         "Standard_F2s"
       ]
     },
-    "solaceVMR_URI": {
+    "solaceVmrUri": {
         "type": "string",
         "metadata": {
             "description": "The URI location of the Solace VMR Docker container tarball"
@@ -115,7 +115,9 @@
     "lbPoolName": "vmr-ha-group",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
-    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
+    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+    "adminPasswordDir" : "/mnt/resource/secrets",
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
@@ -434,9 +436,9 @@
       }
     },
     {
-      "name": "[parameters('storageAccountName')]",
-      "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2016-01-01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('storageAccountName')]",
       "sku": {
         "name": "[variables('storageAccountType')]"
       },
@@ -544,12 +546,14 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[parameters('solaceVMR_URI')]",
+            "[parameters('solaceVmrUri')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
-          ],
-          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"   
-        } 
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'))]"
+        }
       }
     }
   ]

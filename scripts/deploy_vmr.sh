@@ -6,7 +6,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 current_index=""
 ip_prefix=""
 number_of_instances=""
-password="admin"
+password_file="solOSpasswd"
 DEBUG="-vvvv"
 is_primary="false"
 
@@ -20,8 +20,8 @@ while getopts "c:i:n:p:" opt; do
         ;;
     n)  number_of_instances=$OPTARG
         ;;
-    p)  password=$OPTARG
-        ;;        
+    p)  password_file=$OPTARG
+        ;;
     esac
 done
 
@@ -29,9 +29,9 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 verbose=1
-echo "`date` current_index=$current_index ,ip_prefix=$ip_prefix ,number_of_instances=$number_of_instances, \
-       ,Leftovers: $@"
-
+echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
+      password_file=$password_file , Leftovers: $@"
+export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
 yum -y install lvm2
@@ -131,7 +131,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=primary \
       --env redundancy_matelink_connectvia=${ip_prefix}1 \
       --env redundancy_activestandbyrole=primary \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -148,7 +148,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=backup \
       --env redundancy_matelink_connectvia=${ip_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -162,7 +162,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       redundancy_config="\
       --env nodetype=monitoring \
       --env routername=monitor \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -187,11 +187,12 @@ docker create \
  --net=host \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
+ -v $(dirname ${password_file}):/run/secrets \
  -v internalSpool:/usr/sw/internalSpool \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  --env username_admin_globalaccesslevel=admin \
- --env username_admin_password=${password} \
+ --env username_admin_passwordfilepath=$(basename ${password_file}) \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF
@@ -221,7 +222,34 @@ systemctl daemon-reload
 systemctl enable solace-docker-vmr 
 systemctl start solace-docker-vmr
 
+# Poll the VMR SEMP port until it is Up
+loop_guard=30
+pause=10
+count=0
+echo "`date` INFO: Wait for the VMR SEMP service to be enabled"
+while [ ${count} -lt ${loop_guard} ]; do
+  online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+    -q "<rpc semp-version='soltr/8_7VMR'><show><service/></show></rpc>" \
+    -v "/rpc-reply/rpc/show/service/services/service[name='SEMP']/enabled[text()]"`
 
+  is_vmr_up=`echo ${online_results} | jq '.valueSearchResult' -`
+  echo "`date` INFO: SEMP service 'enabled' status is: ${is_vmr_up}"
+
+  run_time=$((${count} * ${pause}))
+  if [ "${is_vmr_up}" = "\"true\"" ]; then
+      echo "`date` INFO: VMR SEMP service is up, after ${run_time} seconds"
+      break
+  fi
+  ((count++))
+  echo "`date` INFO: Waited ${run_time} seconds, VMR SEMP service not yet up"
+  sleep ${pause}
+done
+
+# Remove all VMR Secrets from the host; at this point, the VMR should have come up
+# and it won't be needing those files anymore
+rm ${password_file}
+
+# Poll the redundancy status on the Primary VMR
 loop_guard=30
 pause=10
 count=0
@@ -230,7 +258,7 @@ if [ "${is_primary}" = "true" ]; then
   echo "`date` INFO: Wait for Primary to be 'Local Active' or 'Mate Active'"
   while [ ${count} -lt ${loop_guard} ]; do 
     online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
+         -q "<rpc semp-version='soltr/8_7VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/activity[text()]"`
 
     local_activity=`echo ${online_results} | jq '.valueSearchResult' -`
@@ -265,7 +293,7 @@ if [ "${is_primary}" = "true" ]; then
   echo "`date` INFO: Wait for Backup to be 'Active' or 'Standby'"
   while [ ${count} -lt ${loop_guard} ]; do 
     online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
+         -q "<rpc semp-version='soltr/8_7VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/detail/priority-reported-by-mate/summary[text()]"`
 
     mate_activity=`echo ${online_results} | jq '.valueSearchResult' -`
@@ -295,8 +323,8 @@ if [ "${is_primary}" = "true" ]; then
   fi
 
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
+         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
+         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
 echo "`date` INFO: Solace VMR bringup complete"
