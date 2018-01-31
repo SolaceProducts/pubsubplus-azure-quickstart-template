@@ -5,57 +5,85 @@
     "storageAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Storage Account where the Virtual Machine's disks will be placed."
+        "description": "Unique DNS Label for the Storage Account where the disks of the Virtual Machine(s) will be placed."
       }
     },
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine."
+        "description": "Username for the Virtual Machine(s). Do not use special characters."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine."
+        "description": "Password for the Virtual Machine(s) and for the 'admin' SolOS CLI user."
       }
     },
     "securityGroupName": {
       "type": "string",
       "defaultValue": "vmr-security",
       "metadata": {
-        "description": "Security group defined to support VMR default message vpn ports"
+        "description": "Security group defined to support VMR system level and default message vpn ports."
       }
     },
-    "dnsLabelForPublicIP": {
+    "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine."
+        "description": "Unique OMS Workspace Name for Log Analytics."
       }
     },
-    "centOSVersion": {
+    "dnsLabelForLbIp": {
       "type": "string",
-      "defaultValue": "7.2",
       "metadata": {
-        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3"
+        "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
+      }
+    },
+    "dnsLabelForVmIp": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
+      }
+    },
+    "centosVersion": {
+      "type": "string",
+      "defaultValue": "7.4",
+      "metadata": {
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.2, 7.3, 7.4"
       },
       "allowedValues": [
         "7.2",
-        "7.3"
+        "7.3",
+        "7.4"
       ]
     },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, F2S"
+        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
       },
       "allowedValues": [
         "Standard_D2_v2",
-        "Standard_F2s"
+        "Standard_D2_v3",
+        "Standard_F2s",
+        "Standard_F2s_v2"
       ]
     },
-    "solaceVMR_URI": {
+    "dataDiskSize": {
+      "type": "string",
+      "defaultValue": "0",
+      "metadata": {
+        "description": "The size of the data disk in GB for diagnostics and message spooling. Allowed values: 20, 40, 80, 160"
+      },
+      "allowedValues": [
+        "20",
+        "40",
+        "80",
+        "160"
+      ]
+    },
+    "solaceVmrUri": {
         "type": "string",
         "metadata": {
             "description": "The URI location of the Solace VMR Docker container tarball"
@@ -79,11 +107,15 @@
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
+    "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/",
-    "sharedTemplatename": "shared-resources.json",
+    "scriptUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/SOL-1257/",
+    "solaceSecurityName": "SolaceSecurity.Template",
+    "sharedTemplateName": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
+    "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
+    "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
@@ -96,21 +128,33 @@
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "deploymentModelHighAvailability": {
-      "numberOfNodes": 3
-    },
+    "deploymentModelHighAvailability": { "numberOfNodes": 3 },
     "deploymentModelSingleNode": { "numberOfNodes": 1 },
-    "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
+    "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
+    "lbName" : "myLB",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
+    "frontEndIPConfigName": "LoadBalancerFrontEnd",
+    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
+    "lbPoolName": "vmr-ha-group",
+    "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
+    "lbProbeName": "vmr-ha-ad-health-check",
+    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+    "workspaceTier": "Free",
+    "containersMarketplaceName": "Containers",
+    "syslogFacilities": [ "kern", "user", "daemon", "auth", "syslog", "uucp", "authpriv", "ftp", "cron", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7" ],
+    "dataDiskVolume" : "/dev/sdc",
+    "adminPasswordDir" : "/mnt/resource/secrets",
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "SolaceSecurity.Template",
+      "name": "[variables('solaceSecurityName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplatename'))]",
+          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -120,6 +164,18 @@
           "subnetPrefix": {
             "value": "[variables('subnetPrefix')]"
           }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressNameLB')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsLabelForLbIp')]"
         }
       }
     },
@@ -135,7 +191,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsLabelForPublicIP'), copyindex())]"
+          "domainNameLabel": "[concat(parameters('dnsLabelForVmIp'), copyindex())]"
         }
       }
     },
@@ -144,17 +200,25 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
+      ],
       "properties": {
           "addressSpace": {
-          "addressPrefixes": [ "[variables('addressPrefix')]" ]
+            "addressPrefixes": [
+              "[variables('addressPrefix')]"
+            ]
           },
           "subnets": [
-              {
-                  "name": "[variables('subnetName')]",
-                  "properties": {
-                      "addressPrefix": "[variables('subnetPrefix')]"
-                  }
+            {
+              "name": "[variables('subnetName')]",
+              "properties": {
+                "addressPrefix": "[variables('subnetPrefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+                }
               }
+            }
           ]
         } 
     },
@@ -169,7 +233,8 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyindex())]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/loadBalancers/', variables('lbName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -179,26 +244,242 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('nodeAddressPrefix'), copyindex())]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('publicIPAddressName'), copyindex()))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyindex()))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('lbPoolID')]"
+                }
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "[parameters('storageAccountName')]",
-      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('lbName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressNameLB'))]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('frontEndIPConfigName')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNameLB'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('lbPoolName')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "ssh",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 2222,
+              "backendPort": 2222,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "semp",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 8080,
+              "backendPort": 8080,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "smf",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 55555,
+              "backendPort": 55555,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "smf-compressed",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 55003,
+              "backendPort": 55003,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "smf-web",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "mqtt",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 1883,
+              "backendPort": 1883,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "mqtt-web",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 8000,
+              "backendPort": 8000,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "amqp",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 5672,
+              "backendPort": 5672,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "rest",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 9000,
+              "backendPort": 9000,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('lbProbeName')]",
+            "properties": {
+              "protocol": "http",
+              "port": 5550,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2,
+              "requestPath": "/health-check/guaranteed-active"
+            }
+          }
+        ]
+      }
+    },
+    {
       "apiVersion": "2016-01-01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('storageAccountName')]",
       "sku": {
         "name": "[variables('storageAccountType')]"
       },
       "kind": "Storage",
       "location": "[resourceGroup().location]",
-      "properties": {}
+      "properties": { }
     },
     {
       "apiVersion": "2015-06-15",
@@ -225,6 +506,9 @@
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
       ],
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
@@ -237,17 +521,29 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('centOSVersion')]",
+            "sku": "[parameters('centosVersion')]",
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk1",
+            "name": "[concat(variables('vmName'), copyindex(), '-osdisk1')]",
             "vhd": {
               "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('OSDiskName'),copyindex(),'.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
+              "diskSizeGB": "[parameters('dataDiskSize')]",
+              "lun": 0,
+              "vhd": {
+                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),copyindex(),'.vhd')]"
+              },
+              "caching": "ReadWrite",
+              "createOption": "Empty"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -259,9 +555,9 @@
       }
     },
     {
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/DockerExtension')]",
-      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "DockerLoop",
@@ -276,6 +572,107 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": { }
+      }
+    },
+    {
+      "apiVersion": "2015-03-20",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "name": "[parameters('workspaceName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "[variables('workspaceTier')]",
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "Microsoft.OperationalInsights/workspaces/datasources",
+          "name": "[concat(parameters('workspaceName'), '/syslogCollection')]",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+            "state": "Enabled"
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces/datasources",
+      "name": "[concat(parameters('workspaceName'), '/syslog', copyIndex())]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "copy": {
+        "name": "SyslogFacilityLoop",
+        "count": "[length(variables('syslogFacilities'))]"
+      },
+      "kind": "LinuxSyslog",
+      "properties": {
+        "syslogName": "[variables('syslogFacilities')[copyIndex()]]",
+        "syslogSeverities": [
+          {
+            "severity": "emerg"
+          },
+          {
+            "severity": "alert"
+          },
+          {
+            "severity": "crit"
+          },
+          {
+            "severity": "err"
+          },
+          {
+            "severity": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+      },
+      "plan": {
+        "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
+        "publisher": "Microsoft",
+        "product": "[concat('OMSGallery/', variables('containersMarketplaceName'))]",
+        "promotionCode": ""
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'), copyindex(), '/OmsAgentExtension')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "OmsAgentLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+        "type": "OmsAgentForLinux",
+        "typeHandlerVersion": "1.4",
+        "settings": {
+          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
+        },
+        "protectedSettings": {
+          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
+        }
       }
     },
     {
@@ -297,12 +694,14 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[parameters('solaceVMR_URI')]",
+            "[parameters('solaceVmrUri')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
-            "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
-          ],
-          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"   
-        } 
+            "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', parameters('dataDiskSize'), ' -v ', variables('dataDiskVolume'))]"
+        }
       }
     }
   ]
