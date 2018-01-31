@@ -72,7 +72,7 @@
     },
     "dataDiskSize": {
       "type": "string",
-      "defaultValue": "0",
+      "defaultValue": "20",
       "metadata": {
         "description": "The size of the data disk in GB for diagnostics and message spooling. Allowed values: 20, 40, 80, 160"
       },
