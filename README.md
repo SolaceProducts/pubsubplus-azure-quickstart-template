@@ -32,10 +32,10 @@ This is a 2 step process:
 
 * Hit the "Deploy to Azure" button, and in the deployment template add the link to the VMR provided by Solace. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2FSOL-1257%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2FSOL-1257%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
