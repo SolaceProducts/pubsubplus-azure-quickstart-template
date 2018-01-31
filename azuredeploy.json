@@ -11,7 +11,7 @@
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine(s)."
+        "description": "Username for the Virtual Machine(s). Do not use special characters."
       }
     },
     "adminPassword": {
@@ -74,10 +74,9 @@
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling. Allowed values: 0, 20, 40, 80, 160"
+        "description": "The size of the data disk in GB for diagnostics and message spooling. Allowed values: 20, 40, 80, 160"
       },
       "allowedValues": [
-        "0",
         "20",
         "40",
         "80",

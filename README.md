@@ -43,7 +43,7 @@ The fields that you need to fill out are:
 1.  Resource Group - A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected.
 2.  Location - Select region most suitable to you.
 3.  Storage Account Name - New or existing storage account, where your VHD will be stored.
-4.  Admin Username - Username for the virtual Machine(s).
+4.  Admin Username - Username for the virtual Machine(s). Do not use special characters.
 5.  Admin Password - Password for the virtual Machine(s) and for the 'admin' SolOS CLI user.
 6.  Security Group Name - New or existing security group, where VMR default ports will be made publicly available.
 7.  Workspace Name - New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored.
@@ -51,7 +51,7 @@ The fields that you need to fill out are:
 9.  DNS Label for VM IP - Used for the public DNS name of each Virtual Machine(s).
 10. CentOS Version - The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4.
 11. VM Size - The size of the VM. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2.
-12. Data Disk Size - The size of the data disk in GB for diagnostics and message spooling. Use 0, 20, 40, 80, or 160.
+12. Data Disk Size - The size of the data disk in GB for diagnostics and message spooling. Use 20, 40, 80, or 160.
 13. Solace VMR URI - The URI link from the registration email received during Step 1 of the install process.
 14. Deployment Model - High Availability or Single Node.
 
