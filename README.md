@@ -32,10 +32,10 @@ This is a two step process:
 
 * Hit the "Deploy to Azure" button, and in the deployment template add the link to the VMR provided by Solace. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceProducts%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceDev%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceProducts%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
@@ -51,12 +51,12 @@ The fields that you need to fill out are:
 | Admin Username             | Username for the virtual Machine(s). Do not use special characters. |
 | Admin Password             | Password for the virtual Machine(s) and for the 'admin' SolOS CLI user. |
 | Security Group Name        | New or existing security group, where VMR default ports will be made publicly available. |
-| Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. |
+| Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Note that not all regions support workspaces. |
 | DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine(s). |
-| CentOS Version             |  The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
-| Message Routing VM Size    | The size of the VM for the Solace Message Routing Nodes. Use Standard_D2_v2 or Standard_D2_v3. |
-| Monitor VM Size            | The size of the VM for the Solace Monitor Node. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2. |
+| CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
+| Message Routing VM Size    | The size of the VM for the Solace Message Routing Nodes. Use Standard_D2_v2 or Standard_D2_v3. Note that not all regions support all these VM sizes. |
+| Monitor VM Size            | The size of the VM for the Solace Monitor Node. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2. Note that not all regions support all these VM sizes. |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Use 0, 20, 40, 80, or 160. |
 | Solace VMR URI             | The URI link from the registration email received during Step 1 of the install process. |
 | Deployment Model           | High Availability or Single Node. |
@@ -90,14 +90,14 @@ If you are unfamiliar with the Solace message router, or would prefer an adminis
 
 ![alt text](images/azure-soladmin.png "soladmin connection to gce")
 
-To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address (which is the resource named `myLBPublicIPD` in the Resource Group) associated with the Load Balancer (which is the resource named `myLB` in the Resource Group) as the admin user.
+To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address associated with the Load Balancer as the admin user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 
 # Testing data access to the VMR
 
 To test data traffic though the newly created VMR instance, visit the Solace developer portal and and select your preferred programming language to [send and receive messages](http://dev.solace.com/get-started/send-receive-messages/). Under each language there is a Publish/Subscribe tutorial that will help you get started.
 
-To connect to the currently AD-Active VMR for messaging, use the Public IP Address (which is the resource named `myLBPublicIPD` in the Resource Group) associated with the Load Balancer (which is the resource named `myLB` in the Resource Group) as the admin user.
+To connect to the currently AD-Active VMR for messaging, use the Public IP Address associated with the Load Balancer as the admin user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 ![alt text](images/solace_tutorial.png "getting started publish/subscribe")
 

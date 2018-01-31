@@ -203,13 +203,13 @@ fi
 #Create new volumes that the VMR container can use to consume and store data.
 docker volume create --name=jail
 docker volume create --name=var
+docker volume create --name=softAdb
+docker volume create --name=adbBackup
 
 if [ $disk_size == "0" ]; then
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
-  docker volume create --name=softAdb
-  docker volume create --name=adbBackup
-  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool -v softAdb:/usr/sw/internalSpool/softAdb -v adbBackup:/usr/sw/adb"
+  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
 else
   echo "`date` Create primary partition on new disk"
   (
@@ -226,10 +226,8 @@ else
   mkdir /opt/vmr
   mkdir /opt/vmr/diagnostics
   mkdir /opt/vmr/internalSpool
-  mkdir /opt/vmr/softAdb
-  mkdir /opt/vmr/adbBackup
   mount -a
-  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool -v /opt/vmr/softAdb:/usr/sw/internalSpool/softAdb -v /opt/vmr/adbBackup:/usr/sw/adb"
+  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
 fi
 
 #Define a create script
@@ -249,6 +247,8 @@ docker create \
  -v $(dirname ${password_file}):/run/secrets \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
+ -v softAdb:/usr/sw/internalSpool/softAdb \
+ -v adbBackup:/usr/sw/adb \
  ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${password_file}) \
@@ -298,7 +298,7 @@ count=0
 echo "`date` INFO: Wait for the VMR SEMP service to be enabled"
 while [ ${count} -lt ${loop_guard} ]; do
   online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-    -q "<rpc semp-version='soltr/8_7VMR'><show><service/></show></rpc>" \
+    -q "<rpc><show><service/></show></rpc>" \
     -v "/rpc-reply/rpc/show/service/services/service[name='SEMP']/enabled[text()]"`
 
   is_vmr_up=`echo ${online_results} | jq '.valueSearchResult' -`
@@ -327,7 +327,7 @@ if [ "${is_primary}" = "true" ]; then
   echo "`date` INFO: Wait for Primary to be 'Local Active' or 'Mate Active'"
   while [ ${count} -lt ${loop_guard} ]; do 
     online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_7VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
+         -q "<rpc><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/activity[text()]"`
 
     local_activity=`echo ${online_results} | jq '.valueSearchResult' -`
@@ -362,7 +362,7 @@ if [ "${is_primary}" = "true" ]; then
   echo "`date` INFO: Wait for Backup to be 'Active' or 'Standby'"
   while [ ${count} -lt ${loop_guard} ]; do 
     online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_7VMR'><show><redundancy><detail/></redundancy></show></rpc>" \
+         -q "<rpc><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/detail/priority-reported-by-mate/summary[text()]"`
 
     mate_activity=`echo ${online_results} | jq '.valueSearchResult' -`
@@ -392,8 +392,8 @@ if [ "${is_primary}" = "true" ]; then
   fi
 
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
+         -q "<rpc><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
+         -q "<rpc><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
 echo "`date` INFO: Solace VMR bringup complete"

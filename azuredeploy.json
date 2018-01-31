@@ -61,7 +61,7 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
+        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, D2_v3"
       },
       "allowedValues": [
         "Standard_D2_v2",
@@ -72,12 +72,13 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
+        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, D2_v3, F2S, F2s_v2"
       },
       "allowedValues": [
         "Standard_D2_v2",
         "Standard_D2_v3",
-        "Standard_F2s"
+        "Standard_F2s",
+        "Standard_F2s_v2"
       ]
     },
     "dataDiskSize": {
@@ -120,9 +121,11 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/master/",
+    "scriptUrl": "https://raw.githubusercontent.com/SolaceProducts/solace-azure-quickstart-template/master/",
     "solaceSecurityName": "SolaceSecurity.Template",
-    "sharedTemplateName": "shared-resources.json",
+    "securitySharedTemplateName": "security-shared-resources.json",
+    "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
+    "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
@@ -142,20 +145,15 @@
     "deploymentModelHighAvailability": { "numberOfNodes": 3 },
     "deploymentModelSingleNode": { "numberOfNodes": 1 },
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
+    "monitorNodeIndex": 2,
     "lbName" : "myLB",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
-    "frontEndIPConfigName": "LoadBalancerFrontEnd",
-    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
     "lbPoolName": "vmr-ha-group",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
-    "lbProbeName": "vmr-ha-ad-health-check",
-    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
     "workspaceTier": "Free",
     "containersMarketplaceName": "Containers",
     "syslogFacilities": [ "kern", "user", "daemon", "auth", "syslog", "uucp", "authpriv", "ftp", "cron", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7" ],
     "dataDiskVolume" : "/dev/sdc",
-    "adminPasswordDir" : "/mnt/resource/secrets",
-    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]",
     "dataDisksChoices": {
       "0": [
         {
@@ -182,7 +180,9 @@
         }
       ],
       "2": [ ]
-    }
+    },
+    "adminPasswordDir" : "/mnt/resource/secrets",
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
@@ -192,7 +192,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplateName'))]",
+          "uri": "[concat(variables('scriptUrl'), variables('securitySharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -206,14 +206,31 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressNameLB')]",
-      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('solaceLoadBalancerName')]",
       "properties": {
-        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelForLbIp')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('scriptUrl'), variables('loadBalancerSharedTemplateName'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsLabelForLbIp": {
+            "value": "[parameters('dnsLabelForLbIp')]"
+          },
+          "publicIPAddressNameLB": {
+            "value": "[variables('publicIPAddressNameLB')]"
+          },
+          "publicIPAddressType": {
+            "value": "[variables('publicIPAddressType')]"
+          },
+          "lbName": {
+            "value": "[variables('lbName')]"
+          },
+          "lbPoolName": {
+            "value": "[variables('lbPoolName')]"
+          }
         }
       }
     },
@@ -272,7 +289,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyindex())]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/loadBalancers/', variables('lbName'))]"
+        "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -292,217 +309,6 @@
                   "id": "[variables('lbPoolID')]"
                 }
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/loadBalancers",
-      "name": "[variables('lbName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressNameLB'))]"
-      ],
-      "properties": {
-        "frontendIPConfigurations": [
-          {
-            "name": "[variables('frontEndIPConfigName')]",
-            "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNameLB'))]"
-              }
-            }
-          }
-        ],
-        "backendAddressPools": [
-          {
-            "name": "[variables('lbPoolName')]"
-          }
-        ],
-        "loadBalancingRules": [
-          {
-            "name": "ssh",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 2222,
-              "backendPort": 2222,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "semp",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 8080,
-              "backendPort": 8080,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "smf",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 55555,
-              "backendPort": 55555,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "smf-compressed",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 55003,
-              "backendPort": 55003,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "smf-web",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 80,
-              "backendPort": 80,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "mqtt",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 1883,
-              "backendPort": 1883,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "mqtt-web",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 8000,
-              "backendPort": 8000,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "amqp",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 5672,
-              "backendPort": 5672,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "rest",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 9000,
-              "backendPort": 9000,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          }
-        ],
-        "probes": [
-          {
-            "name": "[variables('lbProbeName')]",
-            "properties": {
-              "protocol": "http",
-              "port": 5550,
-              "intervalInSeconds": 5,
-              "numberOfProbes": 2,
-              "requestPath": "/health-check/guaranteed-active"
             }
           }
         ]
@@ -548,7 +354,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[if(equals(copyindex(), 2), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
+          "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
         },
         "osProfile": {
           "computerName": "[concat(variables('vmName'), copyindex())]",
@@ -570,7 +376,7 @@
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
-          "dataDisks": "[variables('dataDisksChoices')[if(or(equals(parameters('dataDiskSize'), '0'), equals(copyindex(), 2)), '2', string(copyindex()))]]"
+          "dataDisks": "[variables('dataDisksChoices')[if(or(equals(parameters('dataDiskSize'), '0'), equals(copyindex(), variables('monitorNodeIndex'))), '2', string(copyindex()))]]"
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -727,7 +533,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), 2), '0', parameters('dataDiskSize')), if(equals(copyindex(), 2), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceVmrUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceVmrUri'))]"
         }
       }
     }
