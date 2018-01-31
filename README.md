@@ -6,7 +6,7 @@ The Solace Virtual Message Router (VMR) is enterprise-grade messaging middleware
 How to Deploy a VMR
 -------------------
 
-VMRs can either be deployed as a 3 node HA cluster or a single node. For simple test environments that need to validate application functionality, a single instance will suffice.
+VMRs can either be deployed as a three node HA cluster or a single node. For simple test environments that need to validate application functionality, a single instance will suffice.
 
 ![alt text](images/single-vmr.png "Single Node Deployment")
 
@@ -15,9 +15,9 @@ Note that in production or any environment where message loss can not be tolerat
 ![alt text](images/ha-cluster.png "HA Cluster Deployment")
 
 
-This is a 2 step process:
+This is a two step process:
 
-* Go to the Solace Developer portal and request a Solace Community edition VMR or Evaluation edition VMR. This process will return an email with a Download link. Do a right click "Copy Hyperlink" on the "Download the VMR for Docker" hyperlink. This URL link will be needed in the following section. The link below will take you to the correct version of the VMR you require depending on whether you want a single instance or an HA Cluster.
+* Go to the Solace Developer portal and request a Solace Community edition VMR or Evaluation edition VMR. This process will send you an email with a Download link. Right click "Copy Hyperlink" on the "Download the VMR for Docker" hyperlink. This URL will be needed in the following section. The link below will take you to the correct version of the VMR you require depending on whether you want a single instance or an HA Cluster.
 
 | COMMUNITY EDITION FOR SINGLE NODE | EVALUATION EDITION FOR HA CLUSTER
 | --- | --- |
@@ -40,21 +40,26 @@ This is a 2 step process:
 </a>
 
 The fields that you need to fill out are:
-1.  Resource Group - A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected.
-2.  Location - Select region most suitable to you.
-3.  Storage Account Name - New or existing storage account, where your VHD will be stored.
-4.  Admin Username - Username for the virtual Machine(s). Do not use special characters.
-5.  Admin Password - Password for the virtual Machine(s) and for the 'admin' SolOS CLI user.
-6.  Security Group Name - New or existing security group, where VMR default ports will be made publicly available.
-7.  Workspace Name - New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored.
-8.  DNS Label for LB IP - Used for the public DNS name of the Load Balancer.
-9.  DNS Label for VM IP - Used for the public DNS name of each Virtual Machine(s).
-10. CentOS Version - The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4.
-11. VM Size - The size of the VM. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2.
-12. Data Disk Size - The size of the data disk in GB for diagnostics and message spooling. Use 20, 40, 80, or 160.
-13. Solace VMR URI - The URI link from the registration email received during Step 1 of the install process.
-14. Deployment Model - High Availability or Single Node.
 
+| Field                      | Value                                                                          |
+|----------------------------|--------------------------------------------------------------------------------|
+| **BASICS**                 |  |
+| Resource Group             | A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected. |
+| Location                   | Select region most suitable to you. |
+| **SETTINGS**               |  |
+| Storage Account Name       | New or existing storage account, where your VHD will be stored. |
+| Admin Username             | Username for the virtual Machine(s). Do not use special characters. |
+| Admin Password             | Password for the virtual Machine(s) and for the 'admin' SolOS CLI user. |
+| Security Group Name        | New or existing security group, where VMR default ports will be made publicly available. |
+| Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. |
+| DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. |
+| DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine(s). |
+| CentOS Version             |  The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
+| Message Routing VM Size    | The size of the VM for the Solace Message Routing Nodes. Use Standard_D2_v2 or Standard_D2_v3. |
+| Monitor VM Size            | The size of the VM for the Solace Monitor Node. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2. |
+| Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Use 0, 20, 40, 80, or 160. |
+| Solace VMR URI             | The URI link from the registration email received during Step 1 of the install process. |
+| Deployment Model           | High Availability or Single Node. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
 
@@ -85,14 +90,14 @@ If you are unfamiliar with the Solace message router, or would prefer an adminis
 
 ![alt text](images/azure-soladmin.png "soladmin connection to gce")
 
-To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address (which is the resource named `myLBPublicIPD`) associated with the Load Balancer (which is the resource named `myLB`) as the admin user.
+To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address (which is the resource named `myLBPublicIPD` in the Resource Group) associated with the Load Balancer (which is the resource named `myLB` in the Resource Group) as the admin user.
 
 
 # Testing data access to the VMR
 
 To test data traffic though the newly created VMR instance, visit the Solace developer portal and and select your preferred programming language to [send and receive messages](http://dev.solace.com/get-started/send-receive-messages/). Under each language there is a Publish/Subscribe tutorial that will help you get started.
 
-To connect to the currently AD-Active VMR for messaging, use the Public IP Address (which is the resource named `myLBPublicIPD`) associated with the Load Balancer (which is the resource named `myLB`) as the admin user.
+To connect to the currently AD-Active VMR for messaging, use the Public IP Address (which is the resource named `myLBPublicIPD` in the Resource Group) associated with the Load Balancer (which is the resource named `myLB` in the Resource Group) as the admin user.
 
 ![alt text](images/solace_tutorial.png "getting started publish/subscribe")
 

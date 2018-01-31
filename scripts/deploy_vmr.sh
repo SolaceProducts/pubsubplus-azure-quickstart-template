@@ -6,15 +6,16 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 current_index=""
 ip_prefix=""
 number_of_instances=""
-password_file="solOSpasswd"
+password_file=""
 disk_size=""
 disk_volume=""
+solace_url=""
 DEBUG="-vvvv"
 is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:s:v:" opt; do
+while getopts "c:i:n:p:s:v:u:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
@@ -28,6 +29,8 @@ while getopts "c:i:n:p:s:v:" opt; do
         ;;
     v)  disk_volume=$OPTARG
         ;;
+    u)  solace_url=$OPTARG
+        ;;
     esac
 done
 
@@ -36,7 +39,7 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , Leftovers: $@"
+      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
@@ -54,6 +57,18 @@ for filename in ./*; do
 done
 
 echo "`date` INFO: check to make sure we have a complete load"
+if [[ ${REAL_LINK} == "" ]]; then
+    # an already-existing load (plus its md5 file) hosted somewhere else (e.g. in an s3 bucket)
+    wget -O /tmp/solos.info -nv  ${solace_url}.md5
+    IFS=' ' read -ra SOLOSOTHER_INFO <<< `cat /tmp/solos.info`
+    MD5_SUM_OTHER=${SOLOSOTHER_INFO[0]}
+    SolOS_OTHER_LOAD=${SOLOSOTHER_INFO[1]}
+    echo "`date` INFO: Reference md5sum is: ${MD5_SUM_OTHER}"
+else
+    MD5_SUM_OTHER=""
+    SolOS_OTHER_LOAD=""
+fi
+
 wget -O /tmp/solosEval.info -nv  https://products.solace.com/download/VMR_DOCKER_EVAL_MD5
 IFS=' ' read -ra SOLOSEVAL_INFO <<< `cat /tmp/solosEval.info`
 MD5_SUM_EVAL=${SOLOSEVAL_INFO[0]}
@@ -72,7 +87,11 @@ SolOS_LOAD=solos.tar.gz
 isEval=0
 
 while [ $LOOP_COUNT -lt 3 ]; do
-  wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
+  if [[ ${REAL_LINK} == "" ]]; then
+    mv ./$(basename ${solace_url}) /tmp/${SolOS_LOAD}
+  else
+    wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
+  fi
 
   LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
   IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
@@ -83,6 +102,11 @@ while [ $LOOP_COUNT -lt 3 ]; do
   fi
   if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_EVAL} ]; then
     echo "`date` INFO: Successfully downloaded ${SolOS_EVAL_LOAD}"
+    isEval=1
+    break
+  fi
+  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_OTHER} ]; then
+    echo "`date` INFO: Successfully downloaded ${SolOS_OTHER_LOAD}"
     isEval=1
     break
   fi
