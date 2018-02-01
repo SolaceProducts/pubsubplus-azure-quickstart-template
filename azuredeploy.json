@@ -61,24 +61,26 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, D2_v3"
+        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
       },
       "allowedValues": [
         "Standard_D2_v2",
-        "Standard_D2_v3"
+        "Standard_DS2_v2",
+        "Standard_D2_v3",
+        "Standard_D2s_v3"
       ]
     },
     "monitorVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, D2_v3, F2S, F2s_v2"
+        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
       },
       "allowedValues": [
         "Standard_D2_v2",
+        "Standard_DS2_v2",
         "Standard_D2_v3",
-        "Standard_F2s",
-        "Standard_F2s_v2"
+        "Standard_D2s_v3"
       ]
     },
     "dataDiskSize": {

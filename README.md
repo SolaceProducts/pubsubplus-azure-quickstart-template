@@ -55,8 +55,8 @@ The fields that you need to fill out are:
 | DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine(s). |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
-| Message Routing VM Size    | The size of the VM for the Solace Message Routing Nodes. Use Standard_D2_v2 or Standard_D2_v3. Note that not all regions support all these VM sizes. |
-| Monitor VM Size            | The size of the VM for the Solace Monitor Node. Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2. Note that not all regions support all these VM sizes. |
+| Message Routing VM Size    | The size of the VM for the Solace Message Routing Nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
+| Monitor VM Size            | The size of the VM for the Solace Monitor Node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Use 0, 20, 40, 80, or 160. |
 | Solace VMR URI             | The URI link from the registration email received during Step 1 of the install process. |
 | Deployment Model           | High Availability or Single Node. |
