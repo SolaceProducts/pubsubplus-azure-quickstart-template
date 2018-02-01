@@ -107,7 +107,9 @@ while [ $LOOP_COUNT -lt 3 ]; do
   fi
   if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_OTHER} ]; then
     echo "`date` INFO: Successfully downloaded ${SolOS_OTHER_LOAD}"
-    isEval=1
+    if [[ $(basename ${solace_url}) != *"-vmr-community"* ]]; then
+        isEval=1
+    fi
     break
   fi
   echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"

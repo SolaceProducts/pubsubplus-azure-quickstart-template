@@ -90,14 +90,14 @@ If you are unfamiliar with the Solace message router, or would prefer an adminis
 
 ![alt text](images/azure-soladmin.png "soladmin connection to gce")
 
-To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address associated with the Load Balancer as the admin user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
+To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 
 # Testing data access to the VMR
 
 To test data traffic though the newly created VMR instance, visit the Solace developer portal and and select your preferred programming language to [send and receive messages](http://dev.solace.com/get-started/send-receive-messages/). Under each language there is a Publish/Subscribe tutorial that will help you get started.
 
-To connect to the currently AD-Active VMR for messaging, use the Public IP Address associated with the Load Balancer as the admin user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
+To connect to the currently AD-Active VMR for messaging, use the Public IP Address associated with the Load Balancer. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 ![alt text](images/solace_tutorial.png "getting started publish/subscribe")
 
