@@ -6,10 +6,10 @@
       "value": "GEN-UNIQUE"
     },
     "adminUsername": {
-      "value": "ubuntu"
+      "value": "solace"
     },
     "adminPassword": {
-      "value": "P4$$w0rd"
+      "value": "GEN-PASSWORD"
     },
     "workspaceName": {
       "value": "GEN-UNIQUE"
@@ -19,6 +19,9 @@
     },
     "dnsLabelForVmIp": {
       "value": "GEN-UNIQUE"
+    },
+    "deploymentModel": {
+      "value": "SingleNode"
     }
   }
 }
