@@ -59,7 +59,7 @@
     "dnsLabelForVmIp": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
+        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s). Do not use '-'"
       }
     },
     "centosVersion": {
@@ -154,10 +154,8 @@
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
-    "vmName": "SolaceVMR",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
-    "nodeAddressPrefix": "10.0.0.10",
     "storageAccountType": "Standard_LRS",
     "subnetName": "Subnet",
     "virtualNetworkName": "MyVNETD",
@@ -175,7 +173,7 @@
     "dataDisksChoices": {
       "0": [
         {
-          "name": "[concat(variables('vmName'), 0, '-datadisk1')]",
+          "name": "[concat(parameters('dnsLabelForVmIp'), 0, '-datadisk1')]",
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "vhd": {
@@ -187,7 +185,7 @@
       ],
       "1": [
         {
-          "name": "[concat(variables('vmName'), 1, '-datadisk1')]",
+          "name": "[concat(parameters('dnsLabelForVmIp'), 1, '-datadisk1')]",
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "vhd": {
@@ -337,8 +335,7 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(variables('nodeAddressPrefix'), copyindex())]",
+              "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyindex()))]"
               },
@@ -379,7 +376,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('vmName'), copyindex())]",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "virtualMachineLoop",
@@ -398,7 +395,7 @@
           "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('vmName'), copyindex())]",
+          "computerName": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -410,7 +407,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(variables('vmName'), copyindex(), '-osdisk1')]",
+            "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '-osdisk1')]",
             "vhd": {
               "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('OSDiskName'),copyindex(),'.vhd')]"
             },
@@ -431,14 +428,14 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/DockerExtension')]",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/DockerExtension')]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "DockerLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex())]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex())]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -451,14 +448,14 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/OmsAgentExtension')]",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "OmsAgentLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]",
         "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]"
       ],
       "properties": {
@@ -476,14 +473,14 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "SolaceLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -498,7 +495,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceVmrUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceVmrUri'))]"
         }
       }
     }
