@@ -4,7 +4,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables:
 current_index=""
-ip_prefix=""
+dns_prefix=""
 number_of_instances=""
 password_file=""
 disk_size=""
@@ -15,11 +15,11 @@ is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:s:v:u:" opt; do
+while getopts "c:d:n:p:s:v:u:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
-    i)  ip_prefix=$OPTARG
+    d)  dns_prefix=$OPTARG
         ;;
     n)  number_of_instances=$OPTARG
         ;;
@@ -38,7 +38,7 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 verbose=1
-echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
+echo "`date` current_index=$current_index , dns_prefix=$dns_prefix , number_of_instances=$number_of_instances , \
       password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , Leftovers: $@"
 export password=`cat ${password_file}`
 
@@ -153,48 +153,48 @@ if [ ${number_of_instances} -gt 1 ]; then
     0 )
       redundancy_config="\
       --env nodetype=message_routing \
-      --env routername=primary \
-      --env redundancy_matelink_connectvia=${ip_prefix}1 \
+      --env routername=${dns_prefix}primary \
+      --env redundancy_matelink_connectvia=${dns_prefix}1 \
       --env redundancy_activestandbyrole=primary \
       --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
-      --env redundancy_group_node_primary_nodetype=message_routing \
-      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
-      --env redundancy_group_node_backup_nodetype=message_routing \
-      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
-      --env redundancy_group_node_monitor_nodetype=monitoring \
-      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
+      --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
+      --env redundancy_group_node_${dns_prefix}backup_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}backup_connectvia=${dns_prefix}1 \
+      --env redundancy_group_node_${dns_prefix}monitor_nodetype=monitoring \
+      --env redundancy_group_node_${dns_prefix}monitor_connectvia=${dns_prefix}2 \
       --env configsync_enable=yes"
       is_primary="true"
         ;; 
     1 ) 
       redundancy_config="\
       --env nodetype=message_routing \
-      --env routername=backup \
-      --env redundancy_matelink_connectvia=${ip_prefix}0 \
+      --env routername=${dns_prefix}backup \
+      --env redundancy_matelink_connectvia=${dns_prefix}0 \
       --env redundancy_activestandbyrole=backup \
       --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
-      --env redundancy_group_node_primary_nodetype=message_routing \
-      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
-      --env redundancy_group_node_backup_nodetype=message_routing \
-      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
-      --env redundancy_group_node_monitor_nodetype=monitoring \
-      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
+      --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
+      --env redundancy_group_node_${dns_prefix}backup_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}backup_connectvia=${dns_prefix}1 \
+      --env redundancy_group_node_${dns_prefix}monitor_nodetype=monitoring \
+      --env redundancy_group_node_${dns_prefix}monitor_connectvia=${dns_prefix}2 \
       --env configsync_enable=yes"
         ;; 
     2 ) 
       redundancy_config="\
       --env nodetype=monitoring \
-      --env routername=monitor \
+      --env routername=${dns_prefix}monitor \
       --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
-      --env redundancy_group_node_primary_nodetype=message_routing \
-      --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
-      --env redundancy_group_node_backup_nodetype=message_routing \
-      --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
-      --env redundancy_group_node_monitor_nodetype=monitoring \
-      --env redundancy_group_node_monitor_connectvia=${ip_prefix}2"
+      --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
+      --env redundancy_group_node_${dns_prefix}backup_nodetype=message_routing \
+      --env redundancy_group_node_${dns_prefix}backup_connectvia=${dns_prefix}1 \
+      --env redundancy_group_node_${dns_prefix}monitor_nodetype=monitoring \
+      --env redundancy_group_node_${dns_prefix}monitor_connectvia=${dns_prefix}2"
         ;; 
   esac
 else
