@@ -88,9 +88,9 @@ if [ -z ${MD5_SUM} ]; then
 fi
 echo "`date` INFO: Reference md5sum is: ${MD5_SUM}"
 
-echo "`date` INFO: Download from URL provided and validate, trying up to 3 times"
+echo "`date` INFO: Download from URL provided and validate, trying up to 5 times"
 LOOP_COUNT=0
-while [ $LOOP_COUNT -lt 3 ]; do
+while [ $LOOP_COUNT -lt 5 ]; do
   wget -q -O  ${solace_directory}/${SolOS_LOAD} ${REAL_LINK} || echo "There has been an issue with downloading the Solace load"
   LOCAL_OS_INFO=`md5sum ${SolOS_LOAD}`
   IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
