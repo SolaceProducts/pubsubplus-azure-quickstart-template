@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "Deploy Solace Message Router(s) onto Azure Linux VM(s)",
-  "description": "This template allows you to deploy either a standalone Solace Message Router or a three node High Availability cluster of Solace Message Routers onto Azure Linux VM(s).",
-  "summary": "This template deploys either a standalone Solace Message Router or a three node High Availability cluster of Solace Message Routers onto Azure Linux VM(s).",
-  "githubUsername": "KenBarr",
-  "dateUpdated": "2018-01-31"
+  "itemDisplayName": "Deploy Solace PubSub+ message broker(s) onto Azure Linux VM(s)",
+  "description": "This template allows you to deploy either a standalone Solace PubSub+ message broker or a three node High Availability cluster of Solace PubSub+ message brokers onto Azure Linux VM(s).",
+  "summary": "This template deploys either a standalone Solace PubSub+ message broker or a three node High Availability cluster of Solace PubSub+ message brokers onto Azure Linux VM(s).",
+  "githubUsername": "SolaceDev",
+  "dateUpdated": "2018-05-31"
 }

@@ -1,4 +1,20 @@
 #!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
@@ -6,32 +22,31 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 current_index=""
 ip_prefix=""
 number_of_instances=""
-password_file=""
+solace_url=""
+admin_password_file=""
 disk_size=""
 disk_volume=""
-solace_url=""
-DEBUG="-vvvv"
 is_primary="false"
 
 verbose=0
 
 while getopts "c:i:n:p:s:v:u:" opt; do
-    case "$opt" in
-    c)  current_index=$OPTARG
-        ;;
-    i)  ip_prefix=$OPTARG
-        ;;
-    n)  number_of_instances=$OPTARG
-        ;;
-    p)  password_file=$OPTARG
-        ;;
-    s)  disk_size=$OPTARG
-        ;;
-    v)  disk_volume=$OPTARG
-        ;;
-    u)  solace_url=$OPTARG
-        ;;
-    esac
+  case "$opt" in
+  c)  current_index=$OPTARG
+    ;;
+  i)  ip_prefix=$OPTARG
+    ;;
+  n)  number_of_instances=$OPTARG
+    ;;
+  p)  admin_password_file=$OPTARG
+    ;;
+  s)  disk_size=$OPTARG
+    ;;
+  u)  solace_url=$OPTARG
+    ;;
+  v)  disk_volume=$OPTARG
+    ;;
+  esac
 done
 
 shift $((OPTIND-1))
@@ -39,124 +54,122 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , Leftovers: $@"
-export password=`cat ${password_file}`
+      password_file=$admin_password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , Leftovers: $@"
+export admin_password=`cat ${admin_password_file}`
 
 #Install the logical volume manager and jq for json parsing
 yum -y install lvm2
 yum -y install epel-release
 yum -y install jq
-#Load the VMR
-REAL_LINK=
-for filename in ./*; do
-    echo "File = ${filename}"
-    count=`grep -c "https://products.solace.com" ${filename}`
-    if [ "1" = ${count} ]; then
-      REAL_LINK=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=]*" ${filename}`
-    fi    
-done
 
-echo "`date` INFO: check to make sure we have a complete load"
-if [[ ${REAL_LINK} == "" ]]; then
-    # an already-existing load (plus its md5 file) hosted somewhere else (e.g. in an s3 bucket)
-    wget -O /tmp/solos.info -nv  ${solace_url}.md5
-    IFS=' ' read -ra SOLOSOTHER_INFO <<< `cat /tmp/solos.info`
-    MD5_SUM_OTHER=${SOLOSOTHER_INFO[0]}
-    SolOS_OTHER_LOAD=${SOLOSOTHER_INFO[1]}
-    echo "`date` INFO: Reference md5sum is: ${MD5_SUM_OTHER}"
+#Load the VMR
+solace_directory="/tmp"
+
+echo "`date` INFO: RETRIEVE SOLACE DOCKER IMAGE"
+echo "#############################################################"
+if [[ ${solace_url} == *"em.solace.com"* ]]; then
+  wget -q -O ${solace_directory}/solace-redirect ${solace_url} || echo "There has been an issue with downloading the redirect"
+  REAL_LINK=`egrep -o "https://[a-zA-Z0-9\.\/\_\?\=%]*" ${solace_directory}/solace-redirect`
+  LOAD_NAME="`echo $REAL_LINK | awk -v FS="(download/|?)" '{print $2}'`"
+  # a redirect link provided by solace
+  wget -O ${solace_directory}/solos.info -nv  https://products.solace.com/download/${LOAD_NAME}_MD5
 else
-    MD5_SUM_OTHER=""
-    SolOS_OTHER_LOAD=""
+  REAL_LINK=${solace_url}
+  # an already-existing load (plus its md5 file) hosted somewhere else (e.g. in an s3 bucket)
+  wget -O ${solace_directory}/solos.info -nv  ${solace_url}.md5
 fi
 
-wget -O /tmp/solosEval.info -nv  https://products.solace.com/download/VMR_DOCKER_EVAL_MD5
-IFS=' ' read -ra SOLOSEVAL_INFO <<< `cat /tmp/solosEval.info`
-MD5_SUM_EVAL=${SOLOSEVAL_INFO[0]}
-SolOS_EVAL_LOAD=${SOLOSEVAL_INFO[1]}
-echo "`date` INFO: Reference eval md5sum is: ${MD5_SUM_EVAL}"
+IFS=' ' read -ra SOLOS_INFO <<< `cat ${solace_directory}/solos.info`
+MD5_SUM=${SOLOS_INFO[0]}
+SolOS_LOAD=${SOLOS_INFO[1]}
+if [ -z ${MD5_SUM} ]; then
+  echo "`date` ERROR: Missing md5sum for the Solace load" | tee /dev/stderr
+  exit 1
+fi
+echo "`date` INFO: Reference md5sum is: ${MD5_SUM}"
 
-wget -O /tmp/solosComm.info -nv  https://products.solace.com/download/VMR_DOCKER_COMM_MD5
-IFS=' ' read -ra SOLOSCOMM_INFO <<< `cat /tmp/solosComm.info`
-MD5_SUM_COMM=${SOLOSCOMM_INFO[0]}
-SolOS_COMM_LOAD=${SOLOSCOMM_INFO[1]}
-echo "`date` INFO: Reference comm md5sum is: ${MD5_SUM_COMM}"
-
-echo "`date` INFO: try 3 times to download from URL provided and validate it is Evaluation and Community edition VRM"
+echo "`date` INFO: Download from URL provided and validate, trying up to 3 times"
 LOOP_COUNT=0
-SolOS_LOAD=solos.tar.gz
-isEval=0
-
 while [ $LOOP_COUNT -lt 3 ]; do
-  if [[ ${REAL_LINK} == "" ]]; then
-    mv ./$(basename ${solace_url}) /tmp/${SolOS_LOAD}
-  else
-    wget -q -O /tmp/${SolOS_LOAD} -nv ${REAL_LINK}
-  fi
-
-  LOCAL_OS_INFO=`md5sum /tmp/${SolOS_LOAD}`
+  wget -q -O  ${solace_directory}/${SolOS_LOAD} ${REAL_LINK} || echo "There has been an issue with downloading the Solace load"
+  LOCAL_OS_INFO=`md5sum ${SolOS_LOAD}`
   IFS=' ' read -ra SOLOS_INFO <<< ${LOCAL_OS_INFO}
   LOCAL_MD5_SUM=${SOLOS_INFO[0]}
-  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_COMM} ]; then
-    echo "`date` INFO: Successfully downloaded ${SolOS_COMM_LOAD}"
+  if [ ${LOCAL_MD5_SUM} != ${MD5_SUM} ]; then
+    echo "`date` WARN: Possible corrupt Solace load, md5sum do not match"
+  else
+    echo "`date` INFO: Successfully downloaded ${SolOS_LOAD}"
     break
   fi
-  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_EVAL} ]; then
-    echo "`date` INFO: Successfully downloaded ${SolOS_EVAL_LOAD}"
-    isEval=1
-    break
-  fi
-  if [ ${LOCAL_MD5_SUM} == ${MD5_SUM_OTHER} ]; then
-    echo "`date` INFO: Successfully downloaded ${SolOS_OTHER_LOAD}"
-    if [[ $(basename ${solace_url}) != *"-vmr-community"* ]]; then
-        isEval=1
-    fi
-    break
-  fi
-  echo "`date` WARNING: CORRUPT SolOS load re-try ${LOOP_COUNT}"
   ((LOOP_COUNT++))
 done
-
 if [ ${LOOP_COUNT} == 3 ]; then
-  echo "`date` ERROR: Failed to download SolOS exiting" | tee /dev/stderr
+  echo "`date` ERROR: Failed to download the Solace load, exiting" | tee /dev/stderr
   exit 1
 fi
 
-echo "`date` INFO: Check if there is a requirement for 3 node cluster and not Evalution edition exit"
-if [ ${isEval} == 0 ] && [ ${number_of_instances} == 3 ]; then
-  echo "`date` ERROR: Trying to build HA cluster with community edition SolOS, this is not supported" | tee /dev/stderr
-  exit 1
-fi
+echo "`date` INFO: LOAD DOCKER IMAGE INTO LOCAL STORE"
+echo "##################################################################"
+if [ `docker images "solace-*" -q` ] ; then docker rmi -f `docker images "solace-*" -q`; fi;
+docker load -i ${solace_directory}/${SolOS_LOAD}
 
-echo "`date` INFO: Setting up SolOS Docker image"
-docker load -i /tmp/${SolOS_LOAD} 
+export VMR_IMAGE=`docker images | grep solace | awk '{print $1 ":" $2}'`
+echo "`date` INFO: Solace message broker image: ${VMR_IMAGE}"
 
-export VMR_VERSION=`docker images | grep solace | awk '{print $2}'`
-echo "`date` INFO: VMR version: ${VMR_VERSION}"
-
+# Decide which scaling tier applies based on system memory
+# and set maxconnectioncount, ulimit, devshm and swap accordingly
 MEM_SIZE=`cat /proc/meminfo | grep MemTotal | tr -dc '0-9'`
-
-if [ ${MEM_SIZE} -lt 6087960 ]; then
-  echo "`date` WARN: Not enough memory: ${MEM_SIZE} Creating 2GB Swap space"
-  mkdir /var/lib/solace
-  dd if=/dev/zero of=/var/lib/solace/swap count=2048 bs=1MiB
-  mkswap -f /var/lib/solace/swap
-  chmod 0600 /var/lib/solace/swap
-  swapon -f /var/lib/solace/swap
-  grep -q 'solace\/swap' /etc/fstab || sudo sh -c 'echo "/var/lib/solace/swap none swap sw 0 0" >> /etc/fstab'
+if [ ${MEM_SIZE} -lt 4000000 ]; then
+  # 100 if mem<4GiB
+  maxconnectioncount="100"
+  shmsize="1g"
+  ulimit_nofile="2448:6592"
+  SWAP_SIZE="1024"
+elif [ ${MEM_SIZE} -lt 12000000 ]; then
+  # 1000 if 4GiB<=mem<12GiB
+  maxconnectioncount="1000"
+  shmsize="2g"
+  ulimit_nofile="2448:10192"
+  SWAP_SIZE="2048"
+elif [ ${MEM_SIZE} -lt 29000000 ]; then
+  # 10000 if 12GiB<=mem<28GiB
+  maxconnectioncount="10000"
+  shmsize="2g"
+  ulimit_nofile="2448:42192"
+  SWAP_SIZE="2048"
+elif [ ${MEM_SIZE} -lt 58000000 ]; then
+  # 100000 if 28GiB<=mem<56GiB
+  maxconnectioncount="100000"
+  shmsize="3380m"
+  ulimit_nofile="2448:222192"
+  SWAP_SIZE="2048"
 else
-   echo "`date` INFO: Memory size is ${MEM_SIZE}"
+  # 200000 if 56GiB<=mem
+  maxconnectioncount="200000"
+  shmsize="3380m"
+  ulimit_nofile="2448:422192"
+  SWAP_SIZE="2048"
 fi
+echo "`date` INFO: Based on memory size of ${MEM_SIZE}KiB, determined maxconnectioncount: ${maxconnectioncount}, shmsize: ${shmsize}, ulimit_nofile: ${ulimit_nofile}, SWAP_SIZE: ${SWAP_SIZE}"
+
+echo "`date` INFO: Creating Swap space"
+mkdir /var/lib/solace
+dd if=/dev/zero of=/var/lib/solace/swap count=${SWAP_SIZE} bs=1MiB
+mkswap -f /var/lib/solace/swap
+chmod 0600 /var/lib/solace/swap
+swapon -f /var/lib/solace/swap
+grep -q 'solace\/swap' /etc/fstab || sudo sh -c 'echo "/var/lib/solace/swap none swap sw 0 0" >> /etc/fstab'
 
 if [ ${number_of_instances} -gt 1 ]; then
   echo "`date` INFO: Configuring HA tuple"
-  case ${current_index} in  
+  case ${current_index} in
     0 )
       redundancy_config="\
       --env nodetype=message_routing \
       --env routername=primary \
       --env redundancy_matelink_connectvia=${ip_prefix}1 \
       --env redundancy_activestandbyrole=primary \
-      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
+      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -166,14 +179,14 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
       --env configsync_enable=yes"
       is_primary="true"
-        ;; 
-    1 ) 
+        ;;
+    1 )
       redundancy_config="\
       --env nodetype=message_routing \
       --env routername=backup \
       --env redundancy_matelink_connectvia=${ip_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
+      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -182,12 +195,12 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env redundancy_group_node_monitor_nodetype=monitoring \
       --env redundancy_group_node_monitor_connectvia=${ip_prefix}2 \
       --env configsync_enable=yes"
-        ;; 
-    2 ) 
+        ;;
+    2 )
       redundancy_config="\
       --env nodetype=monitoring \
       --env routername=monitor \
-      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
+      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -195,7 +208,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env redundancy_group_node_backup_connectvia=${ip_prefix}1 \
       --env redundancy_group_node_monitor_nodetype=monitoring \
       --env redundancy_group_node_monitor_connectvia=${ip_prefix}2"
-        ;; 
+        ;;
   esac
 else
   echo "`date` INFO: Configuring singleton"
@@ -233,27 +246,28 @@ else
 fi
 
 #Define a create script
-tee /root/docker-create <<-EOF 
-#!/bin/bash 
+tee /root/docker-create <<-EOF
+#!/bin/bash
 docker create \
  --privileged=true \
  --net=host \
  --uts=host \
- --shm-size 2g \
+ --shm-size=${shmsize} \
  --ulimit core=-1 \
  --ulimit memlock=-1 \
- --ulimit nofile=2448:38048 \
+ --ulimit nofile=${ulimit_nofile} \
  --log-driver syslog \
  --log-opt syslog-format=rfc3164 \
  --log-opt syslog-address=udp://127.0.0.1:25224 \
- -v $(dirname ${password_file}):/run/secrets \
+ -v $(dirname ${admin_password_file}):/run/secrets \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  -v adbBackup:/usr/sw/adb \
  ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
- --env username_admin_passwordfilepath=$(basename ${password_file}) \
+ --env username_admin_passwordfilepath=$(basename ${admin_password_file}) \
+ --env system_scaling_maxconnectioncount=${maxconnectioncount} \
  --env logging_debug_output=all \
  --env logging_debug_format=graylog \
  --env logging_command_output=all \
@@ -265,41 +279,41 @@ docker create \
  --env logging_kernel_output=all \
  --env logging_kernel_format=graylog \
  ${redundancy_config} \
- --name=solace solace-app:${VMR_VERSION} 
+ --name=solace ${VMR_IMAGE}
 EOF
 
 #Make the file executable
 chmod +x /root/docker-create
 
-echo "`date` INFO: Creating the Solace VMR container"
+echo "`date` INFO: Creating the Solace container"
 /root/docker-create
 
 #Construct systemd for VMR
 tee /etc/systemd/system/solace-docker-vmr.service <<-EOF
-[Unit] 
-  Description=solace-docker-vmr 
-  Requires=docker.service 
-  After=docker.service 
-[Service] 
-  Restart=always 
-  ExecStart=/usr/bin/docker start -a solace 
-  ExecStop=/usr/bin/docker stop solace 
-[Install] 
-  WantedBy=default.target 
+[Unit]
+  Description=solace-docker-vmr
+  Requires=docker.service
+  After=docker.service
+[Service]
+  Restart=always
+  ExecStart=/usr/bin/docker start -a solace
+  ExecStop=/usr/bin/docker stop solace
+[Install]
+  WantedBy=default.target
 EOF
 
-echo "`date` INFO: Start the Solace VMR container"
-systemctl daemon-reload 
-systemctl enable solace-docker-vmr 
+echo "`date` INFO: Start the Solace container"
+systemctl daemon-reload
+systemctl enable solace-docker-vmr
 systemctl start solace-docker-vmr
 
 # Poll the VMR SEMP port until it is Up
 loop_guard=30
 pause=10
 count=0
-echo "`date` INFO: Wait for the VMR SEMP service to be enabled"
+echo "`date` INFO: Wait for the Solace SEMP service to be enabled"
 while [ ${count} -lt ${loop_guard} ]; do
-  online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+  online_results=`./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
     -q "<rpc><show><service/></show></rpc>" \
     -v "/rpc-reply/rpc/show/service/services/service[name='SEMP']/enabled[text()]"`
 
@@ -308,27 +322,27 @@ while [ ${count} -lt ${loop_guard} ]; do
 
   run_time=$((${count} * ${pause}))
   if [ "${is_vmr_up}" = "\"true\"" ]; then
-      echo "`date` INFO: VMR SEMP service is up, after ${run_time} seconds"
-      break
+    echo "`date` INFO: Solace message broker SEMP service is up, after ${run_time} seconds"
+    break
   fi
   ((count++))
-  echo "`date` INFO: Waited ${run_time} seconds, VMR SEMP service not yet up"
+  echo "`date` INFO: Waited ${run_time} seconds, Solace message broker SEMP service not yet up"
   sleep ${pause}
 done
 
 # Remove all VMR Secrets from the host; at this point, the VMR should have come up
 # and it won't be needing those files anymore
-rm ${password_file}
+rm ${admin_password_file}
 
 # Poll the redundancy status on the Primary VMR
-loop_guard=30
-pause=10
-count=0
-mate_active_check=""
 if [ "${is_primary}" = "true" ]; then
+  loop_guard=30
+  pause=10
+  count=0
+  mate_active_check=""
   echo "`date` INFO: Wait for Primary to be 'Local Active' or 'Mate Active'"
-  while [ ${count} -lt ${loop_guard} ]; do 
-    online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+  while [ ${count} -lt ${loop_guard} ]; do
+    online_results=`./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
          -q "<rpc><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/activity[text()]"`
 
@@ -355,15 +369,17 @@ if [ "${is_primary}" = "true" ]; then
 
   if [ ${count} -eq ${loop_guard} ]; then
     echo "`date` ERROR: Solace redundancy group never came up" | tee /dev/stderr
-    exit 1 
+    echo "`date` ERROR: giving up! Details:"
+    echo `curl -u admin:${admin_password} http://localhost:8080/SEMP -d "<rpc><show><redundancy><detail/></redundancy></show></rpc>"`
+    exit 1
   fi
 
-  loop_guard=30
+  loop_guard=45
   pause=10
   count=0
   echo "`date` INFO: Wait for Backup to be 'Active' or 'Standby'"
-  while [ ${count} -lt ${loop_guard} ]; do 
-    online_results=`./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+  while [ ${count} -lt ${loop_guard} ]; do
+    online_results=`./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
          -q "<rpc><show><redundancy><detail/></redundancy></show></rpc>" \
          -v "/rpc-reply/rpc/show/redundancy/virtual-routers/primary/status/detail/priority-reported-by-mate/summary[text()]"`
 
@@ -384,18 +400,25 @@ if [ "${is_primary}" = "true" ]; then
         ;;
     esac
     ((count++))
-    echo "`date` INFO: Waited ${run_time} seconds, Redundancy not yet up"
+    echo "`date` INFO: Waited ${run_time} seconds, Backup not yet 'Active' or 'Standby'"
     sleep ${pause}
   done
 
   if [ ${count} -eq ${loop_guard} ]; then
-    echo "`date` ERROR: Solace redundancy group never came up" | tee /dev/stderr
-    exit 1 
+    echo "`date` ERROR: Backup never became 'Active' or 'Standby'" | tee /dev/stderr
+    echo "`date` ERROR: giving up! Details:"
+    echo `curl -u admin:${admin_password} http://localhost:8080/SEMP -d "<rpc><show><redundancy><detail/></redundancy></show></rpc>"`
+    exit 1
   fi
 
- ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+ ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
          -q "<rpc><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
- ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
+ ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
          -q "<rpc><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
-echo "`date` INFO: Solace VMR bringup complete"
+
+if [ ${count} -eq ${loop_guard} ]; then
+  echo "`date` ERROR: Solace bringup failed" | tee /dev/stderr
+  exit 1
+fi
+echo "`date` INFO: Solace bringup complete"

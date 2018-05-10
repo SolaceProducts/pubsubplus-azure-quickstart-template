@@ -22,9 +22,9 @@
     },
     "securityGroupName": {
       "type": "string",
-      "defaultValue": "vmr-security",
+      "defaultValue": "solace-security",
       "metadata": {
-        "description": "Security group defined to support VMR system level and default message vpn ports."
+        "description": "Security group defined to support PubSub+ message broker system level and default message vpn ports."
       }
     },
     "workspaceName": {
@@ -89,11 +89,13 @@
     },
     "monitorVmSize": {
       "type": "string",
-      "defaultValue": "Standard_D2_v2",
+      "defaultValue": "Standard_D1_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
+        "description": "The size of the Solace Monitor Node VM. Requires at least 1 core and 1GB of memory. Allowed values: D1_v2, DS1_v2, D2_v2, DS2_v2, D2_v3, D2s_v3"
       },
       "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_DS1_v2",
         "Standard_D2_v2",
         "Standard_DS2_v2",
         "Standard_D2_v3",
@@ -114,10 +116,10 @@
         "160"
       ]
     },
-    "solaceVmrUri": {
+    "solaceDockerImageUri": {
         "type": "string",
         "metadata": {
-            "description": "The URI location of the Solace VMR Docker container tarball"
+            "description": "The URI location of the PubSub+ message broker Docker container tarball"
         }
     },
     "deploymentModel": {
@@ -140,21 +142,21 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/SolaceProducts/solace-azure-quickstart-template/master/",
+    "scriptUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/Rebranding-updates/",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
     "workspaceSharedTemplateName": "workspace-shared-resources.json",
-    "solaceInstallScriptName": "deploy_vmr.sh",
+    "solaceInstallScriptName": "deploy_solace.sh",
     "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
-    "vmName": "SolaceVMR",
+    "vmName": "SolaceVM",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
     "nodeAddressPrefix": "10.0.0.10",
@@ -169,7 +171,7 @@
     "monitorNodeIndex": 2,
     "lbName" : "myLB",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
-    "lbPoolName": "vmr-ha-group",
+    "lbPoolName": "solace-ha-group",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "dataDiskVolume" : "/dev/sdc",
     "dataDisksChoices": {
@@ -476,7 +478,7 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
+      "name": "[concat(variables('vmName'), copyindex(), '/configureSolaceContainer')]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "SolaceLoop",
@@ -492,13 +494,13 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[parameters('solaceVmrUri')]",
+            "[parameters('solaceDockerImageUri')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceVmrUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceDockerImageUri'))]"
         }
       }
     }

@@ -31,7 +31,7 @@
       },
       "lbPoolName": {
         "type": "string",
-        "defaultValue": "vmr-ha-group",
+        "defaultValue": "solace-ha-group",
         "metadata": {
           "description": "Load Balancer Backend Address Pool Name."
         }
@@ -42,7 +42,7 @@
       "frontEndIPConfigName": "LoadBalancerFrontEnd",
       "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
       "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('lbPoolName'))]",
-      "lbProbeName": "vmr-ha-ad-health-check",
+      "lbProbeName": "solace-ha-ad-health-check",
       "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
     },
     "resources": [
