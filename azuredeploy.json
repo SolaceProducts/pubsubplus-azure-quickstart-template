@@ -29,15 +29,16 @@
     },
     "workspaceName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Unique OMS Workspace Name for Log Analytics."
+        "description": "Unique OMS Workspace Name for Log Analytics. Leave this field empty to not deploy an OMS Workspace."
       }
     },
     "workspaceRegion": {
       "type": "string",
       "defaultValue": "East US",
       "metadata": {
-        "description": "OMS Workspace Region for Log Analytics."
+        "description": "OMS Workspace Region for Log Analytics. Not used if Workspace Name is empty."
       },
       "allowedValues": [
         "East US",
@@ -142,13 +143,16 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/SOL-4553/",
+    "baseUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/Rebranding-updates/",
+    "nestedUrl": "[concat(variables('baseUrl'), 'nested/')]",
+    "scriptsUrl": "[concat(variables('baseUrl'), 'scripts/')]",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
-    "workspaceSharedTemplateName": "workspace-shared-resources.json",
+    "workspaceEnabledSharedTemplateName": "workspace-enabled-shared-resources.json",
+    "workspaceDisabledSharedTemplateName": "workspace-disabled-shared-resources.json",
     "solaceInstallScriptName": "deploy_solace.sh",
     "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
@@ -171,7 +175,6 @@
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
     "lbPoolName": "solace-ha-group",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
-    "dataDiskVolume" : "/dev/sdc",
     "dataDisksChoices": {
       "0": [
         {
@@ -210,7 +213,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('securitySharedTemplateName'))]",
+          "uri": "[concat(variables('nestedUrl'), variables('securitySharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -230,7 +233,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('loadBalancerSharedTemplateName'))]",
+          "uri": "[concat(variables('nestedUrl'), variables('loadBalancerSharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -259,7 +262,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('workspaceSharedTemplateName'))]",
+          "uri": "[if(empty(parameters('workspaceName')), concat(variables('nestedUrl'), variables('workspaceDisabledSharedTemplateName')), concat(variables('nestedUrl'), variables('workspaceEnabledSharedTemplateName')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -448,6 +451,7 @@
       }
     },
     {
+      "condition": "[not(empty(parameters('workspaceName')))]",
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
@@ -482,8 +486,8 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]"
-       ],
+        "[if(empty(parameters('workspaceName')), concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension'), concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/OmsAgentExtension'))]"
+      ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
         "type": "CustomScript",
@@ -492,12 +496,12 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceDockerImageUri')]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
+            "[concat(variables('scriptsUrl'), variables('solaceInstallScriptName'))]",
+            "[concat(variables('scriptsUrl'), variables('sempQueryScriptName'))]"
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -u ', parameters('solaceDockerImageUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceDockerImageUri'))]"
          }
       }
     }
