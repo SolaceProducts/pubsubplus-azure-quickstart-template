@@ -25,7 +25,7 @@ You can use this quick start template with either PubSub+ `Standard` or PubSub+ 
 
 | PubSub+ Standard | PubSub+ Enterprise Evaluation Edition
 | :---: | :---: |
-| Free, up to 1k simultaneous connections,<br/>up to 100k messages per second | 90-day trial version, unlimited |
+| Free, up to 1k simultaneous connections,<br/>up to 10k messages per second | 90-day trial version, unlimited |
 | <a href="http://dev.solace.com/downloads/download_vmr-ce-docker" target="_blank"><img src="images/register.png"/></a> | <a href="http://dev.solace.com/downloads/download-vmr-evaluation-edition-docker/" target="_blank"><img src="images/register.png"/></a> |
  
 <br>
@@ -47,22 +47,23 @@ You need to fill in the following fields:
 | Field                      | Value                                                                          |
 |----------------------------|--------------------------------------------------------------------------------|
 | **BASICS**                 |  |
+| Subscription               | Provide your subscription to use. |
 | Resource Group             | A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected. |
 | Location                   | Select region most suitable to you. |
 | **SETTINGS**               |  |
-| Storage Account Name       | New or existing storage account, where your VHD will be stored. |
+| Storage Account Name       | New or existing storage account, where your [VHD](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/about-disks-and-vhds ) will be stored. The name must be globally unique. Do not use special characters including hyphen. |
 | Admin Username             | Username for the virtual Machine(s). Do not use special characters. |
-| Admin Password             | Password for the virtual Machine(s) and for the 'admin' management user. |
+| Admin Password             | Password for the virtual Machine(s) and for the 'admin' management user. Azure sets rules on passwords, observe the online feedback. |
 | Security Group Name        | New or existing security group, where message broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
 | DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
-| Message Broker VM Size     | The size of the VM for the message brokers. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
+| Message Routing VM Size     | The size of the VM for the message routing nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Monitor VM Size            | The size of the VM for the monitoring node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the message brokers. Use 0, 20, 40, 80, or 160. |
-| Solace PubSub+ software message broker URI             | URL from the registration email. Can also use load versions hosted remotely (if so, a .md5 file needs to be created in the same remote directory). |
+| Solace Docker Image URI    | Solace PubSub+ software message broker URL from the registration email. Can also use load versions hosted remotely (if so, a .md5 file needs to be created in the same remote directory). |
 | Deployment Model           | High Availability or Single Node. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
@@ -132,6 +133,6 @@ For more information about writing Azure Resource Manager(ARM) templates and Azu
 
 For more information about Solace technology in general please visit these resources:
 
-- [Solace Developer Portal](http://dev.solace.com)
-- [Intro Solace technology](http://dev.solace.com/tech/)
-- [Solace community on Stack Overflow](http://dev.solace.com/community/).
+- [Solace Developer Portal](http://dev.solace.com )
+- [Intro Solace technology](http://dev.solace.com/tech/ )
+- [Solace community on Stack Overflow](http://dev.solace.com/community/ ).
