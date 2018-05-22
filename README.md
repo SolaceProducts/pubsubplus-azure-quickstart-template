@@ -23,7 +23,7 @@ Go to the Solace Developer Portal and copy the download URL of the Solace PubSub
 
 You can use this quick start template with either PubSub+ `Standard` or PubSub+ `Enterprise Evaluation Edition`.
 
-| PubSub+ Standard Docker Image | PubSub+ Enterprise Evaluation Edition Docker Image
+| PubSub+ Standard<br/>Docker Image | PubSub+ Enterprise Evaluation Edition<br/>Docker Image
 | :---: | :---: |
 | Free, up to 1k simultaneous connections,<br/>up to 10k messages per second | 90-day trial version, unlimited |
 | [Get URL of Standard Docker Image](http://dev.solace.com/downloads/) | [Get URL of Evaluation Docker Image](http://dev.solace.com/downloads#eval) |
