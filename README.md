@@ -19,14 +19,14 @@ This is a two step process:
 
 ### Step 1: 
 
-Go to the Solace Developer Portal and copy the download URL of the Solace PubSub+ software message broker Docker image. 
+Go to the Solace Developer Portal and copy the download URL of the Solace PubSub+ software message broker **Docker** image. 
 
 You can use this quick start template with either PubSub+ `Standard` or PubSub+ `Enterprise Evaluation Edition`.
 
 | PubSub+ Standard Docker Image | PubSub+ Enterprise Evaluation Edition Docker Image
 | :---: | :---: |
-| Free | 90-day trial version of PubSub+ Enterprise |
-| [Copy URL of Standard Docker Image](http://dev.solace.com/downloads/) | [Copy URL of Evaluation Docker Image](http://dev.solace.com/downloads#eval) |
+| Free, up to 1k simultaneous connections,<br/>up to 10k messages per second | 90-day trial version, unlimited |
+| [Get URL of Standard Docker Image](http://dev.solace.com/downloads/) | [Get URL of Evaluation Docker Image](http://dev.solace.com/downloads#eval) |
  
 ### Step 2: 
 
@@ -60,7 +60,7 @@ You need to fill in the following fields:
 | Message Routing VM Size     | The size of the VM for the message routing nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Monitor VM Size            | The size of the VM for the monitoring node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the message brokers. Use 0, 20, 40, 80, or 160. |
-| Solace Docker Image URI    | Solace PubSub+ software message broker URL from the registration email. Can also use load versions hosted remotely (if so, a .md5 file needs to be created in the same remote directory). |
+| Solace Docker Image URI    | Solace PubSub+ software message broker URL. Can also use load versions hosted remotely (if so, a .md5 file needs to be created in the same remote directory). |
 | Deployment Model           | High Availability or Single Node. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
