@@ -4,16 +4,16 @@
     "parameters": {
       "securityGroupName": {
         "type": "string",
-        "defaultValue": "vmr-security",
+        "defaultValue": "solace-security",
         "metadata": {
-          "description": "Security group defined to support VMR system level and default message vpn ports."
+          "description": "Security group defined to support PubSub+ message broker system level and default message vpn ports."
         }
       },
       "subnetPrefix": {
         "type": "string",
         "defaultValue": "10.0.0.0/24",
         "metadata": {
-          "description": "Subnet for VMRs."
+          "description": "Subnet for PubSub+ message brokers."
         }
       }
     },
