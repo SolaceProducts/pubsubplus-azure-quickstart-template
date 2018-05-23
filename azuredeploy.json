@@ -143,7 +143,7 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "baseUrl": "https://raw.githubusercontent.com/SolaceDev/solace-azure-quickstart-template/SOL-4553/",
+    "baseUrl": "https://raw.githubusercontent.com/SolaceProducts/solace-azure-quickstart-template/master/",
     "nestedUrl": "[concat(variables('baseUrl'), 'nested/')]",
     "scriptsUrl": "[concat(variables('baseUrl'), 'scripts/')]",
     "solaceSecurityName": "SolaceSecurity.Template",

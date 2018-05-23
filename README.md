@@ -78,7 +78,23 @@ Microsoft OMS (Operations Management Suite) Agents are also installed on each me
 
 # Gaining admin access to the message broker
 
-If you are used to working with console access to Solace PubSub+, this is available with the Azure instance. The [connect] button at the upper left of the `SolaceMessageBroker0`, `SolaceMessageBroker1`, or `SolaceMessageBroker2` resource view displays this information:
+To manage the currently AD-Active message broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
+
+Refer to the [Management Tools section](https://docs.solace.com/Management-Tools.htm ) of the online documentation to learn more about the available tools. The WebUI is the recommended simplest way to administer the message broker for common tasks.
+
+### WebUI, SolAdmin and SEMP access
+
+Use the Load Balacer's external Public IP at port 8080 to access these services.
+
+### Solace CLI access
+
+If you are used to working with console access to Solace PubSub+, this is available with the Azure instance. 
+
+There are two options to connect:
+* Open a CLI SSH connection on port 2222 to the active node through the Load Balancer as described above; or
+* Access the individual nodes:
+
+The [connect] button at the upper left of the `SolaceMessageBroker0`, `SolaceMessageBroker1`, or `SolaceMessageBroker2` resource view displays this information:
 
 ![alt text](images/remote_access.png "console with Solace cli")
 
@@ -87,13 +103,6 @@ Use the specified "Admin Username" and "Admin Password" to log in. Once you have
 ```
 sudo docker exec -it solace /usr/sw/loads/currentload/bin/cli -A
 ```
-
-If you are unfamiliar with Solace PubSub+ message brokers, or would prefer an administration application, the SolAdmin management application is available. For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/). To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select the OS version desired. The Management IP would be the external Public IP associated with your Azure instance and the port would be 8080 by default.
-
-![alt text](images/azure-soladmin.png "soladmin connection to gce")
-
-To manage the currently AD-Active message broker, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
-
 
 # Testing data access to the message broker
 
