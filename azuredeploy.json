@@ -117,10 +117,11 @@
         "160"
       ]
     },
-    "solaceDockerImageUri": {
+    "solaceDockerImageReference": {
         "type": "string",
+        "defaultValue": "solace/solace-pubsub-standard:latest",
         "metadata": {
-            "description": "The URI location of the PubSub+ message broker Docker container tarball"
+            "description": "Solace PubSub+ message broker docker image reference: a docker registry name with optional tag or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a url to a remotely hosted load version"
         }
     },
     "deploymentModel": {
@@ -495,13 +496,12 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[parameters('solaceDockerImageUri')]",
             "[concat(variables('scriptsUrl'), variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptsUrl'), variables('sempQueryScriptName'))]"
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceDockerImageUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceDockerImageReference'))]"
          }
       }
     }

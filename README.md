@@ -19,15 +19,24 @@ This is a two step process:
 
 ### Step 1: 
 
-Go to the Solace Developer Portal and copy the download URL of the Solace PubSub+ software message broker **Docker** image. 
+Obtain a reference to the Docker image of the Solace PubSub+ message broker to be deployed
 
-You can use this quick start template with either PubSub+ `Standard` or PubSub+ `Enterprise Evaluation Edition`.
+First, decide which [Solace PubSub+ message broker](https://docs.solace.com/Solace-SW-Broker-Set-Up/Setting-Up-SW-Brokers.htm ) and version is suitable to your use case.
 
-| PubSub+ Standard<br/>Docker Image | PubSub+ Enterprise Evaluation Edition<br/>Docker Image
-| :---: | :---: |
-| Free, up to 1k simultaneous connections,<br/>up to 10k messages per second | 90-day trial version, unlimited |
-| [Get URL of Standard Docker Image](http://dev.solace.com/downloads/) | [Get URL of Evaluation Docker Image](http://dev.solace.com/downloads#eval) |
- 
+The Docker image reference can be:
+
+*	A public or accessible private Docker registry repository name with an optional tag. This is the recommended option if using PubSub+ Standard. The default is to use the latest message broker image [available from Docker Hub](https://hub.docker.com/r/solace/solace-pubsub-standard/ ) as `solace/solace-pubsub-standard:latest`, or use a specific version [tag](https://hub.docker.com/r/solace/solace-pubsub-standard/tags/ ).
+
+*	A Docker image download URL
+     * If using Solace PubSub+ Enterprise Evaluation Edition, go to the Solace Downloads page. For the image reference, copy and use the download URL in the Solace PubSub+ Enterprise Evaluation Edition Docker Images section.
+
+         | PubSub+ Enterprise Evaluation Edition<br/>Docker Image
+         | :---: |
+         | 90-day trial version of PubSub+ Enterprise |
+         | [Get URL of Evaluation Docker Image](http://dev.solace.com/downloads#eval ) |
+
+     * If you have purchased a Docker image of Solace PubSub+ Enterprise, Solace will give you information for how to download the compressed tar archive package from a secure Solace server. Contact Solace Support at support@solace.com if you require assistance. Then you can host this tar archive together with its MD5 on a file server and use the download URL as the image reference.
+
 ### Step 2: 
 
 Hit the "Deploy to Azure" button, and in the deployment template add the link to the Solace PubSub+ software message broker. 
@@ -60,14 +69,14 @@ You need to fill in the following fields:
 | Message Routing VM Size     | The size of the VM for the message routing nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Monitor VM Size            | The size of the VM for the monitoring node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the message brokers. Use 0, 20, 40, 80, or 160. |
-| Solace Docker Image URI    | Solace PubSub+ software message broker URL. Can also use load versions hosted remotely (if so, a .md5 file needs to be created in the same remote directory). |
+| Solace Docker image reference | A reference to the Solace PubSub+ message broker Docker image, from step 1. Either the image name with optional tag in an accessible Docker registry or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a URL to a remotely hosted image version. The default value is `solace/solace-pubsub-standard:latest` |
 | Deployment Model           | High Availability or Single Node. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
 
 Once the deployment has started, you can view its progress under the Resource Groups tab. Select the resource group you have deployed into, then select the correct deployment across the top. You can then scroll down and see its progress.
 
-In this example, the resource group is `testmessagebroker3` and the `Microsoft.Template` template is in progress. You can see the VMs `SolaceMessageBroker0`, `SolaceMessageBroker1`, and `SolaceMessageBroker2` have started, the Docker Extensions have been installed on each VM, and the message broker configurations are taking place. Once the message brokers are configured, the primary message broker validates the cluster and signals the deployment as completed. At this point, you can access the message brokers.
+In this example, the resource group is `solacerg` and the `Microsoft.Template` template is in progress. You can see the VMs `solacetestvm0`, `solacetestvm1`, and `solacetestvm2` have started, the Docker Extensions have been installed on each VM, and the message broker configurations are taking place. Once the message brokers are configured, the primary message broker validates the cluster and signals the deployment as completed. At this point, you can access the message brokers.
 
 ![alt text](images/deployment.png "deployment progress")
 
@@ -94,7 +103,7 @@ There are two options to connect:
 * Open a CLI SSH connection on port 2222 to the active node through the Load Balancer as described above; or
 * Access the individual nodes:
 
-The [connect] button at the upper left of the `SolaceMessageBroker0`, `SolaceMessageBroker1`, or `SolaceMessageBroker2` resource view displays this information:
+The [connect] button at the upper left of the `solacetestvm0`, `solacetestvm1`, or `solacetestvm2` resource view displays this information:
 
 ![alt text](images/remote_access.png "console with Solace cli")
 
