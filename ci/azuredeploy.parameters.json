@@ -1,0 +1,30 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "solaceDockerImageReference": {
+      "value": "solace/solace-pubsub-standard:latest"
+    },
+    "storageAccountName": {
+      "value": "travissanUNIQUEID"
+    },
+    "adminUsername": {
+      "value": "travisadm"
+    },
+    "adminPassword": {
+      "value": "Travispwd1234!"
+    },
+    "workspaceName": {
+      "value": "traviswsUNIQUEID"
+    },
+    "dnsLabelForLbIp": {
+      "value": "travislbUNIQUEID"
+    },
+    "dnsLabelForVmIp": {
+      "value": "travisvmUNIQUEID-"
+    },
+    "deploymentModel": {
+      "value": "HighAvailability"
+    }
+  }
+}
