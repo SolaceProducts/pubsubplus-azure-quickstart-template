@@ -361,9 +361,9 @@ echo "`date` INFO: Creating the Solace container"
 /root/docker-create
 
 #Construct systemd for PubSub+ Message Broker
-tee /etc/systemd/system/solace-docker-messagebroker.service <<-EOF
+tee /etc/systemd/system/solace-pubsubplus.service <<-EOF
 [Unit]
-  Description=solace-docker-messagebroker
+  Description=solace-pubsubplus
   Requires=docker.service
   After=docker.service
 [Service]
@@ -376,8 +376,8 @@ EOF
 
 echo "`date` INFO: Start the Solace PubSub+ Message Broker container"
 systemctl daemon-reload
-systemctl enable solace-docker-messagebroker
-systemctl start solace-docker-messagebroker
+systemctl enable solace-pubsubplus
+systemctl start solace-pubsubplus
 
 # Poll the PubSub+ Message Broker SEMP port until it is Up
 loop_guard=30

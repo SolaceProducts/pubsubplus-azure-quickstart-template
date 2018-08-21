@@ -20,12 +20,12 @@ before_install:
 install: true
 
 script:
-  - jsonlint nested/*
+  - jsonlint nestedtemplates/*
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
   - sed -i "s@SolaceProducts/solace-azure-quickstart-template/master@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" azuredeploy.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
-  - az group create --name $TESTRESOURCEGROUPNAME --location "canadaeast"
+  - az group create --name $TESTRESOURCEGROUPNAME --location "canadacentral"
   - echo "Creating cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
