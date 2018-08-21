@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/SolaceProducts/solace-azure-quickstart-template.svg?branch=master)](https://travis-ci.org/SolaceProducts/solace-azure-quickstart-template)
+
 # How to Deploy Standalone or HA Clusters of Solace PubSub+ Software Message Brokers onto Azure
 
 The Solace PubSub+ software message broker meets the needs of big data, cloud migration, and Internet-of-Things initiatives, and enables microservices and event-driven architecture. Capabilities include topic-based publish/subscribe, request/reply, message queues/queueing, and data streaming for IoT devices and mobile/web apps. The message broker supports open APIs and standard protocols including AMQP, JMS, MQTT, REST, and WebSocket. As well, it can be deployed in on-premise datacenters, natively within private and public clouds, and across complex hybrid cloud environments.
@@ -55,9 +57,8 @@ You need to fill in the following fields:
 | **BASICS**                 |  |
 | Subscription               | Provide your subscription to use. |
 | Resource Group             | A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected. |
-| Location                   | Select region most suitable to you. |
+| Location                   | Specify a location for the resource group where metadata about the resources is stored. Select the region most suitable to you. |
 | **SETTINGS**               |  |
-| Storage Account Name       | New or existing storage account, where your [VHD](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/about-disks-and-vhds ) will be stored. The name must be globally unique. Do not use special characters including hyphen. |
 | Admin Username             | Username for the virtual Machine(s). Do not use special characters. |
 | Admin Password             | Password for the virtual Machine(s) and for the 'admin' management user. Azure sets rules on passwords, observe the online feedback. |
 | Security Group Name        | New or existing security group, where message broker default ports will be made publicly available. |
@@ -71,6 +72,7 @@ You need to fill in the following fields:
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the message brokers. Use 0, 20, 40, 80, or 160. |
 | Solace Docker image reference | A reference to the Solace PubSub+ message broker Docker image, from step 1. Either the image name with optional tag in an accessible Docker registry or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a URL to a remotely hosted image version. The default value is `solace/solace-pubsub-standard:latest` |
 | Deployment Model           | High Availability or Single Node. |
+| Location                   | The location where all the resources are stored. The default is the same location as the resource group. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
 

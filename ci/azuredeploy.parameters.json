@@ -5,9 +5,6 @@
     "solaceDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
-    "storageAccountName": {
-      "value": "travissanUNIQUEID"
-    },
     "adminUsername": {
       "value": "travisadm"
     },
@@ -22,6 +19,9 @@
     },
     "dnsLabelForVmIp": {
       "value": "travisvmUNIQUEID-"
+    },
+    "dataDiskSize": {
+      "value": "20"
     },
     "deploymentModel": {
       "value": "HighAvailability"
