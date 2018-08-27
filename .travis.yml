@@ -23,7 +23,7 @@ script:
   - jsonlint nestedtemplates/*
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
-  - sed -i "s@SolaceProducts/solace-azure-quickstart-template/master@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" azuredeploy.json
+  - sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location "canadacentral"
   - echo "Creating cluster and waiting to become active"
