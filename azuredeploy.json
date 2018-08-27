@@ -176,7 +176,7 @@
     "nestedTemplatesLocation": "nestedtemplates/",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
-    "securitySharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('securitySharedTemplateName'), parameters('_artifactsLocationSasToken')))]"
+    "securitySharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('securitySharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "loadBalancerSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('loadBalancerSharedTemplateName'), parameters('_artifactsLocationSasToken')))]"
