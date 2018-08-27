@@ -2,6 +2,9 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "_artifactsLocation": {
+      "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
+    },
     "solaceDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
@@ -16,9 +19,6 @@
     },
     "dnsLabelForLbIp": {
       "value": "travislbUNIQUEID"
-    },
-    "dnsLabelForVmIp": {
-      "value": "travisvmUNIQUEID-"
     },
     "dataDiskSize": {
       "value": "20"

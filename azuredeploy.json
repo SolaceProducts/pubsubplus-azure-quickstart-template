@@ -47,13 +47,13 @@
     },
     "dnsLabelForLbIp": {
       "type": "string",
-      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name)]",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
       }
     },
     "dnsLabelForVmIp": {
       "type": "string",
+      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name)]",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s). Do not use '-'"
       }
@@ -293,10 +293,10 @@
       }
     },
     {
+      "condition": "[not(empty(parameters('workspaceName')))]",
       "apiVersion": "2017-05-10",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceWorkspaceName')]",
-      "condition": "[greater(length(parameters('workspaceName')), 0)]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
