@@ -162,7 +162,7 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    }
+    },
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
@@ -176,7 +176,7 @@
         "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
       },
       "defaultValue": ""
-    },
+    }
   },
   "variables": {
     "availabilitySetName": "SolaceHACluster",
