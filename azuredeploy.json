@@ -271,7 +271,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[parameters('loadBalancerSharedTemplateUri')]",
+          "uri": "[variables('loadBalancerSharedTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
