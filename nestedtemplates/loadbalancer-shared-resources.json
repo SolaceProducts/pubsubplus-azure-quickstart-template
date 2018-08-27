@@ -47,10 +47,10 @@
   "variables": {
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'))]",
     "frontEndIPConfigName": "LoadBalancerFrontEnd",
-    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
-    "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('lbPoolName'))]",
+    "frontEndIPConfigID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'),'frontendIPConfigurations',variables('frontEndIPConfigName'))]",
+    "lbPoolID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'),'backendAddressPools',parameters('lbPoolName'))]",
     "lbProbeName": "solace-ha-ad-health-check",
-    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
+    "lbProbeID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'),'probes',variables('lbProbeName'))]"
   },
   "resources": [
     {
