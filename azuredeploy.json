@@ -259,6 +259,9 @@
           },
           "subnetPrefix": {
             "value": "[parameters('subnetPrefix')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
         }
       }
@@ -288,6 +291,9 @@
           },
           "lbPoolName": {
             "value": "[variables('lbPoolName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
         }
       }
