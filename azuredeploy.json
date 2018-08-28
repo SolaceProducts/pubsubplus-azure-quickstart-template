@@ -53,7 +53,7 @@
     },
     "dnsLabelForVmIp": {
       "type": "string",
-      "defaultValue": "[uniqueString(resourceGroup().id, deployment().name)]",
+      "defaultValue": "[concat('vm', uniqueString(resourceGroup().id, deployment().name))]",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s). Do not use '-'. Default will generate a unique string."
       }
