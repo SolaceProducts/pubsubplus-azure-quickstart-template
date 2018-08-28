@@ -126,7 +126,7 @@
         "160"
       ]
     },
-    "solaceMessageBrokerDockerImageReference": {
+    "solaceDockerImageReference": {
       "type": "string",
       "defaultValue": "solace/solace-pubsub-standard:latest",
       "metadata": {
@@ -526,7 +526,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceMessageBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceDockerImageReference'))]"
          }
       }
     }
