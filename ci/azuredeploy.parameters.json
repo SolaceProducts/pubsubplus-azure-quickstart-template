@@ -5,7 +5,7 @@
     "_artifactsLocation": {
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
-    "solaceDockerImageReference": {
+    "solaceMessageBrokerDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
     "adminUsername": {
