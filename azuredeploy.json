@@ -143,6 +143,19 @@
         "SingleNode"
       ]
     },
+    "existingVirtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Optional: The name of an existing virtual network. Specify together with subnet name if deploying into an existing virtual network and subnet."
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "default",
+      "metadata": {
+        "description": "Optional: The name of an existing subnet. Specify together with virtual network name if deploying into an existing virtual network and subnet"
+      }
+    },
     "vnetAddressPrefix": {
       "type": "string",
       "defaultValue": "10.0.0.0/16",
@@ -180,7 +193,7 @@
     }
   },
   "variables": {
-    "availabilitySetName": "SolaceHACluster",
+    "availabilitySetName": "solace-ha-cluster",
     "platformFaultDomainCount": 3,
     "platformUpdateDomainCount": 3,
     "imagePublisher": "OpenLogic",
@@ -194,6 +207,7 @@
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "loadBalancerSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('loadBalancerSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
+    "solaceUpdateSubnetName": "SolaceUpdateSubnet.Template",
     "updateSubnetSharedTemplateName": "update-subnet-shared-resources.json",
     "updateSubnetSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('updateSubnetSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
@@ -207,9 +221,9 @@
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
-    "subnetName": "Subnet",
-    "virtualNetworkName": "SolaceVNet",
-    "nicName": "NicD",
+    "virtualNetworkName": "[if(not(empty(parameters('existingVirtualNetworkName'))), parameters('existingVirtualNetworkName'), 'solace-vnet')]",
+    "subnetName": "[if(not(empty(parameters('existingSubnetName'))), parameters('existingSubnetName'), 'solace-subnet')]",
+    "nicName": "nicd",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "deploymentModelHighAvailability": { "numberOfNodes": 3 },
     "deploymentModelSingleNode": {
@@ -360,7 +374,7 @@
     },
     {
       "apiVersion": "2017-08-01",
-      "name": "deploy",
+      "name": "[variables('solaceUpdateSubnetName')]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
         "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
