@@ -147,14 +147,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional: The name of an existing virtual network. Specify together with subnet name if deploying into an existing virtual network and subnet."
+        "description": "Optional: The name of an existing virtual network. Specify together with Existing Subnet Name if deploying into an existing virtual network and subnet."
       }
     },
     "existingSubnetName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional: The name of an existing subnet. Specify together with virtual network name if deploying into an existing virtual network and subnet"
+        "description": "Optional: The name of an existing subnet. Specify together with Existing Virtual Network Name if deploying into an existing virtual network and subnet"
       }
     },
     "vnetAddressPrefix": {
@@ -353,6 +353,7 @@
       }
     },
     {
+      "condition": "[empty(parameters('existingSubnetName'))]",
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
