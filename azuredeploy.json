@@ -5,7 +5,7 @@
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine(s). Do not use special characters."
+        "description": "Username for the virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters."
       }
     },
     "adminPassword": {
@@ -147,14 +147,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional: The name of an existing virtual network. Specify together with Existing Subnet Name if deploying into an existing virtual network and subnet."
+        "description": "Optional: Only used if deploying into an existing virtual network and subnet. Specify the Existing Virtual Network Name together with the Existing Subnet Name, otherwise leave it at default blank."
       }
     },
     "existingSubnetName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional: The name of an existing subnet. Specify together with Existing Virtual Network Name if deploying into an existing virtual network and subnet"
+        "description": "Optional: Only used if deploying into an existing virtual network and subnet. Specify the Existing Virtual Network Name together with the Existing Subnet Name, otherwise leave it at default blank."
       }
     },
     "vnetAddressPrefix": {
@@ -182,20 +182,20 @@
       "type": "int",
       "defaultValue": 3,
       "metadata": {
-        "description": "Number of Fault Domains. For fault domains available to a region refer to https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/managed-disks-common-fault-domain-region-list.md"
+        "description": "The number of fault domains to be used for the deployment. For the maximum number fault domains available to your location refer to https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/managed-disks-common-fault-domain-region-list.md"
       }
     },
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
-        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+        "description": "The base URI where artifacts required by this template are located."
       },
       "defaultValue": "https://raw.githubusercontent.com/SolaceProducts/solace-azure-quickstart-template/master/"
     },
     "_artifactsLocationSasToken": {
       "type": "securestring",
       "metadata": {
-        "description": "Optional: The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
+        "description": "Optional: The Shared Access Signatures (SAS) token if required for the artifacts location, otherwise leave it at default blank."
       },
       "defaultValue": ""
     }
