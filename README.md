@@ -78,7 +78,7 @@ You need to fill in the following fields (* marks the mandatory ones):
 | Subnet Prefix              | The subnet's address range in CIDR notation where the Solace message broker will be deployed. It must be contained by the address space of the virtual network. The address range of a subnet which is in use can't be edited. |
 | Location                   | The location where all the resources are stored. The default is the same location as the resource group. |
 | Number Of Fault Domains    | The number of fault domains to be used for the deployment. For the maximum number fault domains available to your location refer to https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/managed-disks-common-fault-domain-region-list.md |
-| _artifactsLocation         | The base URI where artifacts required by this template are located. |
+| _artifactsLocation         | The base URI where artifacts required by this template are located. Leave it at default unless deploying from your own location. |
 | _artifactsLocationSasToken | The Shared Access Signatures (SAS) token if required for the artifacts location, otherwise leave it at default blank. |
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment. The cost will only be related to the Azure instance and storage costs.
