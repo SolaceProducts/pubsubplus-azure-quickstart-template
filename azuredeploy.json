@@ -178,6 +178,13 @@
         "description": "Location for all resources. Default will use the same location as the Resource Group."
       }
     },
+    "numberOfFaultDomains": {
+      "type": "int",
+      "defaultValue": 3,
+      "metadata": {
+        "description": "Number of Fault Domains. For fault domains available to a region refer to https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/managed-disks-common-fault-domain-region-list.md"
+      }
+    },
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
@@ -195,7 +202,7 @@
   },
   "variables": {
     "availabilitySetName": "solace-ha-cluster",
-    "platformFaultDomainCount": 3,
+    "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
     "platformUpdateDomainCount": 3,
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
