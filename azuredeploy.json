@@ -145,13 +145,14 @@
     },
     "existingVirtualNetworkName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Optional: The name of an existing virtual network. Specify together with subnet name if deploying into an existing virtual network and subnet."
       }
     },
     "existingSubnetName": {
       "type": "string",
-      "defaultValue": "default",
+      "defaultValue": "",
       "metadata": {
         "description": "Optional: The name of an existing subnet. Specify together with virtual network name if deploying into an existing virtual network and subnet"
       }
