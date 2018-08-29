@@ -194,6 +194,8 @@
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "loadBalancerSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('loadBalancerSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
+    "updateSubnetSharedTemplateName": "update-subnet-shared-resources.json",
+    "updateSubnetSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('updateSubnetSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
     "workspaceEnabledSharedTemplateName": "workspace-enabled-shared-resources.json",
     "workspaceEnabledSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('workspaceEnabledSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
@@ -353,13 +355,39 @@
           {
             "name": "[variables('subnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('subnetPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
-              }
+              "addressPrefix": "[parameters('subnetPrefix')]"
             }
           }
         ]
+      }
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "deploy",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('securityGroupName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('updateSubnetSharedTemplateUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "virtualNetworkName": {
+            "value": "[variables('virtualNetworkName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "subnetAddressPrefix": {
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName')), variables('subnetName')), '2018-03-01').addressPrefix]"
+          },
+          "nsgId": {
+            "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+          }
+        }
       }
     },
     {
