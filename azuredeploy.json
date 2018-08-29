@@ -342,9 +342,6 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
-      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -366,7 +363,7 @@
       "name": "deploy",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('securityGroupName'))]"
+        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
       ],
       "properties": {
         "mode": "Incremental",
