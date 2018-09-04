@@ -2,7 +2,10 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "solaceDockerImageReference": {
+    "_artifactsLocation": {
+      "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
+    },
+    "solaceMessageBrokerDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
     "adminUsername": {
@@ -16,9 +19,6 @@
     },
     "dnsLabelForLbIp": {
       "value": "travislbUNIQUEID"
-    },
-    "dnsLabelForVmIp": {
-      "value": "travisvmUNIQUEID-"
     },
     "dataDiskSize": {
       "value": "20"

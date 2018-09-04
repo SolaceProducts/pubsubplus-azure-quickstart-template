@@ -14,9 +14,6 @@
     "dnsLabelForLbIp": {
       "value": "GEN-UNIQUE"
     },
-    "dnsLabelForVmIp": {
-      "value": "GEN-UNIQUE"
-    },
     "deploymentModel": {
       "value": "SingleNode"
     }
