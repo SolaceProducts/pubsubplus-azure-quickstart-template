@@ -25,7 +25,7 @@ script:
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
   - sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
-  - az group create --name $TESTRESOURCEGROUPNAME --location "canadacentral"
+  - az group create --name $TESTRESOURCEGROUPNAME --location "canadaeast"
   - echo "Creating cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
