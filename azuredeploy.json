@@ -323,6 +323,27 @@
       }
     },
     {
+      "condition": "[not(empty(parameters('workspaceName')))]",
+      "apiVersion": "2017-05-10",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('solaceWorkspaceName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('workspaceEnabledSharedTemplateUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "workspaceName": {
+            "value": "[parameters('workspaceName')]"
+          },
+          "workspaceRegion": {
+            "value": "[parameters('workspaceRegion')]"
+          }
+        }
+      }
+    },
+    {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(variables('publicIPAddressName'), copyindex())]",
@@ -510,6 +531,32 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": {}
+      }
+    },
+    {
+      "condition": "[not(empty(parameters('workspaceName')))]",
+      "apiVersion": "2018-06-01",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "OmsAgentLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]"
+                                                                                        
+        ],
+      "properties": {
+        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+        "type": "OmsAgentForLinux",
+        "typeHandlerVersion": "1.4",
+        "settings": {
+          "workspaceId": "[if(empty(parameters('workspaceName')),  '', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)]"
+        },
+        "protectedSettings": {
+          "workspaceKey": "[if(empty(parameters('workspaceName')),  '', reference(variables('solaceWorkspaceName')).outputs.workspaceKey.value)]"
+        }
       }
     },
     {
