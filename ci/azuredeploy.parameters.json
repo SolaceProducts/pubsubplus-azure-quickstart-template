@@ -14,6 +14,9 @@
     "adminPassword": {
       "value": "Travispwd1234!"
     },
+    "workspaceName": {
+      "value": "traviswsUNIQUEID"
+    },
     "dnsLabelForLbIp": {
       "value": "travislbUNIQUEID"
     },
