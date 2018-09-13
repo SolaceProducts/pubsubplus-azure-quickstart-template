@@ -537,7 +537,7 @@
       "condition": "[not(empty(parameters('workspaceName')))]",
       "apiVersion": "2018-06-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
+      "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/extensions/OmsAgentExtension')]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "OmsAgentLoop",
