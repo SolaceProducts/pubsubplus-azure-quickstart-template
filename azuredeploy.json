@@ -544,9 +544,9 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]"
-                                                                                        
-        ],
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('dnsLabelForVmIp'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]"
+      ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
         "type": "OmsAgentForLinux",
