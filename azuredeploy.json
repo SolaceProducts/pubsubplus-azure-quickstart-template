@@ -462,7 +462,7 @@
         },
       "properties": {
         "platformFaultDomainCount": "[variables('platformFaultDomainCount')]",
-        "platformUpdateDomainCount": "[variables('platformUpdateDomainCount')]"
+        "platformUpdateDomainCount": "[if(equals(variables('platformFaultDomainCount'), 1), 1, variables('platformUpdateDomainCount'))]"
       }
     },
     {
