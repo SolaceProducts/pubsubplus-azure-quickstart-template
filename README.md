@@ -59,8 +59,9 @@ You need to fill in the following fields (* marks the mandatory ones):
 | Resource Group*            | A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected. |
 | Location*                  | Specify a location for the resource group where metadata about the resources is stored. Select the region most suitable to you. |
 | **SETTINGS**               |  |
-| Admin Username*            | Username for the virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters. |
-| Admin Password*            | Password for the virtual Machine(s) and for the 'admin' management user. Azure sets rules on passwords, observe the online feedback. |
+| VM Admin Username*         | Username for the virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters. |
+| VM Admin Password*         | Password for the virtual Machine(s). Azure sets rules on passwords, observe the online feedback. |
+| Solace Admin Password*     | Password for the Solace message broker admin user 'admin'. Refer to the [Solace admin password rules]( https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords ). |
 | Security Group Name        | New or existing security group, where message broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
@@ -91,7 +92,7 @@ In this example, the resource group is `solacerg` and the `Microsoft.Template` t
 
 In addition to the above resources, the deployment creates an Azure Load Balancer that gives you management and data access to the currently AD-Active message broker.
 
-Microsoft OMS (Operations Management Suite) Agents are also installed on each message broker using the OMS Agent Extension. They collect and send logs to a new or existing Azure Log Analytics workspace resource that aggregates logs and diagnostics from each virtual machine in the deployment.
+If OMS workspace name has been specified, Microsoft OMS (Operations Management Suite) Agents are also installed on each message broker using the OMS Agent Extension. They collect and send logs to a new or existing Azure Log Analytics workspace resource that aggregates logs and diagnostics from each virtual machine in the deployment.
 
 
 # Gaining admin access to the message broker

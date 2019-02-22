@@ -17,7 +17,7 @@
     "solaceAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Solace message broker 'admin' admin user."
+        "description": "Password for the Solace message broker 'admin' admin user. For password rules refer to https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords "
       }
     },
     "securityGroupName": {

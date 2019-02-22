@@ -8,10 +8,13 @@
     "solaceMessageBrokerDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
-    "adminUsername": {
+    "vmAdminUsername": {
       "value": "travisadm"
     },
-    "adminPassword": {
+    "vmAdminPassword": {
+      "value": "Travispwd1234!"
+    },
+    "solaceAdminPassword": {
       "value": "Travispwd1234!"
     },
     "workspaceName": {
