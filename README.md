@@ -61,7 +61,7 @@ You need to fill in the following fields (* marks the mandatory ones):
 | **SETTINGS**               |  |
 | VM Admin Username*         | Username for the virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters. |
 | VM Admin Password*         | Password for the virtual Machine(s). Azure sets rules on passwords, observe the online feedback. |
-| Solace Admin Password*     | Password for the Solace message broker admin user 'admin'. Refer to the [Solace admin password rules]( https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords ). |
+| Solace Admin Password*     | Password for the Solace message broker management 'admin' user. Refer to the [Solace admin password rules]( https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords ). |
 | Security Group Name        | New or existing security group, where message broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
