@@ -2,16 +2,22 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "adminUsername": {
+    "vmAdminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters."
+        "description": "Username for the Virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters."
       }
     },
-    "adminPassword": {
+    "vmAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine(s) and for the 'admin' SolOS CLI user."
+        "description": "Password for the Virtual Machine(s)."
+      }
+    },
+    "solaceAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Solace message broker management 'admin' user. For password rules refer to https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords "
       }
     },
     "securityGroupName": {
@@ -203,7 +209,7 @@
   "variables": {
     "availabilitySetName": "solace-ha-cluster",
     "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
-    "platformUpdateDomainCount": 3,
+    "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
@@ -487,8 +493,8 @@
         },
         "osProfile": {
           "computerName": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminUsername": "[parameters('vmAdminUsername')]",
+          "adminPassword": "[parameters('vmAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -583,7 +589,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceMessageBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceMessageBrokerDockerImageReference'))]"
          }
       }
     }
