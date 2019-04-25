@@ -54,7 +54,7 @@
     "dnsLabelForLbIp": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
+        "description": "Unique DNS Label for the Public IP used to access the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$"
       }
     },
     "dnsLabelForVmIp": {

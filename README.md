@@ -65,8 +65,8 @@ You need to fill in the following fields (* marks the mandatory ones):
 | Security Group Name        | New or existing security group, where message broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
-| DNS Label for LB IP*       | Used for the public DNS name of the Load Balancer. |
-| DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. The default offers to generate a unique name. |
+| DNS Label for LB IP*       | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
+| DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. Do not use '-'. The default offers to generate a unique name. |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
 | Message Routing VM Size     | The size of the VM for the message routing nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
 | Monitor VM Size            | The size of the VM for the monitoring node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. |
