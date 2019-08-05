@@ -2,6 +2,9 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "solaceMessageBrokerDockerImageReference": {
+      "value": "https://bczoma-s3-1.s3.ca-central-1.amazonaws.com/solace-pubsub-standard-100.0openshift_scc2.0.125-docker.tar.gz"
+    },
     "vmAdminUsername": {
       "value": "GEN-UNIQUE"
     },

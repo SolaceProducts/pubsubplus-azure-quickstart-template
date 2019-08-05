@@ -348,6 +348,10 @@ docker create \
  ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${admin_password_file}) \
+ --env "service_ssh_port=2222" \
+ --env "service_webtransport_port=60080" \
+ --env "service_webtransport_tlsport=60443" \
+ --env "service_semp_tlsport=60943" \
  --env system_scaling_maxconnectioncount=${maxconnectioncount} \
  ${logging_config} \
  ${redundancy_config} \
