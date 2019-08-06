@@ -293,9 +293,9 @@ else
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
   echo "UUID=${UUID} /opt/vmr xfs defaults 0 0" >> /etc/fstab
-  mkdir /opt/vmr
-  mkdir /opt/vmr/diagnostics
-  mkdir /opt/vmr/internalSpool
+  mkdir /opt/vmr; chown 1000001 /opt/vmr/
+  mkdir /opt/vmr/diagnostics; chown 1000001 /opt/vmr/diagnostics/
+  mkdir /opt/vmr/internalSpool; chown 1000001 /opt/vmr/internalSpool/
   mount -a
   SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
 fi
