@@ -260,6 +260,8 @@ docker volume create --name=var
 docker volume create --name=softAdb
 docker volume create --name=adbBackup
 
+chown -R 1000001 $(dirname ${admin_password_file})
+
 if [[ ${disk_size} == "0" ]]; then
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
@@ -293,9 +295,9 @@ else
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
   echo "UUID=${UUID} /opt/vmr xfs defaults 0 0" >> /etc/fstab
-  mkdir /opt/vmr; sudo chown 1000001 /opt/vmr/
-  mkdir /opt/vmr/diagnostics; sudo chown 1000001 /opt/vmr/diagnostics/
-  mkdir /opt/vmr/internalSpool; sudo chown 1000001 /opt/vmr/internalSpool/
+  mkdir /opt/vmr; chown 1000001 -R /opt/vmr/
+  mkdir /opt/vmr/diagnostics; chown -R 1000001 /opt/vmr/diagnostics/
+  mkdir /opt/vmr/internalSpool; chown -R 1000001 /opt/vmr/internalSpool/
   echo "`date` INFO: volumes: $(ls -l /opt/vmr)"
   mount -a
   SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
@@ -328,6 +330,8 @@ if [[ ${workspace_id} != "" ]]; then
     --env logging_kernel_output=all \
     --env logging_kernel_format=graylog"
 fi
+
+
 
 #Define a create script
 tee /root/docker-create <<-EOF
