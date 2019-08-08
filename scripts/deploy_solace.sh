@@ -333,7 +333,7 @@ fi
 tee /root/docker-create <<-EOF
 #!/bin/bash
 docker create \
- --privileged=true \
+ --privileged=false \
  --net=host \
  --uts=host \
  --shm-size=${shmsize} \
