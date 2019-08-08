@@ -300,6 +300,7 @@ else
   mkdir /opt/vmr/internalSpool; chown -R 1000001 /opt/vmr/internalSpool/
   echo "`date` INFO: volumes: $(ls -l /opt/vmr)"
   mount -a
+  chown 1000001 -R /opt/vmr/
   SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
 fi
 
