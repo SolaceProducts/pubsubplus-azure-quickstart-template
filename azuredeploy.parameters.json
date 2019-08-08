@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "solaceMessageBrokerDockerImageReference": {
-      "value": "https://bczoma-s3-1.s3.ca-central-1.amazonaws.com/solace-pubsub-standard-100.0openshift_scc2.0.125-docker.tar.gz"
+      "value": "https://dmarcuccio.s3.amazonaws.com/solace-pubsub-enterprise-100.0openshift_scc2.0.129-docker.tar.gz"
     },
     "dataDiskSize": {
       "value": "20"
@@ -24,7 +24,7 @@
       "value": "GEN-UNIQUE"
     },
     "deploymentModel": {
-      "value": "SingleNode"
+      "value": "HighAvailability"
     }
   }
 }
