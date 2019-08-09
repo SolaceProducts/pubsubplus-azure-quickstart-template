@@ -299,20 +299,7 @@ else
   mkdir /opt/vmr/diagnostics
   mkdir /opt/vmr/internalSpool
   mount -a
-  LOOP_COUNT=0
-  while [ $LOOP_COUNT -lt 10 ]; do
-    chown 1000001 -R /opt/vmr/
-    if ls -l /opt/vmr | grep 1000001; then
-      break
-    fi
-    sleep 1
-    ((LOOP_COUNT++))
-  done
-  if ! ls -l /opt/vmr | grep 1000001; then
-    echo "`date` ERROR: Unable to change owner of mounted /opt/vmr/ dir - exiting." | tee /dev/stderr
-    exit 1
-  fi
-  echo "`date` INFO: volumes: $(ls -l /opt/vmr)"
+  chown 1000001 -R /opt/vmr/
   SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
 fi
 
