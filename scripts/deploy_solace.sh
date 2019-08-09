@@ -294,7 +294,7 @@ else
   ) | sudo fdisk $disk_volume
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
-  echo "UUID=${UUID} /opt/vmr xfs defaults 0 0" >> /etc/fstab
+  echo "UUID=${UUID} /opt/vmr xfs defaults,uid=1000001 0 0" >> /etc/fstab
   mkdir /opt/vmr
   mkdir /opt/vmr/diagnostics
   mkdir /opt/vmr/internalSpool
