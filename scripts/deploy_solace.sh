@@ -411,7 +411,7 @@ done
 
 # Remove all VMR Secrets from the host; at this point, the VMR should have come up
 # and it won't be needing those files anymore
-rm ${admin_password_file}
+#rm ${admin_password_file}
 
 # Poll the redundancy status on the Primary VMR
 if [ "${is_primary}" = "true" ]; then
