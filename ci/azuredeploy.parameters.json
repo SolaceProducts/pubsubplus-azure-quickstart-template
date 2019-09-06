@@ -18,10 +18,10 @@
       "value": "Travispwd1234!"
     },
     "workspaceName": {
-      "value": "GEN-UNIQUE"
+      "value": "traviswsUNIQUEID"
     },
     "dnsLabelForLbIp": {
-      "value": "GEN-UNIQUE"
+      "value": "travislbUNIQUEID"
     },
     "dataDiskSize": {
       "value": "20"
