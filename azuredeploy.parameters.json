@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "solaceMessageBrokerDockerImageReference": {
-      "value": "https://dmarcuccio.s3.amazonaws.com/solace-pubsub-enterprise-100.0openshift_scc2.0.129-docker.tar.gz"
+      "value": "solace/solace-pubsub-standard:latest"
     },
     "dataDiskSize": {
       "value": "20"

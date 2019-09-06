@@ -39,8 +39,6 @@ disk_size=""
 workspace_id=""
 is_primary="false"
 
-verbose=0
-
 while getopts "c:d:n:p:s:w:u:" opt; do
   case "$opt" in
   c)  current_index=$OPTARG
@@ -63,7 +61,6 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-verbose=1
 echo "`date` current_index=$current_index , dns_prefix=$dns_prefix , number_of_instances=$number_of_instances , \
       password_file=$admin_password_file , disk_size=$disk_size , workspace_id=$workspace_id , solace_uri=$solace_uri , \
       Leftovers: $@"
@@ -142,6 +139,8 @@ if [ -z "`docker pull ${solace_uri}`" ] ; then
   if [ ${LOOP_COUNT} == 3 ]; then
     echo "`date` ERROR: Failed to download the Solace load, exiting" | tee /dev/stderr
     exit 1
+  else
+    echo "`date` INFO: Successfully downloaded ${SolOS_LOAD}"
   fi
   ## Load the image tarball
   docker load -i ${solace_directory}/${SolOS_LOAD}

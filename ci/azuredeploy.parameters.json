@@ -6,7 +6,7 @@
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
     "solaceMessageBrokerDockerImageReference": {
-      "value": "solace/solace-pubsub-standard:latest"
+      "value": "bczoma/solacetest:100.0openshift_scc2.0.186"
     },
     "vmAdminUsername": {
       "value": "travisadm"
@@ -18,10 +18,10 @@
       "value": "Travispwd1234!"
     },
     "workspaceName": {
-      "value": "traviswsUNIQUEID"
+      "value": "GEN-UNIQUE"
     },
     "dnsLabelForLbIp": {
-      "value": "travislbUNIQUEID"
+      "value": "GEN-UNIQUE"
     },
     "dataDiskSize": {
       "value": "20"
