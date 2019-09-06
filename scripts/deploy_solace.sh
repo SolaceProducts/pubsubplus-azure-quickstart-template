@@ -294,13 +294,13 @@ else
   ) | sudo fdisk $disk_volume
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
-  echo "UUID=${UUID} /opt/vmr xfs defaults,uid=1000001 0 0" >> /etc/fstab
-  mkdir /opt/vmr
-  mkdir /opt/vmr/diagnostics
-  mkdir /opt/vmr/internalSpool
+  echo "UUID=${UUID} /opt/pubsubplus xfs defaults,uid=1000001 0 0" >> /etc/fstab
+  mkdir /opt/pubsubplus
+  mkdir /opt/pubsubplus/diagnostics
+  mkdir /opt/pubsubplus/internalSpool
   mount -a
-  chown 1000001 -R /opt/vmr/
-  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
+  chown 1000001 -R /opt/pubsubplus/
+  SPOOL_MOUNT="-v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
 fi
 
 LOG_OPT=""
