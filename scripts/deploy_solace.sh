@@ -254,19 +254,18 @@ else
   redundancy_config=""
 fi
 
-#Create new volumes that the PubSub+ Message Broker container can use to consume and store data.
-docker volume create --name=jail
-docker volume create --name=var
-docker volume create --name=softAdb
-docker volume create --name=adbBackup
-
+# Setup password file permissions
 chown -R 1000001 $(dirname ${admin_password_file})
 chmod 700 $(dirname ${admin_password_file})
 
 if [[ ${disk_size} == "0" ]]; then
+  #Create new volumes that the PubSub+ Message Broker container can use to consume and store data.
+  docker volume create --name=jail
+  docker volume create --name=var
+  docker volume create --name=softAdb
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
-  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
+  SPOOL_MOUNT="-v jail:/usr/sw/jail -v var:/usr/sw/var -v softAdb:/usr/sw/internalSpool/softAdb -v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
 else
   # Look for unpartitioned disks
   disk_volume=""
@@ -288,7 +287,7 @@ else
   (
     echo n # Add a new partition
     echo p # Primary partition
-    echo 1  # Partition number
+    echo 1 # Partition number
     echo   # First sector (Accept default: 1)
     echo   # Last sector (Accept default: varies)
     echo w # Write changes
@@ -297,11 +296,14 @@ else
   UUID=`blkid -s UUID -o value ${disk_volume}1`
   echo "UUID=${UUID} /opt/pubsubplus xfs defaults,uid=1000001 0 0" >> /etc/fstab
   mkdir /opt/pubsubplus
+  mkdir /opt/pubsubplus/jail
+  mkdir /opt/pubsubplus/var
+  mkdir /opt/pubsubplus/softAdb
   mkdir /opt/pubsubplus/diagnostics
   mkdir /opt/pubsubplus/internalSpool
   mount -a
   chown 1000001 -R /opt/pubsubplus/
-  SPOOL_MOUNT="-v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
+  SPOOL_MOUNT="-v /opt/pubsubplus/jail:/usr/sw/jail -v /opt/pubsubplus/var:/usr/sw/var -v /opt/pubsubplus/softAdb:/usr/sw/internalSpool/softAdb -v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
 fi
 
 LOG_OPT=""
@@ -345,10 +347,6 @@ docker create \
  --ulimit nofile=${ulimit_nofile} \
  ${LOG_OPT} \
  -v $(dirname ${admin_password_file}):/run/secrets \
- -v jail:/usr/sw/jail \
- -v var:/usr/sw/var \
- -v softAdb:/usr/sw/internalSpool/softAdb \
- -v adbBackup:/usr/sw/adb \
  ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${admin_password_file}) \
@@ -412,7 +410,7 @@ done
 
 # Remove all VMR Secrets from the host; at this point, the VMR should have come up
 # and it won't be needing those files anymore
-#rm ${admin_password_file}
+rm ${admin_password_file}
 
 # Poll the redundancy status on the Primary VMR
 if [ "${is_primary}" = "true" ]; then
