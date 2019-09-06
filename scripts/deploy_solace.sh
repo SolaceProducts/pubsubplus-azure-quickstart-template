@@ -261,6 +261,7 @@ docker volume create --name=softAdb
 docker volume create --name=adbBackup
 
 chown -R 1000001 $(dirname ${admin_password_file})
+chmod 700 $(dirname ${admin_password_file})
 
 if [[ ${disk_size} == "0" ]]; then
   docker volume create --name=diagnostics
