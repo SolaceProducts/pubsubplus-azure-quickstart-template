@@ -39,8 +39,6 @@ disk_size=""
 workspace_id=""
 is_primary="false"
 
-verbose=0
-
 while getopts "c:d:n:p:s:w:u:" opt; do
   case "$opt" in
   c)  current_index=$OPTARG
@@ -63,7 +61,6 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-verbose=1
 echo "`date` current_index=$current_index , dns_prefix=$dns_prefix , number_of_instances=$number_of_instances , \
       password_file=$admin_password_file , disk_size=$disk_size , workspace_id=$workspace_id , solace_uri=$solace_uri , \
       Leftovers: $@"
@@ -142,6 +139,8 @@ if [ -z "`docker pull ${solace_uri}`" ] ; then
   if [ ${LOOP_COUNT} == 3 ]; then
     echo "`date` ERROR: Failed to download the Solace load, exiting" | tee /dev/stderr
     exit 1
+  else
+    echo "`date` INFO: Successfully downloaded ${SolOS_LOAD}"
   fi
   ## Load the image tarball
   docker load -i ${solace_directory}/${SolOS_LOAD}
@@ -254,18 +253,18 @@ else
   redundancy_config=""
 fi
 
-#Create new volumes that the PubSub+ Message Broker container can use to consume and store data.
-docker volume create --name=jail
-docker volume create --name=var
-docker volume create --name=softAdb
-docker volume create --name=adbBackup
-
+# Setup password file permissions
 chown -R 1000001 $(dirname ${admin_password_file})
+chmod 700 $(dirname ${admin_password_file})
 
 if [[ ${disk_size} == "0" ]]; then
+  #Create new volumes that the PubSub+ Message Broker container can use to consume and store data.
+  docker volume create --name=jail
+  docker volume create --name=var
+  docker volume create --name=softAdb
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
-  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
+  SPOOL_MOUNT="-v jail:/usr/sw/jail -v var:/usr/sw/var -v softAdb:/usr/sw/internalSpool/softAdb -v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
 else
   # Look for unpartitioned disks
   disk_volume=""
@@ -287,20 +286,23 @@ else
   (
     echo n # Add a new partition
     echo p # Primary partition
-    echo 1  # Partition number
+    echo 1 # Partition number
     echo   # First sector (Accept default: 1)
     echo   # Last sector (Accept default: varies)
     echo w # Write changes
   ) | sudo fdisk $disk_volume
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
-  echo "UUID=${UUID} /opt/vmr xfs defaults,uid=1000001 0 0" >> /etc/fstab
-  mkdir /opt/vmr
-  mkdir /opt/vmr/diagnostics
-  mkdir /opt/vmr/internalSpool
+  echo "UUID=${UUID} /opt/pubsubplus xfs defaults,uid=1000001 0 0" >> /etc/fstab
+  mkdir /opt/pubsubplus
+  mkdir /opt/pubsubplus/jail
+  mkdir /opt/pubsubplus/var
+  mkdir /opt/pubsubplus/softAdb
+  mkdir /opt/pubsubplus/diagnostics
+  mkdir /opt/pubsubplus/internalSpool
   mount -a
-  chown 1000001 -R /opt/vmr/
-  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
+  chown 1000001 -R /opt/pubsubplus/
+  SPOOL_MOUNT="-v /opt/pubsubplus/jail:/usr/sw/jail -v /opt/pubsubplus/var:/usr/sw/var -v /opt/pubsubplus/softAdb:/usr/sw/internalSpool/softAdb -v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
 fi
 
 LOG_OPT=""
@@ -344,10 +346,6 @@ docker create \
  --ulimit nofile=${ulimit_nofile} \
  ${LOG_OPT} \
  -v $(dirname ${admin_password_file}):/run/secrets \
- -v jail:/usr/sw/jail \
- -v var:/usr/sw/var \
- -v softAdb:/usr/sw/internalSpool/softAdb \
- -v adbBackup:/usr/sw/adb \
  ${SPOOL_MOUNT} \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${admin_password_file}) \
