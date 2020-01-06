@@ -137,8 +137,8 @@
                 "id": "[variables('lbPoolID')]"
               },
               "protocol": "Tcp",
-              "frontendPort": 943,
-              "backendPort": 60943,
+              "frontendPort": 1943,
+              "backendPort": 1943,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -166,7 +166,7 @@
             }
           },
           {
-            "name": "smf-compressed",
+            "name": "smfcompressed",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"
@@ -204,7 +204,7 @@
             }
           },
           {
-            "name": "smf-web",
+            "name": "smf",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"
@@ -213,8 +213,8 @@
                 "id": "[variables('lbPoolID')]"
               },
               "protocol": "Tcp",
-              "frontendPort": 80,
-              "backendPort": 60080,
+              "frontendPort": 8008,
+              "backendPort": 8008,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -232,8 +232,8 @@
                 "id": "[variables('lbPoolID')]"
               },
               "protocol": "Tcp",
-              "frontendPort": 443,
-              "backendPort": 60443,
+              "frontendPort": 1443,
+              "backendPort": 1443,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -280,7 +280,7 @@
             }
           },
           {
-            "name": "mqtt-web",
+            "name": "mqttweb",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"

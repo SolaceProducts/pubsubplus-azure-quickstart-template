@@ -359,9 +359,9 @@ docker create \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_passwordfilepath=$(basename ${admin_password_file}) \
  --env "service_ssh_port=2222" \
- --env "service_webtransport_port=60080" \
- --env "service_webtransport_tlsport=60443" \
- --env "service_semp_tlsport=60943" \
+ --env "service_webtransport_port=8008" \
+ --env "service_webtransport_tlsport=1443" \
+ --env "service_semp_tlsport=1943" \
  --env system_scaling_maxconnectioncount=${maxconnectioncount} \
  ${logging_config} \
  ${redundancy_config} \
