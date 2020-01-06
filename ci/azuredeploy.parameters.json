@@ -6,7 +6,7 @@
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
     "solaceMessageBrokerDockerImageReference": {
-      "value": "bczoma/solacetest:100.0bugfix_9_4.0.185"
+      "value": "bczoma/solacetest:100.0bugfix_9_4.0.220"
     },
     "vmAdminUsername": {
       "value": "travisadm"
