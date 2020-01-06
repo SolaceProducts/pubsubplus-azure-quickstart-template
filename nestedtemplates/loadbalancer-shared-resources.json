@@ -99,7 +99,7 @@
                 "id": "[variables('lbPoolID')]"
               },
               "protocol": "Tcp",
-              "frontendPort": 2222,
+              "frontendPort": 22,
               "backendPort": 2222,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
@@ -120,6 +120,25 @@
               "protocol": "Tcp",
               "frontendPort": 8080,
               "backendPort": 8080,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "semptls",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 943,
+              "backendPort": 60943,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -166,6 +185,25 @@
             }
           },
           {
+            "name": "smftls",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 55443,
+              "backendPort": 55443,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
             "name": "smf-web",
             "properties": {
               "frontendIPConfiguration": {
@@ -176,7 +214,45 @@
               },
               "protocol": "Tcp",
               "frontendPort": 80,
-              "backendPort": 80,
+              "backendPort": 60080,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "webtls",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 443,
+              "backendPort": 60443,
+              "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          },
+          {
+            "name": "amqp",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 5672,
+              "backendPort": 5672,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -215,25 +291,6 @@
               "protocol": "Tcp",
               "frontendPort": 8000,
               "backendPort": 8000,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "amqp",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "Tcp",
-              "frontendPort": 5672,
-              "backendPort": 5672,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
