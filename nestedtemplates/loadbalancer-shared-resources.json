@@ -204,7 +204,7 @@
             }
           },
           {
-            "name": "smf",
+            "name": "webservices",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"
