@@ -6,7 +6,7 @@
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
     "solaceMessageBrokerDockerImageReference": {
-      "value": "bczoma/solacetest:100.0bugfix_9_4.0.220"
+      "value": "solace/solace-pubsub-standard:latest"
     },
     "vmAdminUsername": {
       "value": "travisadm"
@@ -15,7 +15,7 @@
       "value": "Travispwd1234!"
     },
     "solaceAdminPassword": {
-      "value": "Travispwd1234!"
+      "value": "ADMINPASSWORD"
     },
     "workspaceName": {
       "value": "traviswsUNIQUEID"

@@ -23,8 +23,11 @@ script:
   - jsonlint nestedtemplates/*
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
+  - ADMINPASSWORD=Travispwd1234!
   - sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
+  - sed -i "s@solace/solace-pubsub-standard:latest@bczoma/solacetest:9.4.0.24@g" ci/azuredeploy.parameters.json
+  - sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location "centralus"
   - echo "Creating cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
@@ -35,9 +38,9 @@ script:
   - tar -xvf SDKPERF_C_LINUX64
   - pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1 | grep "Total Messages"
   - sleep 30
-  - bash -c 'if [[ -z `curl -sS -u admin:Travispwd1234! http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>" | grep "<oper-status>Up</oper-status>"` ]] ; then echo "config-sync not up!"; exit 1; fi'
-  - curl -sS -u admin:Travispwd1234! http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
-  - curl -sS -u admin:Travispwd1234! http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
+  - bash -c 'if [[ -z `curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>" | grep "<oper-status>Up</oper-status>"` ]] ; then echo "config-sync not up!"; exit 1; fi'
+  - curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
+  - curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
   
 
 after_success:
