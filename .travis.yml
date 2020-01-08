@@ -23,7 +23,7 @@ script:
   - jsonlint nestedtemplates/*
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
-  - ADMINPASSWORD=Travispwd1234!
+  - export ADMINPASSWORD=Travispwd1234!
   - sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
   - sed -i "s@solace/solace-pubsub-standard:latest@${SOLACE_DOCKER_URL_PARAMETER_VALUE}@g" ci/azuredeploy.parameters.json

@@ -166,7 +166,7 @@
             }
           },
           {
-            "name": "smfcompressed",
+            "name": "smf-compressed",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"
