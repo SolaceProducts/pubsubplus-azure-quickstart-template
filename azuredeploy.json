@@ -17,14 +17,14 @@
     "solaceAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Solace message broker management 'admin' user. For password rules refer to https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords "
+        "description": "Password for the PubSub+ event broker management 'admin' user. For password rules refer to https://docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords "
       }
     },
     "securityGroupName": {
       "type": "string",
       "defaultValue": "solace-security",
       "metadata": {
-        "description": "Security group defined to support PubSub+ message broker system level and default message vpn ports."
+        "description": "Security group defined to support PubSub+ event broker system level and default message vpn ports."
       }
     },
     "workspaceName": {
@@ -132,11 +132,11 @@
         "160"
       ]
     },
-    "solaceMessageBrokerDockerImageReference": {
+    "solaceEventBrokerDockerImageReference": {
       "type": "string",
       "defaultValue": "solace/solace-pubsub-standard:latest",
       "metadata": {
-          "description": "Solace PubSub+ message broker docker image reference: a docker registry name with optional tag or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a url to a remotely hosted load version. Default will use the latest image available from Docker Hub."
+          "description": "Solace PubSub+ event broker docker image reference: a docker registry name with optional tag or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a url to a remotely hosted load version. Default will use the latest image available from Docker Hub."
       }
     },
     "deploymentModel": {
@@ -167,14 +167,14 @@
       "type": "string",
       "defaultValue": "10.0.0.0/16",
       "metadata": {
-        "description": "The virtual network's address range in CIDR notation where the Solace message broker will be deployed."
+        "description": "The virtual network's address range in CIDR notation where the PubSub+ event broker will be deployed."
       }
     },
     "subnetPrefix": {
       "type": "string",
       "defaultValue": "10.0.0.0/24",
       "metadata": {
-        "description": "The subnet's address range in CIDR notation where the Solace message broker will be deployed. It must be contained by the address space of the virtual network. The address range of a subnet which is in use can't be edited."
+        "description": "The subnet's address range in CIDR notation where the PubSub+ event broker will be deployed. It must be contained by the address space of the virtual network. The address range of a subnet which is in use can't be edited."
       }
     },
     "location": {
@@ -589,7 +589,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceMessageBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
          }
       }
     }

@@ -5,7 +5,7 @@
     "_artifactsLocation": {
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
-    "solaceMessageBrokerDockerImageReference": {
+    "solaceEventBrokerDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
     "vmAdminUsername": {
@@ -15,7 +15,7 @@
       "value": "Travispwd1234!"
     },
     "solaceAdminPassword": {
-      "value": "Travispwd1234!"
+      "value": "ADMINPASSWORD"
     },
     "workspaceName": {
       "value": "traviswsUNIQUEID"
