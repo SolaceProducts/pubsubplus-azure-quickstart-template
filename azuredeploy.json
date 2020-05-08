@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmAdminUsername": {
@@ -274,7 +274,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-10-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceSecurityName')]",
       "properties": {
@@ -297,7 +297,7 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-10-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceLoadBalancerName')]",
       "properties": {
@@ -330,7 +330,7 @@
     },
     {
       "condition": "[not(empty(parameters('workspaceName')))]",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-10-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceWorkspaceName')]",
       "properties": {
@@ -350,7 +350,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(variables('publicIPAddressName'), copyindex())]",
       "location": "[parameters('location')]",
@@ -367,7 +367,7 @@
     },
     {
       "condition": "[empty(parameters('existingSubnetName'))]",
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[parameters('location')]",
@@ -388,7 +388,7 @@
       }
     },
     {
-      "apiVersion": "2017-08-01",
+      "apiVersion": "2019-10-01",
       "name": "[variables('solaceUpdateSubnetName')]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
@@ -420,7 +420,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
@@ -459,7 +459,7 @@
       }
     },
     {
-      "apiVersion": "2017-12-01",
+      "apiVersion": "2019-12-01",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('availabilitySetName')]",
       "location": "[parameters('location')]",
@@ -472,7 +472,7 @@
       }
     },
     {
-      "apiVersion":"2017-03-30",
+      "apiVersion":"2019-12-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
       "location": "[parameters('location')]",
@@ -520,7 +520,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2019-12-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/DockerExtension')]",
       "location": "[parameters('location')]",
@@ -541,7 +541,7 @@
     },
     {
       "condition": "[not(empty(parameters('workspaceName')))]",
-      "apiVersion": "2018-06-01",
+      "apiVersion": "2019-12-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
       "location": "[parameters('location')]",
@@ -566,7 +566,7 @@
       }
     },
     {
-      "apiVersion": "2016-03-30",
+      "apiVersion": "2019-12-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/configureSolaceContainer')]",
       "location": "[parameters('location')]",
