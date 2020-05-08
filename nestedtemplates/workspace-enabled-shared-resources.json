@@ -43,7 +43,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2020-03-01-preview",
+      "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationalInsights/workspaces",
       "name": "[parameters('workspaceName')]",
       "location": "[parameters('workspaceRegion')]",
@@ -54,7 +54,7 @@
       },
       "resources": [
         {
-          "apiVersion": "2020-03-01-preview",
+          "apiVersion": "2015-11-01-preview",
           "type": "Microsoft.OperationalInsights/workspaces/datasources",
           "name": "[concat(parameters('workspaceName'), '/syslogCollection')]",
           "dependsOn": [
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "apiVersion": "2020-03-01-preview",
+      "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationalInsights/workspaces/datasources",
       "name": "[concat(parameters('workspaceName'), '/syslog', copyindex())]",
       "dependsOn": [
@@ -101,7 +101,7 @@
       }
     },
     {
-      "apiVersion": "2020-03-01-preview",
+      "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationsManagement/solutions",
       "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
       "location": "[parameters('workspaceRegion')]",
