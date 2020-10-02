@@ -38,14 +38,15 @@ admin_password_file=""
 disk_size=""
 workspace_id=""
 is_primary="false"
-
-while getopts "c:d:n:p:s:w:u:" opt; do
+max_connections="100"
+max_queue_messages="100"
+while getopts "c:d:i:p:s:w:u:n:q:" opt; do
   case "$opt" in
   c)  current_index=$OPTARG
     ;;
   d)  dns_prefix=$OPTARG
     ;;
-  n)  number_of_instances=$OPTARG
+  i)  number_of_instances=$OPTARG
     ;;
   p)  admin_password_file=$OPTARG
     ;;
@@ -55,6 +56,10 @@ while getopts "c:d:n:p:s:w:u:" opt; do
     ;;
   w)  workspace_id=$OPTARG
     ;;
+  n)  max_connections=$OPTARG
+    ;;
+  q)  max_queue_messages=$OPTARG
+    ;;
   esac
 done
 
@@ -62,7 +67,7 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 echo "`date` current_index=$current_index , dns_prefix=$dns_prefix , number_of_instances=$number_of_instances , \
-      password_file=$admin_password_file , disk_size=$disk_size , workspace_id=$workspace_id , solace_uri=$solace_uri , \
+      password_file=$admin_password_file , disk_size=$disk_size , workspace_id=$workspace_id , solace_uri=$solace_uri, max_connections=$max_connections, max_queue_messages=$max_queue_messages, \
       Leftovers: $@"
 export admin_password=`cat ${admin_password_file}`
 
@@ -154,41 +159,11 @@ fi
 echo "`date` INFO: Successfully loaded ${solace_uri} to local docker repo"
 echo "`date` INFO: Solace message broker image and tag: `docker images | grep solace | awk '{print $1,":",$2}'`"
 
-# Decide which scaling tier applies based on system memory
-# and set maxconnectioncount, ulimit, devshm and swap accordingly
-MEM_SIZE=`cat /proc/meminfo | grep MemTotal | tr -dc '0-9'`
-if [ ${MEM_SIZE} -lt 6600000 ]; then
-  # 100 if mem<6,325MiB
-  maxconnectioncount="100"
-  shmsize="1g"
-  ulimit_nofile="2448:6592"
-  SWAP_SIZE="1024"
-elif [ ${MEM_SIZE} -lt 14500000 ]; then
-  # 1000 if 6,325MiB<=mem<13,916MiB
-  maxconnectioncount="1000"
-  shmsize="2g"
-  ulimit_nofile="2448:10192"
-  SWAP_SIZE="2048"
-elif [ ${MEM_SIZE} -lt 30600000 ]; then
-  # 10000 if 13,916MiB<=mem<29,215MiB
-  maxconnectioncount="10000"
-  shmsize="2g"
-  ulimit_nofile="2448:42192"
-  SWAP_SIZE="2048"
-elif [ ${MEM_SIZE} -lt 57500000 ]; then
-  # 100000 if 29,215MiB<=mem<54,840MiB
-  maxconnectioncount="100000"
-  shmsize="3380m"
-  ulimit_nofile="2448:222192"
-  SWAP_SIZE="2048"
-else
-  # 200000 if 54,840MiB<=mem
-  maxconnectioncount="200000"
-  shmsize="3380m"
-  ulimit_nofile="2448:422192"
-  SWAP_SIZE="2048"
-fi
-echo "`date` INFO: Based on memory size of ${MEM_SIZE}KiB, determined maxconnectioncount: ${maxconnectioncount}, shmsize: ${shmsize}, ulimit_nofile: ${ulimit_nofile}, SWAP_SIZE: ${SWAP_SIZE}"
+# Common for all scalings
+shmsize="1g"
+ulimit_nofile="2448:422192"
+SWAP_SIZE="2048"
+echo "`date` INFO: Using shmsize: ${shmsize}, ulimit_nofile: ${ulimit_nofile}, SWAP_SIZE: ${SWAP_SIZE}"
 
 echo "`date` INFO: Creating Swap space"
 mkdir /var/lib/solace
@@ -267,14 +242,17 @@ chown -R 1000001 $(dirname ${admin_password_file})
 chmod 700 $(dirname ${admin_password_file})
 
 if [[ ${disk_size} == "0" ]]; then
+  echo "`date` Using ephemeral volumes"
   #Create new volumes that the PubSub+ Message Broker container can use to consume and store data.
   docker volume create --name=jail
   docker volume create --name=var
+  docker volume create --name=adb
   docker volume create --name=softAdb
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
-  SPOOL_MOUNT="-v jail:/usr/sw/jail -v var:/usr/sw/var -v softAdb:/usr/sw/internalSpool/softAdb -v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
+  SPOOL_MOUNT="-v jail:/usr/sw/jail -v var:/usr/sw/var -v softAdb:/usr/sw/internalSpool/softAdb -v adb:/usr/sw/adb -v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
 else
+  echo "`date` Using persistent volumes"
   # Look for unpartitioned disks
   disk_volume=""
   DEVS=($(ls -1 /dev/sd*|egrep -v "[0-9]$"))
@@ -304,14 +282,16 @@ else
   UUID=`blkid -s UUID -o value ${disk_volume}1`
   echo "UUID=${UUID} /opt/pubsubplus xfs defaults,uid=1000001 0 0" >> /etc/fstab
   mkdir /opt/pubsubplus
+  mount -a
   mkdir /opt/pubsubplus/jail
   mkdir /opt/pubsubplus/var
+  mkdir /opt/pubsubplus/adb
   mkdir /opt/pubsubplus/softAdb
   mkdir /opt/pubsubplus/diagnostics
   mkdir /opt/pubsubplus/internalSpool
-  mount -a
   chown 1000001 -R /opt/pubsubplus/
-  SPOOL_MOUNT="-v /opt/pubsubplus/jail:/usr/sw/jail -v /opt/pubsubplus/var:/usr/sw/var -v /opt/pubsubplus/softAdb:/usr/sw/internalSpool/softAdb -v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
+  #chmod -R 777 /opt/pubsubplus
+  SPOOL_MOUNT="-v /opt/pubsubplus/jail:/usr/sw/jail -v /opt/pubsubplus/var:/usr/sw/var -v /opt/pubsubplus/adb:/usr/sw/adb -v /opt/pubsubplus/softAdb:/usr/sw/internalSpool/softAdb -v /opt/pubsubplus/diagnostics:/var/lib/solace/diags -v /opt/pubsubplus/internalSpool:/usr/sw/internalSpool"
 fi
 
 LOG_OPT=""
@@ -362,7 +342,8 @@ docker create \
  --env "service_webtransport_port=8008" \
  --env "service_webtransport_tlsport=1443" \
  --env "service_semp_tlsport=1943" \
- --env system_scaling_maxconnectioncount=${maxconnectioncount} \
+ --env "system_scaling_maxconnectioncount=${max_connections}" \
+ --env "system_scaling_maxqueuemessagecount=${max_queue_messages}" \
  ${logging_config} \
  ${redundancy_config} \
  --name=solace ${SOLACE_IMAGE_ID}
@@ -497,10 +478,59 @@ if [ "${is_primary}" = "true" ]; then
     exit 1
   fi
 
- ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
-         -q "<rpc><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
- ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
-         -q "<rpc><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
+  echo "`date` INFO: Initiating config-sync for router"
+  ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
+          -q "<rpc><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
+  ./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
+          -q "<rpc><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
+  
+  # Wait for config-sync results
+  count=0
+  echo "`date` INFO: Waiting for config-sync connected"
+  while [ ${count} -lt ${loop_guard} ]; do
+    online_results=`./semp_query.sh -n admin -p ${admin_password} -u http://localhost:8080/SEMP \
+            -q "<rpc><show><config-sync></config-sync></show></rpc>" \
+            -v "/rpc-reply/rpc/show/config-sync/status/oper-status"`
+    
+    confsyncstatus_results=`echo ${online_results} | jq '.valueSearchResult' -`
+    echo "`date` INFO: Config-sync is: ${confsyncstatus_results}"
+  
+    run_time=$((${count} * ${pause}))
+    case "${confsyncstatus_results}" in
+      "\"Up\"")
+        echo "`date` INFO: Config-sync is Up, after ${run_time} seconds"
+        break
+        ;;
+    esac
+    ((count++))
+    echo "`date` INFO: Waited ${run_time} seconds, Config-sync is not yet Up"
+    sleep ${pause}
+  done
+  
+  if [ ${count} -eq ${loop_guard} ]; then
+    echo "`date` ERROR: Config-sync never reached state \"Up\" - exiting." | tee /dev/stderr
+    exit 1
+  fi
+  
+  # Poll the broker Message-Spool
+  count=0
+  echo "`date` INFO: Wait for the broker message-spool service to be guaranteed-active"
+  while [ ${count} -lt ${loop_guard} ]; do
+    health_result=`curl -s -o /dev/null -w "%{http_code}"  http://localhost:5550/health-check/guaranteed-active`
+    run_time=$((${count} * ${pause}))
+    if [ "${health_result}" = "200" ]; then
+        echo "`date` INFO: broker message-spool is guaranteed-active, after ${run_time} seconds"
+        break
+    fi
+    ((count++))
+    echo "`date` INFO: Waited ${run_time} seconds, broker message-spool not yet guaranteed-active. State: ${health_result}"
+    sleep ${pause}
+  done
+  if [ ${count} -eq ${loop_guard} ]; then
+    echo "`date` ERROR: broker message-spool never came guaranteed-active" | tee /dev/stderr
+    exit 1
+  fi
+
 fi
 
 if [ ${count} -eq ${loop_guard} ]; then
