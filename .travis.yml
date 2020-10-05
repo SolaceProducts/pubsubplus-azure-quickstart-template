@@ -33,6 +33,9 @@ script:
   - "travis_wait 30 sleep 1800 &"
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
+  - ########################################
+  - exit
+  - ########################################
   - export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
   - curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64
   - tar -xvf SDKPERF_C_LINUX64
