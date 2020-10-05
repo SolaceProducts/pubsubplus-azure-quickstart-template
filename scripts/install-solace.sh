@@ -191,7 +191,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=${dns_prefix}primary \
       --env redundancy_activestandbyrole=primary \
       --env redundancy_matelink_connectvia=${dns_prefix}1 \
-      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
+      --env redundancy_authentication_presharedkey_key=$(cat ${admin_password_file} | awk '{x=$0;for(i=length;i<51;i++)x=x "0";}END{print x}' | base64) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
       --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
@@ -208,7 +208,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=${dns_prefix}backup \
       --env redundancy_matelink_connectvia=${dns_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
+      --env redundancy_authentication_presharedkey_key=$(cat ${admin_password_file} | awk '{x=$0;for(i=length;i<51;i++)x=x "0";}END{print x}' | base64) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
       --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
@@ -222,7 +222,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       redundancy_config="\
       --env nodetype=monitoring \
       --env routername=${dns_prefix}monitor \
-      --env redundancy_group_passwordfilepath=$(basename ${admin_password_file}) \
+      --env redundancy_authentication_presharedkey_key=$(cat ${admin_password_file} | awk '{x=$0;for(i=length;i<51;i++)x=x "0";}END{print x}' | base64) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_${dns_prefix}primary_nodetype=message_routing \
       --env redundancy_group_node_${dns_prefix}primary_connectvia=${dns_prefix}0 \
