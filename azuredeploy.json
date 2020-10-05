@@ -76,11 +76,37 @@
         "7.4"
       ]
     },
-    "messageRoutingVmSize": {
+    "maximumNumberOfClientConnections": {
+      "type": "string",
+      "defaultValue": "100",
+      "metadata": {
+        "description": "The maximum supported number of client connections system scaling parameter"
+      },
+      "allowedValues": [
+        "100",
+        "1000",
+        "10000",
+        "100000",
+        "200000"
+      ]
+    },
+    "maximumNumberOfQueueMessages": {
+      "type": "string",
+      "defaultValue": "100",
+      "metadata": {
+        "description": "The maximum number of queue messages system scaling parameter, in millions of messages"
+      },
+      "allowedValues": [
+        "100",
+        "240",
+        "3000"
+      ]
+    },
+    "messageRoutingNodeVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
+        "description": "The size for PubSub+ event broker message routing nodes VM. Important: ensure adequate CPU and Memory resources are available to support the selected system scaling parameters. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
@@ -96,26 +122,21 @@
         "Standard_DS2_v2",
         "Standard_DS3_v2",
         "Standard_DS4_v2",
-        "Standard_DS5_v2",
-        "Standard_D2s_v3",
-        "Standard_D4s_v3",
-        "Standard_D8s_v3",
-        "Standard_D16s_v3"
+        "Standard_DS5_v2"
       ]
     },
-    "monitorVmSize": {
+    "monitorNodeVmSize": {
       "type": "string",
       "defaultValue": "Standard_D1_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 1 core and 1GB of memory. Allowed values: D1_v2, DS1_v2, D2_v2, DS2_v2, D2_v3, D2s_v3"
+        "description": "The size of the Solace Monitor Node VM. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
         "Standard_DS1_v2",
         "Standard_D2_v2",
         "Standard_DS2_v2",
-        "Standard_D2_v3",
-        "Standard_D2s_v3"
+        "Standard_D2_v3"
       ]
     },
     "dataDiskSize": {
@@ -212,8 +233,6 @@
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
-    "OSDiskName": "osdiskfordockersimple",
-    "dataDiskName": "datadiskfordockersimple",
     "nestedTemplatesLocation": "nestedtemplates/",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
@@ -239,10 +258,6 @@
     "subnetName": "[if(not(empty(parameters('existingSubnetName'))), parameters('existingSubnetName'), 'solace-subnet')]",
     "nicName": "nicd",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-    "deploymentModelHighAvailability": { "numberOfNodes": 3 },
-    "deploymentModelSingleNode": {
-      "numberOfNodes": 1
-    },
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
     "monitorNodeIndex": 2,
     "lbName" : "solace-ha-group-loadbalancer",
@@ -489,7 +504,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
+          "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorNodeVmSize'), parameters('messageRoutingNodeVmSize'))]"
         },
         "osProfile": {
           "computerName": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
@@ -589,7 +604,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -n ', parameters('maximumNumberOfClientConnections'), ' -q ', parameters('maximumNumberOfQueueMessages'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
          }
       }
     }
