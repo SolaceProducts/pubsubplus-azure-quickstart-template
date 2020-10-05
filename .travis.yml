@@ -23,7 +23,7 @@ script:
   - jsonlint nestedtemplates/*
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
-  - export ADMINPASSWORD=Travispwd1234!
+  - export ADMINPASSWORD=TravisAdminpwd1234!
   - sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
   - sed -i "s@solace/solace-pubsub-standard:latest@${SOLACE_DOCKER_URL_PARAMETER_VALUE}@g" ci/azuredeploy.parameters.json
@@ -34,7 +34,7 @@ script:
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
   - ########################################
-  - exit
+  - #exit
   - ########################################
   - export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
   - curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64
