@@ -80,7 +80,7 @@
       "type": "string",
       "defaultValue": "100",
       "metadata": {
-        "description": "The maximum supported number of client connections system scaling parameter"
+        "description": "Broker system scaling: the maximum supported number of client connections"
       },
       "allowedValues": [
         "100",
@@ -94,7 +94,7 @@
       "type": "string",
       "defaultValue": "100",
       "metadata": {
-        "description": "The maximum number of queue messages system scaling parameter, in millions of messages"
+        "description": "Broker system scaling: the maximum number of queue messages, in millions of messages"
       },
       "allowedValues": [
         "100",
@@ -106,7 +106,7 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size for PubSub+ event broker message routing nodes VM. Important: ensure adequate CPU and Memory resources are available to support the selected system scaling parameters. For requirements check https://docs.solace.com/."
+        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
@@ -129,7 +129,7 @@
       "type": "string",
       "defaultValue": "Standard_D1_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. For requirements check https://docs.solace.com/."
+        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
