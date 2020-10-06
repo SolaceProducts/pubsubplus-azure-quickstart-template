@@ -272,7 +272,7 @@
     "dataDisksChoices": {
       "0": [
         {
-          "name": "[concat(parameters(' '), 0, '_DataDisk')]",
+          "name": "[concat(parameters('dnsLabelForVmIp'), 0, '_DataDisk')]",
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "caching": "ReadWrite",
