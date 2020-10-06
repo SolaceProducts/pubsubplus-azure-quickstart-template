@@ -14,6 +14,8 @@ Message brokers can be deployed in three node HA clusters or as single, standalo
 
 Note that in production, or any environment where message loss cannot be tolerated, an HA cluster is required.
 
+The following diagram shows the PubSub+ broker nodes deployed in [Azure Availability Sets](https://docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-sets). To meet more strict service uptime requirements the broker nodes can be deployed in [Azure Availability Zones](https://docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-zones) instead.
+
 ![alt text](images/ha-cluster.png "HA Cluster Deployment")
 
 

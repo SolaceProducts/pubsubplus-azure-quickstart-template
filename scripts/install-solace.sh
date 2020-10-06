@@ -173,7 +173,7 @@ chmod 0600 /var/lib/solace/swap
 swapon -f /var/lib/solace/swap
 grep -q 'solace\/swap' /etc/fstab || sudo sh -c 'echo "/var/lib/solace/swap none swap sw 0 0" >> /etc/fstab'
 
-echo "`date` INFO: Applying TCP for WAN optimizations" &>> ${LOG_FILE}
+echo "`date` INFO: Applying TCP for WAN optimizations"
 echo '
   net.core.rmem_max = 134217728
   net.core.wmem_max = 134217728
@@ -265,6 +265,16 @@ else
       break
     fi
   done
+
+  for DEV in ${DEVS}"; do
+    # Check each device if there is a "1" partition.
+    # If not, assume it is not partitioned.
+    if [ ! -b ${DEV}1 ]; then
+      echo "`date` INFO: Disk device with no primary partition found"
+      disk_volume="${DEV}"
+      break
+    fi
+  done
   if [[ ${disk_volume} == "" ]]; then
     echo "`date` INFO: Default disk device to /dev/sdc"
     disk_volume="/dev/sdc"
@@ -280,7 +290,7 @@ else
   ) | sudo fdisk $disk_volume
   mkfs.xfs  ${disk_volume}1 -m crc=0
   UUID=`blkid -s UUID -o value ${disk_volume}1`
-  echo "UUID=${UUID} /opt/pubsubplus xfs defaults,uid=1000001 0 0" >> /etc/fstab
+  echo "UUID=${UUID} /opt/pubsubplus xfs defaults 0 0" >> /etc/fstab
   mkdir /opt/pubsubplus
   mount -a
   mkdir /opt/pubsubplus/jail
