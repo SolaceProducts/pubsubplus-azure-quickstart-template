@@ -24,7 +24,7 @@
       "value": "travislbUNIQUEID"
     },
     "dataDiskSize": {
-      "value": "20"
+      "value": "8"
     },
     "deploymentModel": {
       "value": "HighAvailability"

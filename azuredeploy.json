@@ -76,7 +76,7 @@
         "7.4"
       ]
     },
-    "maximumNumberOfClientConnections": {
+    "maxNumberOfClientConnections": {
       "type": "string",
       "defaultValue": "100",
       "metadata": {
@@ -90,7 +90,7 @@
         "200000"
       ]
     },
-    "maximumNumberOfQueueMessages": {
+    "maxNumberOfQueueMessages": {
       "type": "string",
       "defaultValue": "100",
       "metadata": {
@@ -143,14 +143,16 @@
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Allowed values: 0, 20, 40, 80, 160"
+        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "0",
-        "20",
-        "40",
-        "80",
-        "160"
+        "8",
+        "16",
+        "32",
+        "64",
+        "128",
+        "256"
       ]
     },
     "solaceEventBrokerDockerImageReference": {
@@ -608,7 +610,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -n ', parameters('maximumNumberOfClientConnections'), ' -q ', parameters('maximumNumberOfQueueMessages'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -n ', parameters('maxNumberOfClientConnections'), ' -q ', parameters('maxNumberOfQueueMessages'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
          }
       }
     }
