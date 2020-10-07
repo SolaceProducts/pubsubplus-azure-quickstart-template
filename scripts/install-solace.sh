@@ -265,16 +265,6 @@ else
       break
     fi
   done
-
-  for DEV in ${DEVS}"; do
-    # Check each device if there is a "1" partition.
-    # If not, assume it is not partitioned.
-    if [ ! -b ${DEV}1 ]; then
-      echo "`date` INFO: Disk device with no primary partition found"
-      disk_volume="${DEV}"
-      break
-    fi
-  done
   if [[ ${disk_volume} == "" ]]; then
     echo "`date` INFO: Default disk device to /dev/sdc"
     disk_volume="/dev/sdc"
