@@ -276,7 +276,10 @@
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "caching": "ReadWrite",
-          "createOption": "Empty"
+          "createOption": "Empty",
+          "managedDisk": {
+            "storageAccountType": "StandardSSD_LRS"
+          }
         }
       ],
       "1": [
@@ -285,7 +288,10 @@
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "caching": "ReadWrite",
-          "createOption": "Empty"
+          "createOption": "Empty",
+          "managedDisk": {
+            "storageAccountType": "StandardSSD_LRS"
+          }
         }
       ],
       "2": [ ]
