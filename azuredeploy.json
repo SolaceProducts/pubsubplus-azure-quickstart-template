@@ -5,13 +5,13 @@
     "vmAdminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters."
+        "description": "Username for the virtual Machine(s) hosting the PubSub+ event broker instance(s). Do not use special characters."
       }
     },
     "vmAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine(s)."
+        "description": "Password for the virtual Machine(s). Azure sets rules on passwords, check the online feedback."
       }
     },
     "solaceAdminPassword": {

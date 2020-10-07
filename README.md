@@ -61,10 +61,10 @@ You need to fill in the following fields (* marks the mandatory ones):
 | **BASICS**                 |  |
 | Subscription*              | Provide your subscription to use. |
 | Resource Group*            | A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected. |
-| Location*                  | Specify a location for the resource group where metadata about the resources is stored. Select the region most suitable to you. |
 | **SETTINGS**               |  |
+| Region*                  | Specify an Azure region for the deployment. Note that not every resource is available in every region. |
 | VM Admin Username*         | Username for the virtual Machine(s) hosting the PubSub+ event broker instance(s). Do not use special characters. |
-| VM Admin Password*         | Password for the virtual Machine(s). Azure sets rules on passwords, observe the online feedback. |
+| VM Admin Password*         | Password for the virtual Machine(s). Azure sets rules on passwords, check the online feedback. |
 | Solace Admin Password*     | Password for the PubSub+ event broker management 'admin' user. Refer to the [admin password rules]( //docs.solace.com/Configuring-and-Managing/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords). |
 | Security Group Name        | New or existing security group, where event broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
@@ -72,10 +72,12 @@ You need to fill in the following fields (* marks the mandatory ones):
 | DNS Label for LB IP*       | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. Do not use '-'. The default offers to generate a unique name. |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
-| Message Routing VM Size    | The size of the VM for the message routing nodes. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Note that not all regions support all these VM sizes. Determine the PubSub+ event broker resource requirements based on the targeted [connection scaling](//docs.solace.com/Solace-SW-Broker-Set-Up/SW-Broker-Rel-Compat.htm#Connecti) |
-| Monitor VM Size            | The size of the VM for the monitoring node. Use Standard_D2_v2, Standard_DS2_v2, Standard_D2_v3, or Standard_D2s_v3. Generally, the smallest size available will suffice. Note that not all regions support all these VM sizes. |
-| Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the event brokers. Use 0, 20, 40, 80, or 160. |
-| Solace Event Broker Docker image reference | A reference to the Solace PubSub+ event broker Docker image, from step 1. Either the image name with optional tag in an accessible Docker registry or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a URL to a remotely hosted image version. The default value is `solace/solace-pubsub-standard:latest` |
+| Max Number of Client Connections | Broker system scaling: the maximum supported number of client connections |
+| Max Number of Queue Messages | Broker system scaling: the maximum number of queue messages, in millions of messages |
+| Message Routing VM Size    |The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check [//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Scaling-Parameters.htm). |
+| Monitor VM Size            | The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check [https://docs.solace.com](//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Resource-Requirements.htm#res-req-container) |
+| Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com. |
+| Broker Docker Image Reference | A reference to the Solace PubSub+ event broker Docker image, from step 1. Either the image name with optional tag in an accessible Docker registry or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a URL to a remotely hosted image version. The default value is `solace/solace-pubsub-standard:latest` |
 | Deployment Model*          | High Availability or Single Node. |
 | Existing Virtual Network Name | Only used if deploying into an existing virtual network and subnet. Specify the Existing Virtual Network Name together with the Existing Subnet Name, otherwise leave it at default blank. |
 | Existing Subnet Name       | Only used if deploying into an existing virtual network and subnet. Specify the Existing Virtual Network Name together with the Existing Subnet Name, otherwise leave it at default blank. |
