@@ -14,7 +14,9 @@ Message brokers can be deployed in three node HA clusters or as single, standalo
 
 Note that in production, or any environment where message loss cannot be tolerated, an HA cluster is required.
 
-The following diagram shows the PubSub+ broker nodes deployed in [Azure Availability Sets](https://docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-sets). To meet more strict service uptime requirements the broker nodes can be deployed in [Azure Availability Zones](https://docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-zones) instead.
+The following diagram shows the PubSub+ broker nodes deployed in [Azure Availability Sets](//docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-sets). To meet more strict service uptime requirements the broker nodes can be deployed in [Azure Availability Zones](//docs.microsoft.com/en-us/azure/virtual-machines/availability#availability-zones) instead.
+
+Also note that for production use the type of data disks mounted from Azure Block Storage shall be adjusted from the default [Standard HDD](//docs.microsoft.com/en-us/azure/virtual-machines/disks-types)
 
 ![alt text](images/ha-cluster.png "HA Cluster Deployment")
 
@@ -25,11 +27,11 @@ This is a two step process:
 
 Obtain a reference to the Docker image of the Solace PubSub+ event broker to be deployed
 
-First, decide which [Solace PubSub+ event broker](https://docs.solace.com/Solace-SW-Broker-Set-Up/Setting-Up-SW-Brokers.htm ) and version is suitable to your use case.
+First, decide which [Solace PubSub+ event broker](//docs.solace.com/Solace-SW-Broker-Set-Up/Setting-Up-SW-Brokers.htm ) and version is suitable to your use case.
 
 The Docker image reference can be:
 
-*	A public or accessible private Docker registry repository name with an optional tag. This is the recommended option if using PubSub+ Standard. The default is to use the latest event broker image [available from Docker Hub](https://hub.docker.com/r/solace/solace-pubsub-standard/ ) as `solace/solace-pubsub-standard:latest`, or use a specific version [tag](https://hub.docker.com/r/solace/solace-pubsub-standard/tags/ ).
+*	A public or accessible private Docker registry repository name with an optional tag. This is the recommended option if using PubSub+ Standard. The default is to use the latest event broker image [available from Docker Hub](//hub.docker.com/r/solace/solace-pubsub-standard/ ) as `solace/solace-pubsub-standard:latest`, or use a specific version [tag](//hub.docker.com/r/solace/solace-pubsub-standard/tags/ ).
 
 *	A Docker image download URL
      * If using Solace PubSub+ Enterprise Evaluation Edition, go to the Solace Downloads page. For the image reference, copy and use the download URL in the Solace PubSub+ Enterprise Evaluation Edition Docker Images section.
@@ -101,7 +103,7 @@ If OMS workspace name has been specified, Microsoft OMS (Operations Management S
 
 To manage the currently AD-Active event broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
-Refer to the [Management Tools section](https://docs.solace.com/Management-Tools.htm ) of the online documentation to learn more about the available tools. The WebUI is the recommended simplest way to administer the event broker for common tasks.
+Refer to the [Management Tools section](//docs.solace.com/Management-Tools.htm ) of the online documentation to learn more about the available tools. The WebUI is the recommended simplest way to administer the event broker for common tasks.
 
 ### WebUI, SolAdmin and SEMP access
 
@@ -155,8 +157,8 @@ This project is licensed under the Apache License, Version 2.0. - See the [LICEN
 
 For more information about writing Azure Resource Manager(ARM) templates and Azure Quickstart templates try these resources:
 
-- [Authoring Azure Resource Manager templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates)
-- [Azure Quickstart Templates](https://azure.microsoft.com/en-us/resources/templates/)
+- [Authoring Azure Resource Manager templates](//docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates)
+- [Azure Quickstart Templates](//azure.microsoft.com/en-us/resources/templates/)
 
 For more information about Solace PubSub+ technology in general please visit these resources:
 

@@ -278,7 +278,7 @@
           "caching": "ReadWrite",
           "createOption": "Empty",
           "managedDisk": {
-            "storageAccountType": "StandardSSD_LRS"
+            "storageAccountType": "Standard_LRS"
           }
         }
       ],
@@ -290,7 +290,7 @@
           "caching": "ReadWrite",
           "createOption": "Empty",
           "managedDisk": {
-            "storageAccountType": "StandardSSD_LRS"
+            "storageAccountType": "Standard_LRS"
           }
         }
       ],
