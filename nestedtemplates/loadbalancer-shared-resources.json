@@ -36,6 +36,13 @@
         "description": "Load Balancer Backend Address Pool Name."
       }
     },
+    "subnetRef": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Load Balancer Private IP subnet."
+      }
+    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -77,8 +84,8 @@
           {
             "name": "[variables('frontEndIPConfigName')]",
             "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressNameLB'))]"
+              "subnet": {
+                "id": "[parameters('subnetRef')]"
               }
             }
           }
