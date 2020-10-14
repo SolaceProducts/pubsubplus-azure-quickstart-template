@@ -61,24 +61,9 @@
   "resources": [
     {
       "apiVersion": "2020-04-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[parameters('publicIPAddressNameLB')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "[parameters('publicIPAddressType')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelForLbIp')]"
-        }
-      }
-    },
-    {
-      "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/loadBalancers",
       "name": "[parameters('lbName')]",
       "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressNameLB'))]"
-      ],
       "properties": {
         "frontendIPConfigurations": [
           {
