@@ -20,7 +20,7 @@
     "workspaceName": {
       "value": "traviswsUNIQUEID"
     },
-    "dnsLabelForLbIp": {
+    "dnsLabelForPublicLoadBalancer": {
       "value": "travislbUNIQUEID"
     },
     "dataDiskSize": {

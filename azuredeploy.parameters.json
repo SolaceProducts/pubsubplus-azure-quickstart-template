@@ -20,7 +20,7 @@
     "workspaceName": {
       "value": "GEN-UNIQUE"
     },
-    "dnsLabelForLbIp": {
+    "dnsLabelForPublicLoadBalancer": {
       "value": "GEN-UNIQUE"
     },
     "deploymentModel": {

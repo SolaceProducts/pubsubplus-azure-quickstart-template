@@ -51,10 +51,22 @@
         "Canada Central"
       ]
     },
-    "dnsLabelForLbIp": {
+    "typeOfLoadBalancer": {
       "type": "string",
+      "defaultValue": "Public",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$"
+        "description": "Specify the type of Load Balancer to expose broker services. Internal LB will only be accessible from the local virtual network"
+      },
+      "allowedValues": [
+        "Local",
+        "Public"
+      ]
+    },
+    "dnsLabelForPublicLoadBalancer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Required if using a Public Load Balancer, provide the Unique DNS Label for the access IP. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$"
       }
     },
     "dnsLabelForVmIp": {
@@ -334,8 +346,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "dnsLabelForLbIp": {
-            "value": "[parameters('dnsLabelForLbIp')]"
+          "dnsLabelForPublicLoadBalancer": {
+            "value": "[parameters('dnsLabelForPublicLoadBalancer')]"
           },
           "publicIPAddressNameLB": {
             "value": "[variables('publicIPAddressNameLB')]"
