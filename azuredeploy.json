@@ -58,7 +58,7 @@
         "description": "Specify the type of access to the broker VMs for SSH and to the Load Balancer for broker services. 'Internal' will make them accessible only from the local virtual network"
       },
       "allowedValues": [
-        "Local",
+        "Internal",
         "Public"
       ]
     },
@@ -268,7 +268,6 @@
     "publicIPAddressNameVM": "myVMPublicIPD",
     "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
-    "publicIPAddressesJSON": "{ \"id\": [resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressNameVM'), copyindex()))] }",
     "virtualNetworkName": "[if(not(empty(parameters('existingVirtualNetworkName'))), parameters('existingVirtualNetworkName'), 'solace-vnet')]",
     "subnetName": "[if(not(empty(parameters('existingSubnetName'))), parameters('existingSubnetName'), 'solace-subnet')]",
     "nicName": "nicd",
@@ -462,6 +461,7 @@
       }
     },
     {
+      "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicName'), copyindex())]",
@@ -484,7 +484,45 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": "[if(equals(parameters('vmAndLoadbalancerExposure'),'Public'), variables('publicIPAddressesJSON'), json('null'))]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressNameVM'), copyindex()))]"
+              },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('lbPoolID')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('vmAndLoadbalancerExposure'),'Public'))]",
+      "apiVersion": "2020-04-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('nicName'), copyindex())]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
+      ],
+      "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('subnetRef')]"
               },
