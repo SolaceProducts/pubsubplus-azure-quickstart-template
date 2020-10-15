@@ -462,6 +462,7 @@
     },
     {
       "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
+      "comments": "Only created if network interfaces are to be publicly exposed. Otherwise the next resource is created.",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat('Public',variables('nicName'), copyindex())]",

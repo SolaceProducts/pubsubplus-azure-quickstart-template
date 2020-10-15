@@ -20,6 +20,9 @@
     "workspaceName": {
       "value": "traviswsUNIQUEID"
     },
+    "vmAndLoadbalancerExposure": {
+      "value": "Internal"
+    },
     "dnsLabelForPublicLoadBalancer": {
       "value": "travislbUNIQUEID"
     },
