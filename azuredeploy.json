@@ -344,6 +344,9 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
+          "vmAndLoadbalancerExposure": {
+            "value": "[parameters('vmAndLoadbalancerExposure')]"
+          },
           "dnsLabelForPublicLoadBalancer": {
             "value": "[parameters('dnsLabelForPublicLoadBalancer')]"
           },

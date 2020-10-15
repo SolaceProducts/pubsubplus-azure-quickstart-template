@@ -2,16 +2,16 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dnsLabelForPublicLoadBalancer": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
-      }
-    },
     "vmAndLoadbalancerExposure": {
       "type": "string",
       "metadata": {
         "description": "Either 'Public' or 'Internal'. Internal Load balancer is only available from the virtual network, no public IP created"
+      }
+    },
+    "dnsLabelForPublicLoadBalancer": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
       }
     },
     "publicIPAddressNameLB": {
