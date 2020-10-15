@@ -464,7 +464,7 @@
       "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex())]",
+      "name": "[concat('Public',variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicLoop",
@@ -504,7 +504,7 @@
       "condition": "[not(equals(parameters('vmAndLoadbalancerExposure'),'Public'))]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex())]",
+      "name": "[concat('Internal',variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicLoop",
