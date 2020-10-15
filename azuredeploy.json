@@ -464,7 +464,7 @@
       "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicName'), copyindex())]",
+      "name": "[concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicLoop",
@@ -504,7 +504,7 @@
       "condition": "[not(equals(parameters('vmAndLoadbalancerExposure'),'Public'))]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicName'), copyindex())]",
+      "name": "[concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicLoop",
@@ -559,7 +559,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
+        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex()))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
       ],
       "properties": {
@@ -591,7 +591,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex()))]"
             }
           ]
         }
