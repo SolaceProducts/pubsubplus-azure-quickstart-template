@@ -21,7 +21,7 @@
       "value": "traviswsUNIQUEID"
     },
     "vmAndLoadbalancerExposure": {
-      "value": "Public"
+      "value": "EXPOSURE"
     },
     "dnsLabelForPublicLoadBalancer": {
       "value": "travislbUNIQUEID"
