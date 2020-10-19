@@ -43,6 +43,9 @@ script:
   - # For some reason the last char of LB_IP is a CR - address that
   - ssh azureuser@$VM_IP "curl ${LB_IP%?}:8080" | grep aurelia
   - ssh azureuser@$VM_IP "curl -sS -u admin:$ADMINPASSWORD http://${LB_IP%?}:8080/SEMP -d \"<rpc><show><redundancy></redundancy></show></rpc>\" "
+  - ########################
+  - exit
+  - ########################
   
 
 after_success:
