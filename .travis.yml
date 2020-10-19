@@ -42,13 +42,10 @@ script:
   - LB_IP=`az network lb show -g $TESTRESOURCEGROUPNAME -n solace-ha-group-loadbalancer    --query "frontendIpConfigurations[].privateIpAddress" -o tsv`
   - echo ${VM_IP}
   - echo ${LB_IP}
-  - # For some reason the last char of LB_IP is a CR - address that
   - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl ${LB_IP}:8080" | grep aurelia
   - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl -sS -u admin:$ADMINPASSWORD http://${LB_IP}:8080/SEMP -d \"<rpc><show><redundancy></redundancy></show></rpc>\" "
-  - ########################
-  - exit
-  - ########################
-  
+  - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64 ; tar -xvf SDKPERF_C_LINUX64"
+  - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1" | grep "Total Messages"
 
 after_success:
   - echo "Test Success - Branch($TRAVIS_BRANCH) Pull Request($TRAVIS_PULL_REQUEST) Tag($TRAVIS_TAG)"
