@@ -5,7 +5,7 @@
     "_artifactsLocation": {
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
-    "solaceEventBrokerDockerImageReference": {
+    "brokerDockerImageReference": {
       "value": "solace/solace-pubsub-standard:latest"
     },
     "vmAdminUsername": {
@@ -24,7 +24,7 @@
       "value": "travislbUNIQUEID"
     },
     "dataDiskSize": {
-      "value": "20"
+      "value": "8"
     },
     "deploymentModel": {
       "value": "HighAvailability"

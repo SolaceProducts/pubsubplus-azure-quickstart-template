@@ -5,13 +5,13 @@
     "vmAdminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine(s) hosting the Solace message router instance(s). Do not use special characters."
+        "description": "Username for the virtual Machine(s) hosting the PubSub+ event broker instance(s). Do not use special characters."
       }
     },
     "vmAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine(s)."
+        "description": "Password for the virtual Machine(s). Azure sets rules on passwords, check the online feedback."
       }
     },
     "solaceAdminPassword": {
@@ -76,11 +76,37 @@
         "7.4"
       ]
     },
-    "messageRoutingVmSize": {
+    "maxNumberOfClientConnections": {
+      "type": "string",
+      "defaultValue": "100",
+      "metadata": {
+        "description": "Broker system scaling: the maximum supported number of client connections"
+      },
+      "allowedValues": [
+        "100",
+        "1000",
+        "10000",
+        "100000",
+        "200000"
+      ]
+    },
+    "maxNumberOfQueueMessages": {
+      "type": "string",
+      "defaultValue": "100",
+      "metadata": {
+        "description": "Broker system scaling: the maximum number of queue messages, in millions of messages"
+      },
+      "allowedValues": [
+        "100",
+        "240",
+        "3000"
+      ]
+    },
+    "messageRoutingNodeVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
+        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
@@ -96,43 +122,40 @@
         "Standard_DS2_v2",
         "Standard_DS3_v2",
         "Standard_DS4_v2",
-        "Standard_DS5_v2",
-        "Standard_D2s_v3",
-        "Standard_D4s_v3",
-        "Standard_D8s_v3",
-        "Standard_D16s_v3"
+        "Standard_DS5_v2"
       ]
     },
-    "monitorVmSize": {
+    "monitorNodeVmSize": {
       "type": "string",
       "defaultValue": "Standard_D1_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 1 core and 1GB of memory. Allowed values: D1_v2, DS1_v2, D2_v2, DS2_v2, D2_v3, D2s_v3"
+        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "Standard_D1_v2",
         "Standard_DS1_v2",
         "Standard_D2_v2",
         "Standard_DS2_v2",
-        "Standard_D2_v3",
-        "Standard_D2s_v3"
+        "Standard_D2_v3"
       ]
     },
     "dataDiskSize": {
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Allowed values: 0, 20, 40, 80, 160"
+        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com/."
       },
       "allowedValues": [
         "0",
-        "20",
-        "40",
-        "80",
-        "160"
+        "8",
+        "16",
+        "32",
+        "64",
+        "128",
+        "256"
       ]
     },
-    "solaceEventBrokerDockerImageReference": {
+    "brokerDockerImageReference": {
       "type": "string",
       "defaultValue": "solace/solace-pubsub-standard:latest",
       "metadata": {
@@ -196,7 +219,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
       },
-      "defaultValue": "https://raw.githubusercontent.com/SolaceProducts/solace-azure-quickstart-template/master/"
+      "defaultValue": "https://raw.githubusercontent.com/SolaceProducts/pubsubplus-azure-quickstart-template/master/"
     },
     "_artifactsLocationSasToken": {
       "type": "securestring",
@@ -212,8 +235,6 @@
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
-    "OSDiskName": "osdiskfordockersimple",
-    "dataDiskName": "datadiskfordockersimple",
     "nestedTemplatesLocation": "nestedtemplates/",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
@@ -228,7 +249,7 @@
     "workspaceEnabledSharedTemplateName": "workspace-enabled-shared-resources.json",
     "workspaceEnabledSharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('workspaceEnabledSharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
     "scriptsLocation": "scripts/",
-    "solaceInstallScriptName": "deploy_solace.sh",
+    "solaceInstallScriptName": "install-solace.sh",
     "solaceInstallScriptFileUri": "[uri(parameters('_artifactsLocation'), concat(variables('scriptsLocation'), variables('solaceInstallScriptName'), parameters('_artifactsLocationSasToken')))]",
     "sempQueryScriptName": "semp_query.sh",
     "sempQueryScriptFileUri": "[uri(parameters('_artifactsLocation'), concat(variables('scriptsLocation'), variables('sempQueryScriptName'), parameters('_artifactsLocationSasToken')))]",
@@ -238,11 +259,11 @@
     "virtualNetworkName": "[if(not(empty(parameters('existingVirtualNetworkName'))), parameters('existingVirtualNetworkName'), 'solace-vnet')]",
     "subnetName": "[if(not(empty(parameters('existingSubnetName'))), parameters('existingSubnetName'), 'solace-subnet')]",
     "nicName": "nicd",
-    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "deploymentModelHighAvailability": { "numberOfNodes": 3 },
     "deploymentModelSingleNode": {
       "numberOfNodes": 1
     },
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
     "monitorNodeIndex": 2,
     "lbName" : "solace-ha-group-loadbalancer",
@@ -255,7 +276,10 @@
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "caching": "ReadWrite",
-          "createOption": "Empty"
+          "createOption": "Empty",
+          "managedDisk": {
+            "storageAccountType": "Standard_LRS"
+          }
         }
       ],
       "1": [
@@ -264,7 +288,10 @@
           "diskSizeGB": "[parameters('dataDiskSize')]",
           "lun": 0,
           "caching": "ReadWrite",
-          "createOption": "Empty"
+          "createOption": "Empty",
+          "managedDisk": {
+            "storageAccountType": "Standard_LRS"
+          }
         }
       ],
       "2": [ ]
@@ -489,7 +516,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
+          "vmSize": "[if(equals(copyindex(), variables('monitorNodeIndex')), parameters('monitorNodeVmSize'), parameters('messageRoutingNodeVmSize'))]"
         },
         "osProfile": {
           "computerName": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
@@ -589,7 +616,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceEventBrokerDockerImageReference'))]"
+          "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -n ', parameters('maxNumberOfClientConnections'), ' -q ', parameters('maxNumberOfQueueMessages'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('brokerDockerImageReference'))]"
          }
       }
     }
