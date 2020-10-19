@@ -38,7 +38,7 @@ script:
   
   - az network vnet subnet create  --address-prefixes "10.0.1.0/24" --name VmTestSubnet -g $TESTRESOURCEGROUPNAME --vnet-name solace-vnet
   - az vm create   --resource-group $TESTRESOURCEGROUPNAME --name myVM   --image UbuntuLTS  --vnet-name solace-vnet  --subnet VmTestSubnet --admin-username azureuser   --generate-ssh-keys
-  - VM_IP=`az vm show -d -g $TESTRESOURCEGROUPNAME -n myVM --query privateIps -o tsv`
+  - VM_IP=`az vm show -d -g $TESTRESOURCEGROUPNAME -n myVM --query publicIps -o tsv`
   - LB_IP=`az network lb show -g $TESTRESOURCEGROUPNAME -n solace-ha-group-loadbalancer    --query "frontendIpConfigurations[].privateIpAddress" -o tsv`
   - # For some reason the last char of LB_IP is a CR - address that
   - ssh azureuser@$VM_IP "curl ${LB_IP%?}:8080" | grep aurelia
