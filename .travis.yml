@@ -32,7 +32,7 @@ script:
   - sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
   - sed -i "s@EXPOSURE@Public@g" ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
-  - echo "Creating cluster and waiting to become active"
+  - echo "Creating publicly exposed cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
@@ -49,9 +49,9 @@ script:
   - UNIQUEID="$(date +%s)"
   - TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
   - sed -i 's@"Public"@"Internal"@g' ci/azuredeploy.parameters.json
+  - sed -i 's@"travisws.*@"travisws${UNIQUEID}"@g' ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
-  - echo "Creating cluster and waiting to become active"
-  - "travis_wait 30 sleep 1800 &"
+  - echo "Creating internally exposed cluster and waiting to become active"
   - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
   - az network vnet subnet create  --address-prefixes "10.0.1.0/24" --name VmTestSubnet -g $TESTRESOURCEGROUPNAME --vnet-name solace-vnet

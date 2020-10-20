@@ -21,10 +21,12 @@ The following diagram shows the PubSub+ broker nodes deployed in [Azure Availabi
 
 Also note that for production use the type of data disks mounted from Azure Block Storage shall be adjusted from the default [Standard HDD](//docs.microsoft.com/en-us/azure/virtual-machines/disks-types)
 
+The Load Balancer in the diagram is exposed publicly and the VMs are also publicly accessible via SSH. This is not always desirable and an "Internal" deployment option is also provided, which will only expose these internally with no public IP addresses created. In this case the Load Balancer and the VMs are only accessible from a VM within the virtual network. 
+
 ![alt text](images/ha-cluster.png "HA Cluster Deployment")
 
 
-This is a two step process:
+The deployment is a two step process:
 
 ### Step 1: 
 
@@ -72,7 +74,8 @@ You need to fill in the following fields (* marks the mandatory ones):
 | Security Group Name        | New or existing security group, where event broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
-| DNS Label for LB IP*       | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
+| VM and Loadbalancer exposure | Specify the type of access to the broker VMs for SSH and to the Load Balancer for broker services. 'Internal' will make them accessible only from the local virtual network. Default is "Public". |
+| DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. Do not use '-'. The default offers to generate a unique name. |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
 | Max Number of Client Connections | Broker system scaling: the maximum supported number of client connections |
@@ -106,7 +109,7 @@ If OMS workspace name has been specified, Microsoft OMS (Operations Management S
 
 # Gaining admin access to the event broker
 
-To manage the currently AD-Active event broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
+To manage the currently AD-Active event broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user (for the rest of the document it is assumed that the publicly exposed Load Balancer option has been deployed). From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 Refer to the [Management Tools section](//docs.solace.com/Management-Tools.htm ) of the online documentation to learn more about the available tools. The WebUI is the recommended simplest way to administer the event broker for common tasks.
 
