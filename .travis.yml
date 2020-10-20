@@ -45,7 +45,7 @@ script:
   - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl ${LB_IP}:8080" | grep aurelia
   - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl -sS -u admin:$ADMINPASSWORD http://${LB_IP}:8080/SEMP -d \"<rpc><show><redundancy></redundancy></show></rpc>\" "
   - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64 ; tar -xvf SDKPERF_C_LINUX64"
-  - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1" | grep "Total Messages"
+  - ssh -o StrictHostKeyChecking=no azureuser@${VM_IP} "pubSubTools/sdkperf_c -cip=${LB_IP}:55555 -mn=100000 -mr=0 -ptl=t1 -stl=t1" | grep "Total Messages"
 
 after_success:
   - echo "Test Success - Branch($TRAVIS_BRANCH) Pull Request($TRAVIS_PULL_REQUEST) Tag($TRAVIS_TAG)"
