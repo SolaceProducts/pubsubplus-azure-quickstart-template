@@ -30,7 +30,7 @@ script:
   - sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
   - sed -i "s@solace/solace-pubsub-standard:latest@${SOLACE_DOCKER_URL_PARAMETER_VALUE}@g" ci/azuredeploy.parameters.json
   - sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
-  - sed -i "s@EXPOSURE@External@g" ci/azuredeploy.parameters.json
+  - sed -i "s@EXPOSURE@Public@g" ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
   - echo "Creating cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
