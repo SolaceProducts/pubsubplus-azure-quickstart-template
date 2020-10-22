@@ -35,7 +35,7 @@ script:
   - az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
   - echo "Creating publicly exposed cluster and waiting to become active"
   - "travis_wait 30 sleep 1800 &"
-  - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
+  - az deployment group create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
   - export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
   - curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64
@@ -54,7 +54,7 @@ script:
   - cat ci/azuredeploy.parameters.json
   - az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
   - echo "Creating internally exposed cluster and waiting to become active"
-  - az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
+  - az deployment group create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
   - az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
   - az network vnet subnet create  --address-prefixes "10.0.1.0/24" --name VmTestSubnet -g $TESTRESOURCEGROUPNAME --vnet-name solace-vnet
   - az vm create   --resource-group $TESTRESOURCEGROUPNAME --name myVM   --image UbuntuLTS  --vnet-name solace-vnet  --subnet VmTestSubnet --admin-username azureuser   --generate-ssh-keys
