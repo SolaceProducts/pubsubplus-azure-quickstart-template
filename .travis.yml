@@ -46,6 +46,7 @@ script:
   - curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
   - curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
   - az deployment group create -g $TESTRESOURCEGROUPNAME -f ci/ResourceGroupCleanup.template.json --mode complete # purge all existing resources from RG to prep for next deployment
+  - az deployment delete --name TravisTestDeployment${UNIQUEID}
   - UNIQUEID="$(date +%s)"
   - sed -i 's@"Public"@"Internal"@g' ci/azuredeploy.parameters.json
   - sed -i "s@\"travisws.*@\"travisws${UNIQUEID}\"@g" ci/azuredeploy.parameters.json
