@@ -242,7 +242,7 @@
     }
   },
   "variables": {
-    "availabilitySetName": "solace-ha-cluster",
+    "availabilitySetName": "solace-availabilityset",
     "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
