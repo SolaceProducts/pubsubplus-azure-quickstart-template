@@ -9,22 +9,22 @@
       "value": "TEST_SOLACEDOCKERIMAGE"
     },
     "vmAdminUsername": {
-      "value": "ghActionsAdm"
+      "value": "ghActionsVmAdm"
     },
     "vmAdminPassword": {
-      "value": "ghActionsPwd1234!"
+      "value": "ghActionsVmPwd1234!"
     },
     "solaceAdminPassword": {
       "value": "ADMINPASSWORD"
     },
     "workspaceName": {
-      "value": "ghActionsWsUNIQUEID"
+      "value": "ghactionswsUNIQUEID"
     },
     "vmAndLoadbalancerExposure": {
       "value": "EXPOSURE"
     },
     "dnsLabelForPublicLoadBalancer": {
-      "value": "ghActionsLbUNIQUEID"
+      "value": "ghactionslbUNIQUEID"
     },
     "dataDiskSize": {
       "value": "8"
