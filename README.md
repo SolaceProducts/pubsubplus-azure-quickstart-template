@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SolaceProducts/pubsubplus-azure-quickstart-template.svg?branch=master)](https://travis-ci.org/SolaceProducts/pubsubplus-azure-quickstart-template)
+[![Actions Status](https://github.com/SolaceProducts/pubsubplus-azure-quickstart-template/workflows/build/badge.svg?branch=master)](https://github.com/SolaceProducts/pubsubplus-azure-quickstart-template/actions?query=workflow%3Abuild+branch%3Amaster)
 
 # How to Deploy Standalone or HA Clusters of Solace PubSub+ Software Event Brokers onto Azure
 

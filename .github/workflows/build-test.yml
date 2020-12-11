@@ -60,7 +60,7 @@ jobs:
           export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
           curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64
           tar -xvf SDKPERF_C_LINUX64 -C /tmp
-          tmp/pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1 | grep "Total Messages"
+          /tmp/pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1 | grep "Total Messages"
           sleep 30
           bash -c 'if [[ -z `curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>" | grep "<oper-status>Up</oper-status>"` ]] ; then echo "config-sync not up!"; exit 1; fi'
           curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
