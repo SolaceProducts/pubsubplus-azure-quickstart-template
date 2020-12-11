@@ -17,9 +17,11 @@ jobs:
         echo "AZURELOCATION=centralus" >> $GITHUB_ENV
         UNIQUEID="$(date +%s)"
         echo "UNIQUEID=$UNIQUEID" >> $GITHUB_ENV
-        TESTRESOURCEGROUPNAME="TravisTestResourceGroup${UNIQUEID}"
+        TESTRESOURCEGROUPNAME="GHTestResourceGroup${UNIQUEID}"
+        TESTDEPLOYMENTNAME="GHTestDeployment${UNIQUEID}"
         echo "TESTRESOURCEGROUPNAME=$TESTRESOURCEGROUPNAME" >> $GITHUB_ENV
-        echo "ADMINPASSWORD=TravisAdminpwd1234!" >> $GITHUB_ENV
+        echo "TESTDEPLOYMENTNAME=$TESTDEPLOYMENTNAME" >> $GITHUB_ENV
+        echo "ADMINPASSWORD=GHAdminpwd1234!" >> $GITHUB_ENV
         #
         sudo apt-get install jq -y
         sudo apt-get install -y jsonlint
@@ -38,9 +40,9 @@ jobs:
 
     - name: Setup test params
       run: |
-        sed -i "s@ARTIFACTSLOCATION@$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH@g" ci/azuredeploy.parameters.json
+        sed -i "s@ARTIFACTSLOCATION@$GITHUB_REPOSITORY@g" ci/azuredeploy.parameters.json
         sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
-        sed -i "s@solace/solace-pubsub-standard:latest@${SOLACE_DOCKER_URL_PARAMETER_VALUE}@g" ci/azuredeploy.parameters.json
+        sed -i "s@TEST_SOLACEDOCKERIMAGE@${{ secrets.BROKER_DOCKER_IMAGE_REF }}@g" ci/azuredeploy.parameters.json
         sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
         sed -i "s@EXPOSURE@Public@g" ci/azuredeploy.parameters.json
         cat ci/azuredeploy.parameters.json
@@ -52,7 +54,7 @@ jobs:
         inlineScript: |
           az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
           echo "Creating publicly exposed cluster and waiting to become active"
-          az group deployment create --name TravisTestDeployment${UNIQUEID} --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
+          az group deployment create --name $TESTDEPLOYMENTNAME --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
           az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
           export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
           curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64
@@ -63,7 +65,7 @@ jobs:
           curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
           curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
           az group deployment create -g $TESTRESOURCEGROUPNAME -f ci/ResourceGroupCleanup.template.json --mode complete # purge all existing resources from RG to prep for next deployment
-          az deployment delete --name TravisTestDeployment${UNIQUEID}
+          az deployment delete --name $TESTDEPLOYMENTNAME
 
     - name: Delete test resource group (Cleanup)
       if: ${{ always() }}
