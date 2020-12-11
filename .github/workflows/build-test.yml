@@ -22,6 +22,7 @@ jobs:
         echo "TESTRESOURCEGROUPNAME=$TESTRESOURCEGROUPNAME" >> $GITHUB_ENV
         echo "TESTDEPLOYMENTNAME=$TESTDEPLOYMENTNAME" >> $GITHUB_ENV
         echo "ADMINPASSWORD=GHAdminpwd1234!" >> $GITHUB_ENV
+        echo "TESTRUNBRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
         #
         sudo apt-get install jq -y
         sudo apt-get install -y jsonlint
@@ -40,7 +41,7 @@ jobs:
 
     - name: Setup test params
       run: |
-        sed -i "s@ARTIFACTSLOCATION@$GITHUB_REPOSITORY@g" ci/azuredeploy.parameters.json
+        sed -i "s@ARTIFACTSLOCATION@$GITHUB_REPOSITORY/$TESTRUNBRANCH@g" ci/azuredeploy.parameters.json
         sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
         sed -i "s@TEST_SOLACEDOCKERIMAGE@${{ secrets.BROKER_DOCKER_IMAGE_REF }}@g" ci/azuredeploy.parameters.json
         sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
