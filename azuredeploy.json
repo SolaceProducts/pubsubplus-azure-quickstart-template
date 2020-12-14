@@ -51,17 +51,29 @@
         "Canada Central"
       ]
     },
-    "dnsLabelForLbIp": {
+    "vmAndLoadbalancerExposure": {
       "type": "string",
+      "defaultValue": "Public",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$"
+        "description": "Specify the type of access to the broker VMs for SSH and to the Load Balancer for broker services. 'Internal' will make them accessible only from the local virtual network"
+      },
+      "allowedValues": [
+        "Internal",
+        "Public"
+      ]
+    },
+    "dnsLabelForPublicLoadBalancer": {
+      "type": "string",
+      "defaultValue": "[concat('lb', uniqueString(resourceGroup().id, deployment().name))]",
+      "metadata": {
+        "description": "Ignored if Local exposure selected. If using a Public access, provide a unique DNS Label for the Load Balancer access IP. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$. Default will generate a unique string"
       }
     },
     "dnsLabelForVmIp": {
       "type": "string",
       "defaultValue": "[concat('vm', uniqueString(resourceGroup().id, deployment().name))]",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s). Do not use '-'. Default will generate a unique string."
+        "description": "Ignored if Local exposure selected. If using a Public access, provide a unique DNS Label for the broker Virtual Machine(s). Do not use '-'. Default will generate a unique string"
       }
     },
     "centosVersion": {
@@ -230,7 +242,7 @@
     }
   },
   "variables": {
-    "availabilitySetName": "solace-ha-cluster",
+    "availabilitySetName": "solace-availabilityset",
     "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
@@ -253,16 +265,14 @@
     "solaceInstallScriptFileUri": "[uri(parameters('_artifactsLocation'), concat(variables('scriptsLocation'), variables('solaceInstallScriptName'), parameters('_artifactsLocationSasToken')))]",
     "sempQueryScriptName": "semp_query.sh",
     "sempQueryScriptFileUri": "[uri(parameters('_artifactsLocation'), concat(variables('scriptsLocation'), variables('sempQueryScriptName'), parameters('_artifactsLocationSasToken')))]",
-    "publicIPAddressName": "myPublicIPD",
+    "publicIPAddressNameVM": "myVMPublicIPD",
     "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
     "virtualNetworkName": "[if(not(empty(parameters('existingVirtualNetworkName'))), parameters('existingVirtualNetworkName'), 'solace-vnet')]",
     "subnetName": "[if(not(empty(parameters('existingSubnetName'))), parameters('existingSubnetName'), 'solace-subnet')]",
-    "nicName": "nicd",
+    "nicName": "Nicd",
     "deploymentModelHighAvailability": { "numberOfNodes": 3 },
-    "deploymentModelSingleNode": {
-      "numberOfNodes": 1
-    },
+    "deploymentModelSingleNode": { "numberOfNodes": 1 },
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
     "monitorNodeIndex": 2,
@@ -334,8 +344,11 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "dnsLabelForLbIp": {
-            "value": "[parameters('dnsLabelForLbIp')]"
+          "vmAndLoadbalancerExposure": {
+            "value": "[parameters('vmAndLoadbalancerExposure')]"
+          },
+          "dnsLabelForPublicLoadBalancer": {
+            "value": "[parameters('dnsLabelForPublicLoadBalancer')]"
           },
           "publicIPAddressNameLB": {
             "value": "[variables('publicIPAddressNameLB')]"
@@ -348,6 +361,9 @@
           },
           "lbPoolName": {
             "value": "[variables('lbPoolName')]"
+          },
+          "subnetRef": {
+            "value": "[variables('subnetRef')]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -377,9 +393,10 @@
       }
     },
     {
+      "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(variables('publicIPAddressName'), copyindex())]",
+      "name": "[concat(variables('publicIPAddressNameVM'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "interfaceLoop",
@@ -447,16 +464,18 @@
       }
     },
     {
+      "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
+      "comments": "Only created if network interfaces are to be publicly exposed. Otherwise the next resource is created.",
       "apiVersion": "2020-04-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicName'), copyindex())]",
+      "name": "[concat('Public',variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyindex())]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressNameVM'), copyindex())]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
         "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
       ],
@@ -470,8 +489,44 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyindex()))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressNameVM'), copyindex()))]"
               },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[variables('lbPoolID')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[not(equals(parameters('vmAndLoadbalancerExposure'),'Public'))]",
+      "apiVersion": "2020-04-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat('Internal',variables('nicName'), copyindex())]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
+      ],
+      "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('subnetRef')]"
               },
@@ -508,7 +563,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('nicName'), copyindex()))]",
+        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex()))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
       ],
       "properties": {
@@ -540,7 +595,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmAndLoadbalancerExposure'),variables('nicName'), copyindex()))]"
             }
           ]
         }

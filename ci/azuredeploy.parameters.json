@@ -6,22 +6,25 @@
       "value": "https://raw.githubusercontent.com/ARTIFACTSLOCATION/"
     },
     "brokerDockerImageReference": {
-      "value": "solace/solace-pubsub-standard:latest"
+      "value": "TEST_SOLACEDOCKERIMAGE"
     },
     "vmAdminUsername": {
-      "value": "travisadm"
+      "value": "ghActionsVmAdm"
     },
     "vmAdminPassword": {
-      "value": "Travispwd1234!"
+      "value": "ghActionsVmPwd1234!"
     },
     "solaceAdminPassword": {
       "value": "ADMINPASSWORD"
     },
     "workspaceName": {
-      "value": "traviswsUNIQUEID"
+      "value": "ghactionswsUNIQUEID"
     },
-    "dnsLabelForLbIp": {
-      "value": "travislbUNIQUEID"
+    "vmAndLoadbalancerExposure": {
+      "value": "EXPOSURE"
+    },
+    "dnsLabelForPublicLoadBalancer": {
+      "value": "ghactionslbUNIQUEID"
     },
     "dataDiskSize": {
       "value": "8"

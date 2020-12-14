@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SolaceProducts/pubsubplus-azure-quickstart-template.svg?branch=master)](https://travis-ci.org/SolaceProducts/pubsubplus-azure-quickstart-template)
+[![Actions Status](https://github.com/SolaceProducts/pubsubplus-azure-quickstart-template/workflows/build/badge.svg?branch=master)](https://github.com/SolaceProducts/pubsubplus-azure-quickstart-template/actions?query=workflow%3Abuild+branch%3Amaster)
 
 # How to Deploy Standalone or HA Clusters of Solace PubSub+ Software Event Brokers onto Azure
 
@@ -21,10 +21,12 @@ The following diagram shows the PubSub+ broker nodes deployed in [Azure Availabi
 
 Also note that for production use the type of data disks mounted from Azure Block Storage shall be adjusted from the default [Standard HDD](//docs.microsoft.com/en-us/azure/virtual-machines/disks-types)
 
+The Load Balancer in the diagram is exposed publicly and the VMs are also publicly accessible via SSH. This is not always desirable and an "Internal" deployment option is also provided, which will only expose these internally with no public IP addresses created. In this case the Load Balancer and the VMs are only accessible from a VM within the virtual network. 
+
 ![alt text](images/ha-cluster.png "HA Cluster Deployment")
 
 
-This is a two step process:
+The deployment is a two step process:
 
 ### Step 1: 
 
@@ -72,13 +74,14 @@ You need to fill in the following fields (* marks the mandatory ones):
 | Security Group Name        | New or existing security group, where event broker default ports will be made publicly available. |
 | Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Leave this field empty to not deploy an OMS Workspace. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. Not used if Workspace Name is empty. |
-| DNS Label for LB IP*       | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
+| VM and Loadbalancer exposure | Specify the type of access to the broker VMs for SSH and to the Load Balancer for broker services. 'Internal' will make them accessible only from the local virtual network. Default is "Public". |
+| DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. Do not use '-'. The default offers to generate a unique name. |
 | CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.2, 7.3, or 7.4. |
 | Max Number of Client Connections | Broker system scaling: the maximum supported number of client connections |
 | Max Number of Queue Messages | Broker system scaling: the maximum number of queue messages, in millions of messages |
-| Message Routing VM Size    |The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check [//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Scaling-Parameters.htm). |
-| Monitor VM Size            | The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check [https://docs.solace.com](//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Resource-Requirements.htm#res-req-container) |
+| Message Routing VM Size    | The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements, check the [Solace documentation](//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Scaling-Parameters.htm). |
+| Monitor VM Size            | The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements, check [https://docs.solace.com](//docs.solace.com/Configuring-and-Managing/SW-Broker-Specific-Config/System-Resource-Requirements.htm#res-req-container) |
 | Data Disk Size             | The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com. |
 | Broker Docker Image Reference | A reference to the Solace PubSub+ event broker Docker image, from step 1. Either the image name with optional tag in an accessible Docker registry or a download URL. The download URL can be obtained from http://dev.solace.com/downloads/ or it can be a URL to a remotely hosted image version. The default value is `solace/solace-pubsub-standard:latest` |
 | Deployment Model*          | High Availability or Single Node. |
@@ -106,7 +109,7 @@ If OMS workspace name has been specified, Microsoft OMS (Operations Management S
 
 # Gaining admin access to the event broker
 
-To manage the currently AD-Active event broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user. From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
+To manage the currently AD-Active event broker, you can connect to the Public IP Address associated with the Load Balancer as the 'admin' user (for the rest of the document it is assumed that the publicly exposed Load Balancer option has been deployed). From the Resource Group view for your deployment on the Azure Portal, the Load Balancer is the resource named `myLB`, and its Public IP Address is the resource named `myLBPublicIPD`, which has an IP address and a DNS name that you can connect to.
 
 Refer to the [Management Tools section](//docs.solace.com/Management-Tools.htm ) of the online documentation to learn more about the available tools. The WebUI is the recommended simplest way to administer the event broker for common tasks.
 
