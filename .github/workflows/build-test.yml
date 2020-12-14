@@ -34,14 +34,6 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # - name: Setup Azure CLI and login
-    #   run: |
-    #     AZ_REPO=$(lsb_release -cs)
-    #     echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
-    #     curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    #     sudo apt-get install apt-transport-https
-    #     sudo apt-get install azure-cli
-    #     az login `echo ${{ secrets.AZURE_CREDENTIALS }}`
     
     - name: Lint json templates
       run: |
@@ -59,17 +51,17 @@ jobs:
     - name: Test deploy with public LB option
       run: |
         az group create --name $TESTRESOURCEGROUPNAME --location $AZURELOCATION
-        # echo "Creating publicly exposed cluster and waiting to become active"
-        # az group deployment create --name $TESTDEPLOYMENTNAME --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
-        # az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
-        # export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
-        # curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64; tar -xvf SDKPERF_C_LINUX64 -C /tmp; /tmp/pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1 | grep "Total Messages"
-        # sleep 30
-        # bash -c 'if [[ -z `curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>" | grep "<oper-status>Up</oper-status>"` ]] ; then echo "config-sync not up!"; exit 1; fi'
-        # curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
-        # curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
-        # az group deployment create -g $TESTRESOURCEGROUPNAME -f ci/ResourceGroupCleanup.template.json --mode complete # purge all existing resources from RG to prep for next deployment
-        # az deployment delete --name $TESTDEPLOYMENTNAME
+        echo "Creating publicly exposed cluster and waiting to become active"
+        az group deployment create --name $TESTDEPLOYMENTNAME --resource-group $TESTRESOURCEGROUPNAME --template-file azuredeploy.json --parameters ci/azuredeploy.parameters.json
+        az group show --name $TESTRESOURCEGROUPNAME | grep provisioningState
+        export url=`az network public-ip show --resource-group $TESTRESOURCEGROUPNAME --name myLBPublicIPD --query [ipAddress] --output tsv`; echo $url
+        curl -O https://sftp.solace.com/download/SDKPERF_C_LINUX64; tar -xvf SDKPERF_C_LINUX64 -C /tmp; /tmp/pubSubTools/sdkperf_c -cip=$url -mn=100000 -mr=0 -ptl=t1 -stl=t1 | grep "Total Messages"
+        sleep 30
+        bash -c 'if [[ -z `curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>" | grep "<oper-status>Up</oper-status>"` ]] ; then echo "config-sync not up!"; exit 1; fi'
+        curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
+        curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
+        az group deployment create -g $TESTRESOURCEGROUPNAME -f ci/ResourceGroupCleanup.template.json --mode complete # purge all existing resources from RG to prep for next deployment
+        az deployment delete --name $TESTDEPLOYMENTNAME
 
     - name: Test deploy with internally exposed cluster option
       run: |
