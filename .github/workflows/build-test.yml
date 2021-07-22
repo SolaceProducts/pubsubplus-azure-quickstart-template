@@ -43,7 +43,7 @@ jobs:
       run: |
         sed -i "s@ARTIFACTSLOCATION@$GITHUB_REPOSITORY/$TESTRUNBRANCH@g" ci/azuredeploy.parameters.json
         sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
-        sed -i "s@TEST_SOLACEDOCKERIMAGE@bczoma/solacetest:latest@g" ci/azuredeploy.parameters.json
+        sed -i "s@TEST_SOLACEDOCKERIMAGE@${{ secrets.BROKER_DOCKER_IMAGE_REF }}@g" ci/azuredeploy.parameters.json
         sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
         sed -i "s@EXPOSURE@Public@g" ci/azuredeploy.parameters.json
         cat ci/azuredeploy.parameters.json
