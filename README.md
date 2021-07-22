@@ -2,11 +2,11 @@
 
 # How to Deploy Standalone or HA Clusters of Solace PubSub+ Software Event Brokers onto Azure
 
+This project is a best practice template intended for development and demo purposes. The tested and recommended Solace PubSub+ Software Event Broker version is 9.10.
+
 The Solace PubSub+ software event broker meets the needs of big data, cloud migration, and Internet-of-Things initiatives, and enables microservices and event-driven architecture. Capabilities include topic-based publish/subscribe, request/reply, message queues/queueing, and data streaming for IoT devices and mobile/web apps. The event broker supports open APIs and standard protocols including AMQP, JMS, MQTT, REST, and WebSocket. As well, it can be deployed in on-premise datacenters, natively within private and public clouds, and across complex hybrid cloud environments.
 
 This document provides a quick getting started guide to install a deployment in Microsoft Azure cloud computing service.
-
-The supported event broker version is 9.7 or later. For earlier broker releases use [this GitHub version of the QuickStart](//github.com/SolaceProducts/pubsubplus-azure-quickstart-template/tree/v1.1.0).
 
 How to Deploy a Solace PubSub+ Software Event Broker
 -------------------
