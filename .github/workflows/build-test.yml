@@ -42,7 +42,6 @@ jobs:
 
     - name: Setup test params
       run: |
-        sed -i "s@ARTIFACTSLOCATION@$GITHUB_REPOSITORY/$TESTRUNBRANCH@g" ci/azuredeploy.parameters.json
         sed -i "s@UNIQUEID@$UNIQUEID@g" ci/azuredeploy.parameters.json
         sed -i "s@TEST_SOLACEDOCKERIMAGE@$BROKERTESTIMAGE@g" ci/azuredeploy.parameters.json
         sed -i "s@ADMINPASSWORD@$ADMINPASSWORD@g" ci/azuredeploy.parameters.json
