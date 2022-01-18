@@ -62,7 +62,7 @@ jobs:
         curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><redundancy></redundancy></show></rpc>"
         curl -sS -u admin:$ADMINPASSWORD http://$url:8080/SEMP -d "<rpc><show><config-sync></config-sync></show></rpc>"
 
-    # - name: Delete test resource group (Cleanup)
-    #   if: ${{ always() }}
-    #   run: |
-    #     az group delete --name $TESTRESOURCEGROUPNAME --yes
+    - name: Delete test resource group (Cleanup)
+      if: ${{ always() }}
+      run: |
+        az group delete --name $TESTRESOURCEGROUPNAME --yes

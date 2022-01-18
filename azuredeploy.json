@@ -78,9 +78,9 @@
     },
     "centosVersion": {
       "type": "string",
-      "defaultValue": "7.6",
+      "defaultValue": "7.7",
       "metadata": {
-        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.4, 7.6, 7.7"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.7, 7.6, or 7.4 (legacy)"
       },
       "allowedValues": [
         "7.4",
@@ -118,7 +118,7 @@
       "type": "string",
       "defaultValue": "Standard_D2_v3",
       "metadata": {
-        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check https://docs.solace.com/."
+        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
         "Standard_D2_v3",
@@ -135,7 +135,7 @@
       "type": "string",
       "defaultValue": "Standard_D2_v3",
       "metadata": {
-        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check https://docs.solace.com/."
+        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
         "Standard_D2_v3",
@@ -146,7 +146,7 @@
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com/."
+        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
         "0",
