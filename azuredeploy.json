@@ -78,7 +78,7 @@
     },
     "centosVersion": {
       "type": "string",
-      "defaultValue": "7_9",
+      "defaultValue": "8_4",
       "metadata": {
         "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.9, or 8.4"
       },
