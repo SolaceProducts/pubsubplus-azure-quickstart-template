@@ -78,14 +78,13 @@
     },
     "centosVersion": {
       "type": "string",
-      "defaultValue": "7.7",
+      "defaultValue": "8_4",
       "metadata": {
-        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.7, 7.6, or 7.4 (legacy)"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.9, or 8.4"
       },
       "allowedValues": [
-        "7.4",
-        "7.6",
-        "7.7"
+        "7_9",
+        "8_4"
       ]
     },
     "maxNumberOfClientConnections": {
@@ -237,7 +236,7 @@
     "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
-    "imageOffer": "Centos",
+    "imageOffer": "CentOS",
     "nestedTemplatesLocation": "nestedtemplates/",
     "solaceSecurityTemplateName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
