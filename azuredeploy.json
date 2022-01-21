@@ -80,11 +80,10 @@
       "type": "string",
       "defaultValue": "7_9",
       "metadata": {
-        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.9, or 8.4"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.9"
       },
       "allowedValues": [
-        "7_9",
-        "8_4"
+        "7_9"
       ]
     },
     "maxNumberOfClientConnections": {

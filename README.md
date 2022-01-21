@@ -77,7 +77,7 @@ You need to fill in the following fields (* marks the mandatory ones):
 | VM and Loadbalancer exposure | Specify the type of access to the broker VMs for SSH and to the Load Balancer for broker services. 'Internal' will make them accessible only from the local virtual network. Default is "Public". |
 | DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. Name must satisfy regular expression ^[a-z][a-z0-9-]{1,61}[a-z0-9]$ |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine. Do not use '-'. The default offers to generate a unique name. |
-| CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.7, 7.6, or 7.4 (legacy). |
+| CentOS Version             | The CentOS version for deploying the Docker containers. Use CentOS 7.9. |
 | Max Number of Client Connections | Broker system scaling: the maximum supported number of client connections |
 | Max Number of Queue Messages | Broker system scaling: the maximum number of queue messages, in millions of messages |
 | Message Routing VM Size    | The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements, check the [Resource calculator](https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html). |
