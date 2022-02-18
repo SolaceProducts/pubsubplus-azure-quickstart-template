@@ -78,14 +78,12 @@
     },
     "centosVersion": {
       "type": "string",
-      "defaultValue": "7.4",
+      "defaultValue": "7_9",
       "metadata": {
-        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.2, 7.3, 7.4"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.9"
       },
       "allowedValues": [
-        "7.2",
-        "7.3",
-        "7.4"
+        "7_9"
       ]
     },
     "maxNumberOfClientConnections": {
@@ -116,46 +114,37 @@
     },
     "messageRoutingNodeVmSize": {
       "type": "string",
-      "defaultValue": "Standard_D2_v2",
+      "defaultValue": "Standard_D2_v3",
       "metadata": {
-        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check https://docs.solace.com/."
+        "description": "The size of a PubSub+ broker message routing node VM. Important: ensure adequate CPU and Memory resources are available to support the selected broker system scaling parameters. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
-        "Standard_D1_v2",
-        "Standard_D2_v2",
-        "Standard_D3_v2",
-        "Standard_D4_v2",
-        "Standard_D5_v2",
         "Standard_D2_v3",
         "Standard_D4_v3",
         "Standard_D8_v3",
         "Standard_D16_v3",
-        "Standard_DS1_v2",
-        "Standard_DS2_v2",
-        "Standard_DS3_v2",
-        "Standard_DS4_v2",
-        "Standard_DS5_v2"
+        "Standard_D2s_v3",
+        "Standard_D4s_v3",
+        "Standard_D8s_v3",
+        "Standard_D16s_v3"
       ]
     },
     "monitorNodeVmSize": {
       "type": "string",
-      "defaultValue": "Standard_D1_v2",
+      "defaultValue": "Standard_D2_v3",
       "metadata": {
-        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check https://docs.solace.com/."
+        "description": "The size of the PubSub+ monitor node VM in a High Availabity deployment. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
-        "Standard_D1_v2",
-        "Standard_DS1_v2",
-        "Standard_D2_v2",
-        "Standard_DS2_v2",
-        "Standard_D2_v3"
+        "Standard_D2_v3",
+        "Standard_D2s_v3"
       ]
     },
     "dataDiskSize": {
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check https://docs.solace.com/."
+        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. For requirements check the resource calculator at https://docs.solace.com/Assistance-Tools/Resource-Calculator/pubsubplus-resource-calculator.html."
       },
       "allowedValues": [
         "0",
@@ -231,7 +220,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
       },
-      "defaultValue": "https://raw.githubusercontent.com/SolaceProducts/pubsubplus-azure-quickstart-template/master/"
+      "defaultValue": "[deployment().properties.templatelink.uri]"
     },
     "_artifactsLocationSasToken": {
       "type": "securestring",
@@ -246,9 +235,9 @@
     "platformFaultDomainCount": "[parameters('numberOfFaultDomains')]",
     "platformUpdateDomainCount": "[if(equals(parameters('numberOfFaultDomains'), 1), 1, 3)]",
     "imagePublisher": "OpenLogic",
-    "imageOffer": "Centos",
+    "imageOffer": "CentOS",
     "nestedTemplatesLocation": "nestedtemplates/",
-    "solaceSecurityName": "SolaceSecurity.Template",
+    "solaceSecurityTemplateName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
     "securitySharedTemplateUri": "[uri(parameters('_artifactsLocation'), concat(variables('nestedTemplatesLocation'), variables('securitySharedTemplateName'), parameters('_artifactsLocationSasToken')))]",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
@@ -288,7 +277,7 @@
           "caching": "ReadWrite",
           "createOption": "Empty",
           "managedDisk": {
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "StandardSSD_LRS"
           }
         }
       ],
@@ -300,7 +289,7 @@
           "caching": "ReadWrite",
           "createOption": "Empty",
           "managedDisk": {
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "StandardSSD_LRS"
           }
         }
       ],
@@ -311,9 +300,9 @@
   },
   "resources": [
     {
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2021-04-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "[variables('solaceSecurityName')]",
+      "name": "[variables('solaceSecurityTemplateName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -334,7 +323,7 @@
       }
     },
     {
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2021-04-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceLoadBalancerName')]",
       "properties": {
@@ -373,7 +362,7 @@
     },
     {
       "condition": "[not(empty(parameters('workspaceName')))]",
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2021-04-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceWorkspaceName')]",
       "properties": {
@@ -394,7 +383,7 @@
     },
     {
       "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2021-05-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(variables('publicIPAddressNameVM'), copyindex())]",
       "location": "[parameters('location')]",
@@ -411,7 +400,7 @@
     },
     {
       "condition": "[empty(parameters('existingSubnetName'))]",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2021-05-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[parameters('location')]",
@@ -432,11 +421,11 @@
       }
     },
     {
-      "apiVersion": "2019-10-01",
+      "apiVersion": "2021-04-01",
       "name": "[variables('solaceUpdateSubnetName')]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
+        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityTemplateName'))]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -466,7 +455,7 @@
     {
       "condition": "[equals(parameters('vmAndLoadbalancerExposure'),'Public')]",
       "comments": "Only created if network interfaces are to be publicly exposed. Otherwise the next resource is created.",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2021-05-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat('Public',variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
@@ -506,7 +495,7 @@
     },
     {
       "condition": "[not(equals(parameters('vmAndLoadbalancerExposure'),'Public'))]",
-      "apiVersion": "2020-04-01",
+      "apiVersion": "2021-05-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat('Internal',variables('nicName'), copyindex())]",
       "location": "[parameters('location')]",
@@ -541,7 +530,7 @@
       }
     },
     {
-      "apiVersion": "2019-12-01",
+      "apiVersion": "2021-07-01",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('availabilitySetName')]",
       "location": "[parameters('location')]",
@@ -554,7 +543,7 @@
       }
     },
     {
-      "apiVersion":"2019-12-01",
+      "apiVersion":"2021-07-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex())]",
       "location": "[parameters('location')]",
@@ -602,7 +591,7 @@
       }
     },
     {
-      "apiVersion": "2019-12-01",
+      "apiVersion": "2021-07-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/DockerExtension')]",
       "location": "[parameters('location')]",
@@ -623,7 +612,7 @@
     },
     {
       "condition": "[not(empty(parameters('workspaceName')))]",
-      "apiVersion": "2019-12-01",
+      "apiVersion": "2021-07-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/OmsAgentExtension')]",
       "location": "[parameters('location')]",
@@ -648,7 +637,7 @@
       }
     },
     {
-      "apiVersion": "2019-12-01",
+      "apiVersion": "2021-07-01",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('dnsLabelForVmIp'), copyindex(), '/configureSolaceContainer')]",
       "location": "[parameters('location')]",
@@ -672,8 +661,9 @@
         },
         "protectedSettings": {
           "commandToExecute": "[concat('mkdir -p -m 770 ', variables('adminPasswordDir'), '; echo ', parameters('solaceAdminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -d ', parameters('dnsLabelForVmIp'), ' -i ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -n ', parameters('maxNumberOfClientConnections'), ' -q ', parameters('maxNumberOfQueueMessages'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('brokerDockerImageReference'))]"
-         }
+        }
       }
     }
   ]
 }
+
